@@ -33,7 +33,8 @@ void main() {
       return const Right(tAuthenticationData);
     });
 
-    final result = await usecase.execute(email: tEmail, password: tPassword);
+    final result =
+        await usecase(const Params(email: tEmail, password: tPassword));
     expect(result, const Right(tAuthenticationData));
     verify(mockAuthenticationRepository.signUpWithEmailPassword(
         email: tEmail, password: tPassword));

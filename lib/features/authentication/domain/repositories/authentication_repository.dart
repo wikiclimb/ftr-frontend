@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
+import '../../../../core/error/failure.dart';
 import '../entities/authentication_data.dart';
 
 /// Contract class for authentication use cases.
