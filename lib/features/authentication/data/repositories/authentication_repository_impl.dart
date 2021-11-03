@@ -1,3 +1,4 @@
+import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/platform/network_info.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_remote_data_source.dart';
@@ -18,8 +19,26 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   });
   @override
   Future<Either<Failure, AuthenticationData>> logInWithUsernamePassword(
-      {required String username, required String password}) {
-    // TODO: implement logInWithUsernamePassword
-    throw UnimplementedError();
+      {required String username, required String password}) async {
+    networkInfo.isConnected;
+    try {
+      final authData = await remoteDataSource.login(
+        username: username,
+        password: password,
+      );
+      localDataSource.cacheAuthenticationData(authData);
+      return Right(authData);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthenticationData>> getAuthenticationData() async {
+    try {
+      return Right(await localDataSource.getAuthenticationData());
+    } on CacheException {
+      return Left(CacheFailure());
+    }
   }
 }

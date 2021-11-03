@@ -6,4 +6,6 @@ import '../entities/authentication_data.dart';
 abstract class AuthenticationRepository {
   Future<Either<Failure, AuthenticationData>> logInWithUsernamePassword(
       {required String username, required String password});
+
+  Future<Either<Failure, AuthenticationData>> getAuthenticationData();
 }
