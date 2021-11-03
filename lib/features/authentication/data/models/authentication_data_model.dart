@@ -1,4 +1,4 @@
-import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
+import '../../domain/entities/authentication_data.dart';
 
 class AuthenticationDataModel extends AuthenticationData {
   const AuthenticationDataModel({required String token, required int id})
