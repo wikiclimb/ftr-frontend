@@ -1,11 +1,11 @@
-import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
-import 'package:wikiclimb_flutter_frontend/core/platform/network_info.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_remote_data_source.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
-import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
+import '../../../../core/error/exception.dart';
+import '../../../../core/network/network_info.dart';
+import '../datasources/authentication_local_data_source.dart';
+import '../datasources/authentication_remote_data_source.dart';
+import '../../domain/entities/authentication_data.dart';
+import '../../../../core/error/failure.dart';
 import 'package:dartz/dartz.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/domain/repositories/authentication_repository.dart';
+import '../../domain/repositories/authentication_repository.dart';
 
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final AuthenticationRemoteDataSource remoteDataSource;
