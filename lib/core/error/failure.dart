@@ -23,3 +23,14 @@ class CacheFailure extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+/// This Failure represents not passing validation and can contain a
+/// message that further explains the cause of failing validation.
+class ValidationFailure extends Failure {
+  const ValidationFailure(this.message);
+
+  final String message;
+
+  @override
+  List<Object?> get props => [];
+}
