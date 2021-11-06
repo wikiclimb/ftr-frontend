@@ -32,10 +32,15 @@ class AuthenticationRemoteDataSourceImpl
       body: {'username': username, 'password': password},
       headers: {'Content-Type': 'application/json'},
     );
-    if (response.statusCode == 200) {
-      return AuthenticationDataModel.fromJson(jsonDecode(response.body));
-    } else {
-      throw ServerException();
+    switch (response.statusCode) {
+      case 200:
+        return AuthenticationDataModel.fromJson(
+          jsonDecode(response.body),
+        );
+      case 401:
+        throw UnauthorizedException();
+      default:
+        throw ServerException();
     }
   }
 }

@@ -28,6 +28,8 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
       );
       localDataSource.cacheAuthenticationData(authData);
       return Right(authData);
+    } on UnauthorizedException {
+      return Left(UnauthorizedFailure());
     } on ServerException {
       return Left(ServerFailure());
     }

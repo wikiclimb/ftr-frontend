@@ -24,7 +24,7 @@ void main() {
     const tUsername = 'test-username';
     const tPassword = 'very-secret';
 
-    test('should send GET request with parameters and header', () async {
+    test('should send POST request with parameters and header', () async {
       // arrange
       when(mockClient.post(
         any,
@@ -43,6 +43,22 @@ void main() {
         headers: {'Content-Type': 'application/json'},
       ));
     });
+
+    test(
+      'should throw an UnauthorizedException when response code is 401',
+      () async {
+        when(mockClient.post(
+          any,
+          body: anyNamed('body'),
+          headers: anyNamed('headers'),
+        )).thenAnswer(
+          (_) async => http.Response('Unauthorized', 401),
+        );
+        final call = dataSource.login;
+        expect(() => call(username: tUsername, password: tPassword),
+            throwsA(const TypeMatcher<UnauthorizedException>()));
+      },
+    );
 
     test('should throw a ServerException when response code is 404', () async {
       when(mockClient.post(

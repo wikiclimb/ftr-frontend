@@ -100,6 +100,27 @@ void main() {
       );
 
       test(
+        'should return UnauthorizedFailure when the call to '
+        'remote data source returns login failure',
+        () async {
+          when(mockRemoteDataSource.login(
+            username: tUsername,
+            password: tPassword,
+          )).thenThrow(UnauthorizedException());
+          final result = await repository.logInWithUsernamePassword(
+            username: tUsername,
+            password: tPassword,
+          );
+          verify(mockRemoteDataSource.login(
+            username: tUsername,
+            password: tPassword,
+          ));
+          verifyZeroInteractions(mockLocalDataSource);
+          expect(result, equals(Left(UnauthorizedFailure())));
+        },
+      );
+
+      test(
         'should return server failure when the call to '
         'remote data source is unsuccessful',
         () async {
