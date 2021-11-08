@@ -1,11 +1,12 @@
+import 'package:dartz/dartz.dart';
+
 import '../../../../core/error/exception.dart';
+import '../../../../core/error/failure.dart';
 import '../../../../core/network/network_info.dart';
+import '../../domain/entities/authentication_data.dart';
+import '../../domain/repositories/authentication_repository.dart';
 import '../datasources/authentication_local_data_source.dart';
 import '../datasources/authentication_remote_data_source.dart';
-import '../../domain/entities/authentication_data.dart';
-import '../../../../core/error/failure.dart';
-import 'package:dartz/dartz.dart';
-import '../../domain/repositories/authentication_repository.dart';
 
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final AuthenticationRemoteDataSource remoteDataSource;
@@ -31,6 +32,10 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     } on UnauthorizedException {
       return Left(UnauthorizedFailure());
     } on ServerException {
+      return Left(ServerFailure());
+    } on NetworkException {
+      return Left(NetworkFailure());
+    } catch (e) {
       return Left(ServerFailure());
     }
   }

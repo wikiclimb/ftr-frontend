@@ -121,13 +121,55 @@ void main() {
       );
 
       test(
-        'should return server failure when the call to '
-        'remote data source is unsuccessful',
+        'should return [ServerFailure] when the call to '
+        'remote data source returns [ServerException]',
         () async {
           when(mockRemoteDataSource.login(
             username: tUsername,
             password: tPassword,
           )).thenThrow(ServerException());
+          final result = await repository.logInWithUsernamePassword(
+            username: tUsername,
+            password: tPassword,
+          );
+          verify(mockRemoteDataSource.login(
+            username: tUsername,
+            password: tPassword,
+          ));
+          verifyZeroInteractions(mockLocalDataSource);
+          expect(result, equals(Left(ServerFailure())));
+        },
+      );
+
+      test(
+        'should return [NetworkFailure] when the call to '
+        'remote data source returns [NetworkException]',
+        () async {
+          when(mockRemoteDataSource.login(
+            username: tUsername,
+            password: tPassword,
+          )).thenThrow(NetworkException());
+          final result = await repository.logInWithUsernamePassword(
+            username: tUsername,
+            password: tPassword,
+          );
+          verify(mockRemoteDataSource.login(
+            username: tUsername,
+            password: tPassword,
+          ));
+          verifyZeroInteractions(mockLocalDataSource);
+          expect(result, equals(Left(NetworkFailure())));
+        },
+      );
+
+      test(
+        'should return [ServerFailure] when the call to '
+        'remote data source returns other [Exception]',
+        () async {
+          when(mockRemoteDataSource.login(
+            username: tUsername,
+            password: tPassword,
+          )).thenThrow(Exception());
           final result = await repository.logInWithUsernamePassword(
             username: tUsername,
             password: tPassword,

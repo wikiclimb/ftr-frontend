@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../features/authentication/presentation/screens/login_screen.dart';
+import '../features/home/presentation/screens/home_screen.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -11,28 +13,13 @@ class App extends StatelessWidget {
       title: title,
       theme: ThemeData(
         primarySwatch: Colors.purple,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Scaffold(
-        appBar: AppBar(title: Text(title)),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const <Widget>[
-            Center(
-              child: SizedBox(
-                width: 200,
-                child: Image(
-                  image: AssetImage('graphics/wikiclimb-logo.png'),
-                ),
-              ),
-            ),
-            // TODO: The following widget is only for testing the login page.
-            ElevatedButton(
-              onPressed: null,
-              child: Text('Login'),
-            ),
-          ],
-        ),
-      ),
+      initialRoute: HomeScreen.id,
+      routes: {
+        HomeScreen.id: (context) => const HomeScreen(),
+        LoginScreen.id: (context) => const LoginScreen(),
+      },
     );
   }
 }

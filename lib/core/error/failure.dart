@@ -15,6 +15,15 @@ class CacheFailure extends Failure {
   List<Object?> get props => [];
 }
 
+/// Generic network failure class.
+///
+/// Use this class to inform consumers that the system failed to connect to
+/// a remote server.
+class NetworkFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
 /// Generic server failure class.
 ///
 /// Use this class to inform consumers that the system failed to get data

@@ -19,13 +19,14 @@ class LogInWithUsernamePassword extends UseCase<AuthenticationData, Params> {
 }
 
 class Params extends Equatable {
-  final String username;
-  final String password;
-
   const Params({required this.username, required this.password});
+
+  final String password;
+  final String username;
 
   // coverage:ignore-start
   @override
   List<Object?> get props => [username, password];
+
   // coverage:ignore-end
 }

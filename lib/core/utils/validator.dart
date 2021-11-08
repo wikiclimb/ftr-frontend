@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
+
+import '../error/failure.dart';
 
 /// The parent class for validators.
 abstract class Validator {

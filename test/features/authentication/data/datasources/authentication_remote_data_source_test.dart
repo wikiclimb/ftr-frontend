@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
@@ -39,7 +42,7 @@ void main() {
       // assert
       verify(mockClient.post(
         Uri.parse('https://${EnvironmentConfig.apiUrl}/login'),
-        body: {'username': tUsername, 'password': tPassword},
+        body: jsonEncode({'username': tUsername, 'password': tPassword}),
         headers: {'Content-Type': 'application/json'},
       ));
     });
@@ -71,6 +74,17 @@ void main() {
       final call = dataSource.login;
       expect(() => call(username: tUsername, password: tPassword),
           throwsA(const TypeMatcher<ServerException>()));
+    });
+
+    test('should throw a NetworkException when connection fails', () async {
+      when(mockClient.post(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenThrow((_) async => const SocketException('Could not connect'));
+      final call = dataSource.login;
+      expect(() => call(username: tUsername, password: tPassword),
+          throwsA(const TypeMatcher<NetworkException>()));
     });
   });
 }

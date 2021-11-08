@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/domain/usecases/log_in_with_username_password.dart';
+import '../../../../core/error/failure.dart';
+import '../../domain/usecases/log_in_with_username_password.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -12,7 +12,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   static const loginFailedMessage = 'Wrong username or password';
-  static const serverNetworkError = 'There was an error, please try again';
+  static const networkError = 'Could not connect to the server, '
+      'are you connected to the Internet?';
+  static const serverError = 'There was an error, please try again';
   static const undefinedError = 'Something went wrong';
 
   final LogInWithUsernamePassword loginUsecase;
@@ -36,7 +38,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (failure is UnauthorizedFailure) {
           message = loginFailedMessage;
         } else if (failure is ServerFailure) {
-          message = serverNetworkError;
+          message = serverError;
+        } else if (failure is NetworkFailure) {
+          message = networkError;
         }
         emit(LoginError(message: message));
       },

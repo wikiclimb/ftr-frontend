@@ -72,7 +72,22 @@ void main() {
       );
       final expected = [
         LoginLoading(),
-        const LoginError(message: LoginBloc.serverNetworkError),
+        const LoginError(message: LoginBloc.serverError),
+      ];
+      bloc.add(const LoginRequested(
+        username: tUsername,
+        password: tPassword,
+      ));
+      expectLater(bloc.stream, emitsInOrder(expected));
+    });
+
+    test('on [NetworkFailure] should return [LoginError]', () async {
+      when(loginUsecase.call(tParams)).thenAnswer(
+        (_) async => Left(NetworkFailure()),
+      );
+      final expected = [
+        LoginLoading(),
+        const LoginError(message: LoginBloc.networkError),
       ];
       bloc.add(const LoginRequested(
         username: tUsername,
