@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../features/authentication/presentation/screens/login_screen.dart';
+import '../../../features/login/presentation/screens/login_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({Key? key, required this.currentRoute}) : super(key: key);

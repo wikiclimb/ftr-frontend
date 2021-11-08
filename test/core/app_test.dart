@@ -6,7 +6,7 @@ import 'package:wikiclimb_flutter_frontend/core/widgets/form/decorated_icon_inpu
 import 'package:mocktail/mocktail.dart';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/login_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/login/presentation/bloc/login_bloc.dart';
 
 class MockLoginBloc extends MockBloc<LoginEvent, LoginState>
     implements LoginBloc {}
