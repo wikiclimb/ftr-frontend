@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import '../../../authentication/domain/entities/authentication_data.dart';
 
 import '../../../../core/error/failure.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../../core/authentication/domain/entities/authentication_data.dart';
 import '../repositories/login_repository.dart';
 
 class LogInWithUsernamePassword extends UseCase<AuthenticationData, Params> {

@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/validator.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/domain/usecases/log_in_with_username_password.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/bloc/login_bloc.dart';
 import 'login_bloc_test.mocks.dart';

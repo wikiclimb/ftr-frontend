@@ -5,8 +5,8 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/data/datasources/authentication_local_data_source.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/data/models/authentication_data_model.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/data/models/authentication_data_model.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 import 'authentication_local_data_source_test.mocks.dart';

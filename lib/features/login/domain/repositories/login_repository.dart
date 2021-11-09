@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failure.dart';
-import '../../../../core/authentication/domain/entities/authentication_data.dart';
+import '../../../authentication/domain/entities/authentication_data.dart';
 
 /// Contract class for login use cases.
 abstract class LoginRepository {

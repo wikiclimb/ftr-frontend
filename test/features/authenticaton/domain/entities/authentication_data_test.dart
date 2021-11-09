@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 
 void main() {
   test('authentication data equality comparison should work', () {

@@ -5,11 +5,11 @@ import 'package:mockito/mockito.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/core/network/network_info.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/data/datasources/authentication_local_data_source.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/data/models/authentication_data_model.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/data/datasources/login_remote_data_source.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/data/models/authentication_data_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/data/repositories/login_repository_impl.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/entities/authentication_data.dart';
 
 import 'login_repository_impl_test.mocks.dart';
 
@@ -38,8 +38,10 @@ void main() {
   group('login', () {
     const tUsername = 'username';
     const tPassword = 'very-secret';
-    const tAuthenticationDataModel =
-        AuthenticationDataModel(token: 'token', id: 123);
+    const tAuthenticationDataModel = AuthenticationDataModel(
+      token: 'token',
+      id: 123,
+    );
     const AuthenticationData tAuthenticationData = tAuthenticationDataModel;
 
     test('should check if the device is online', () {

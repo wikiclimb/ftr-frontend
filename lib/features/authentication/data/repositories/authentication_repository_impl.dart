@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../error/exception.dart';
-import '../../../error/failure.dart';
+import '../../../../core/error/exception.dart';
+import '../../../../core/error/failure.dart';
 import '../../domain/entities/authentication_data.dart';
 import '../../domain/repositories/authentication_repository.dart';
 import '../datasources/authentication_local_data_source.dart';

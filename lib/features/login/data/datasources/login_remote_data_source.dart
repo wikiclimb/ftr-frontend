@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import '../../../authentication/data/models/authentication_data_model.dart';
 
 import '../../../../core/environment/environment_config.dart';
 import '../../../../core/error/exception.dart';
-import '../../../../core/authentication/data/models/authentication_data_model.dart';
 
 abstract class LoginRemoteDataSource {
   /// Calls the login endpoint

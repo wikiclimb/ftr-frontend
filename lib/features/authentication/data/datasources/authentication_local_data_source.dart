@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../error/exception.dart';
+import '../../../../core/error/exception.dart';
 import '../models/authentication_data_model.dart';
 
 abstract class AuthenticationLocalDataSource {

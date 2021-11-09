@@ -1,7 +1,7 @@
 // coverage:ignore-file
 import 'package:get_it/get_it.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
 
-import '../../core/authentication/data/datasources/authentication_local_data_source.dart';
 import 'data/datasources/login_remote_data_source.dart';
 import 'data/repositories/login_repository_impl.dart';
 import 'domain/repositories/login_repository.dart';

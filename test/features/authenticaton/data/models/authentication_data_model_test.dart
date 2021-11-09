@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/data/models/authentication_data_model.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/data/models/authentication_data_model.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 

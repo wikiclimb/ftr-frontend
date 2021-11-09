@@ -2,11 +2,11 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/entities/authentication_data.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/repositories/authentication_repository.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/usecases/fetch_cached.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/core/usecases/usecase.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/repositories/authentication_repository.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/usecases/fetch_cached.dart';
 
 import 'fetch_cached_test.mocks.dart';
 

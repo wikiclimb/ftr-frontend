@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:wikiclimb_flutter_frontend/core/authentication/domain/repositories/authentication_repository.dart';
+
+import '../../../../core/usecases/usecase.dart';
+import '../repositories/authentication_repository.dart';
 import '../entities/authentication_data.dart';
-import '../../../error/failure.dart';
-import '../../../usecases/usecase.dart';
+import '../../../../core/error/failure.dart';
 
 class FetchCached extends UseCase<AuthenticationData, NoParams> {
   FetchCached(this.repository);
