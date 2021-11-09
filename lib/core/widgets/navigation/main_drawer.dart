@@ -15,7 +15,7 @@ class MainDrawer extends StatelessWidget {
         children: [
           ListTile(
             key: UniqueKey(),
-            leading: const Icon(Icons.menu),
+            leading: const Icon(Icons.login),
             enabled: currentRoute != LoginScreen.id,
             title: const Text('Login'),
             onTap: () {
