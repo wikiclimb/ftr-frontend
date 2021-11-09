@@ -44,11 +44,11 @@ void main() {
         LoginLoading(),
         LoginSuccess(),
       ];
+      expectLater(bloc.stream, emitsInOrder(expected));
       bloc.add(const LoginRequested(
         username: tUsername,
         password: tPassword,
       ));
-      expectLater(bloc.stream, emitsInOrder(expected));
     });
 
     test('Login failure should return [LoginError]', () async {

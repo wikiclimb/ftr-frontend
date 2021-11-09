@@ -4,11 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/di.dart';
+import 'features/authentication/di.dart';
 import 'features/login/di.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  initAuthenticationFeature(sl);
   initLoginFeature(sl);
   initCore(sl);
   // External dependencies
