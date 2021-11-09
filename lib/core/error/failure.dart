@@ -6,6 +6,12 @@ abstract class Failure extends Equatable {
   const Failure([List properties = const <dynamic>[]]);
 }
 
+/// This failure communicates that authentication data was not found.
+class AuthenticationFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
 /// Generic cache failure class.
 ///
 /// Use this class to inform consumers that the system failed to get data

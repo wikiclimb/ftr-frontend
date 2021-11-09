@@ -188,36 +188,6 @@ void main() {
       setUp(() {
         when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
       });
-
-      test(
-        'should return last locally cached data when the '
-        'cached data is present',
-        () async {
-          // arrange
-          when(mockLocalDataSource.getAuthenticationData())
-              .thenAnswer((_) async => tAuthenticationDataModel);
-          // act
-          final result = await repository.getAuthenticationData();
-          // assert
-          verifyZeroInteractions(mockRemoteDataSource);
-          verify(mockLocalDataSource.getAuthenticationData());
-          expect(result, equals(const Right(tAuthenticationData)));
-        },
-      );
-      test(
-        'should return CacheFailure when there is no cached data present',
-        () async {
-          // arrange
-          when(mockLocalDataSource.getAuthenticationData())
-              .thenThrow(CacheException());
-          // act
-          final result = await repository.getAuthenticationData();
-          // assert
-          verifyZeroInteractions(mockRemoteDataSource);
-          verify(mockLocalDataSource.getAuthenticationData());
-          expect(result, equals(Left(CacheFailure())));
-        },
-      );
     });
   });
 }

@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 
+import '../../../../core/authentication/data/datasources/authentication_local_data_source.dart';
+import '../../../../core/authentication/domain/entities/authentication_data.dart';
 import '../../../../core/error/exception.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/network/network_info.dart';
-import '../../../../core/authentication/domain/entities/authentication_data.dart';
 import '../../domain/repositories/login_repository.dart';
-import '../../../../core/authentication/data/datasources/authentication_local_data_source.dart';
 import '../datasources/login_remote_data_source.dart';
 
 class LoginRepositoryImpl implements LoginRepository {
@@ -18,15 +18,6 @@ class LoginRepositoryImpl implements LoginRepository {
   final AuthenticationLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
   final LoginRemoteDataSource remoteDataSource;
-
-  @override
-  Future<Either<Failure, AuthenticationData>> getAuthenticationData() async {
-    try {
-      return Right(await localDataSource.getAuthenticationData());
-    } on CacheException {
-      return Left(CacheFailure());
-    }
-  }
 
   @override
   Future<Either<Failure, AuthenticationData>> logInWithUsernamePassword(
