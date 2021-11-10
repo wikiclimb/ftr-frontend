@@ -18,7 +18,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final result = await fetchCachedUsecase(NoParams());
     result.fold(
       (failure) {
-        emit(AuthenticationError());
+        emit(AuthenticationFailed());
       },
       (authData) {
         emit(AuthenticationSuccess(authData));

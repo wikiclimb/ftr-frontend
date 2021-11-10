@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wikiclimb_flutter_frontend/core/app.dart';
@@ -67,7 +68,22 @@ void main() {
     });
 
     testWidgets('LoginScreen displays', (WidgetTester tester) async {
-      await tester.pumpWidget(const App());
+      whenListen(
+        authCubit,
+        Stream.fromIterable([
+          AuthenticationLoading(),
+          AuthenticationFailed(),
+        ]),
+        initialState: AuthenticationFailed(),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider(
+            create: (BuildContext context) => authCubit,
+            child: const App(),
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.menu), findsOneWidget);
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();

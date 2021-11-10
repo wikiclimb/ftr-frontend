@@ -13,7 +13,7 @@ void main() async {
   final GetIt sl = GetIt.instance;
   final authCubit = sl<AuthenticationCubit>();
   authCubit.fetchCachedData();
-  runApp(BlocProvider(
+  runApp(BlocProvider<AuthenticationCubit>(
     create: (BuildContext context) => authCubit,
     child: const App(),
   ));

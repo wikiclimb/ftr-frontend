@@ -48,7 +48,7 @@ void main() {
       );
       final expected = [
         AuthenticationLoading(),
-        AuthenticationError(),
+        AuthenticationFailed(),
       ];
       expectLater(cubit.stream, emitsInOrder(expected));
       cubit.fetchCachedData();
@@ -62,7 +62,7 @@ void main() {
       );
       final expected = [
         AuthenticationLoading(),
-        AuthenticationError(),
+        AuthenticationFailed(),
       ];
       expectLater(cubit.stream, emitsInOrder(expected));
       cubit.fetchCachedData();
