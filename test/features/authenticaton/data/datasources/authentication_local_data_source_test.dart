@@ -44,7 +44,7 @@ void main() {
 
     test('should throw a CacheException when there is not a cached value', () {
       // arrange
-      when(mockSharedPreferences.getString(any)).thenReturn(null);
+      when(mockSharedPreferences.getString(any)).thenThrow(Exception());
       // act
       // Not calling the method here, just storing it inside a call variable
       final call = dataSource.getAuthenticationData;
@@ -53,6 +53,15 @@ void main() {
       // This is needed to test if calling a method throws an exception.
       expect(() => call(), throwsA(const TypeMatcher<CacheException>()));
     });
+
+    test(
+      'should throw a CacheException when there is not a cached value',
+      () async {
+        when(mockSharedPreferences.getString(any)).thenReturn(null);
+        final result = await dataSource.getAuthenticationData();
+        expect(result, null);
+      },
+    );
   });
 
   group('cacheAuthenticationData', () {
@@ -72,6 +81,26 @@ void main() {
         AuthenticationLocalDataSource.authCacheKey,
         expectedJsonString,
       ));
+    });
+  });
+
+  group('remove authentication data', () {
+    test('remove successful', () async {
+      when(mockSharedPreferences.remove(any)).thenAnswer((_) async => true);
+
+      final result = await dataSource.removeAuthenticationData();
+      expect(result, true);
+      verify(mockSharedPreferences.remove(any)).called(1);
+      verifyNoMoreInteractions(mockSharedPreferences);
+    });
+
+    test('remove failed', () async {
+      when(mockSharedPreferences.remove(any)).thenAnswer((_) async => false);
+
+      final result = await dataSource.removeAuthenticationData();
+      expect(result, false);
+      verify(mockSharedPreferences.remove(any)).called(1);
+      verifyNoMoreInteractions(mockSharedPreferences);
     });
   });
 }

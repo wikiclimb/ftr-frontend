@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 
-import '../../../authentication/presentation/bloc/authentication_cubit.dart';
 import '../screens/login_screen.dart';
 
 class LoginDrawerTile extends StatelessWidget {
@@ -9,12 +9,12 @@ class LoginDrawerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
-      if (state is AuthenticationSuccess) {
+      if (state is AuthenticationAuthenticated) {
         return const LogoutTile();
       }
-      if (state is AuthenticationLoading) {
+      if (state is AuthenticationUnauthenticated) {
         return const LoadingAuthenticationDataTile();
       }
       return const LoginTile();

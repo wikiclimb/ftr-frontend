@@ -9,11 +9,11 @@ abstract class AuthenticationLocalDataSource {
   static const String authCacheKey = 'WKC_CACHED_AUTHENTICATION_DATA';
 
   /// Gets the cached [AuthenticationDataModel].
-  ///
-  /// Throws [NoLocalDataException] if there is no cached data.
-  Future<AuthenticationDataModel> getAuthenticationData();
+  Future<AuthenticationDataModel?> getAuthenticationData();
 
-  Future<void> cacheAuthenticationData(AuthenticationDataModel authData);
+  Future<bool> cacheAuthenticationData(AuthenticationDataModel authData);
+
+  Future<bool> removeAuthenticationData();
 }
 
 class AuthenticationLocalDataSourceImpl
@@ -23,22 +23,40 @@ class AuthenticationLocalDataSourceImpl
   final SharedPreferences sharedPreferences;
 
   @override
-  Future<void> cacheAuthenticationData(AuthenticationDataModel authData) {
+  Future<bool> cacheAuthenticationData(AuthenticationDataModel authData) {
     return sharedPreferences.setString(
       AuthenticationLocalDataSource.authCacheKey,
       jsonEncode(authData.toJson()),
     );
   }
 
+  /// Fetch authentication data from the cache.
+  ///
+  /// Returns an [AuthenticationDataModel] if successful or null if
+  /// it cannot find or convert data.
+  /// Throws [CacheException] if problems are found.
   @override
-  Future<AuthenticationDataModel> getAuthenticationData() {
-    final jsonString = sharedPreferences.getString(
+  Future<AuthenticationDataModel?> getAuthenticationData() {
+    late AuthenticationDataModel? model;
+    try {
+      final jsonString = sharedPreferences.getString(
+        AuthenticationLocalDataSource.authCacheKey,
+      );
+      if (jsonString != null) {
+        model = AuthenticationDataModel.fromJson(jsonDecode(jsonString));
+      } else {
+        model = null;
+      }
+    } catch (_) {
+      throw CacheException();
+    }
+    return Future.value(model);
+  }
+
+  @override
+  Future<bool> removeAuthenticationData() {
+    return sharedPreferences.remove(
       AuthenticationLocalDataSource.authCacheKey,
     );
-    if (jsonString != null) {
-      return Future.value(
-          AuthenticationDataModel.fromJson(jsonDecode(jsonString)));
-    }
-    throw CacheException();
   }
 }

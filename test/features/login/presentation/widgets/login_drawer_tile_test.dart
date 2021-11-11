@@ -4,16 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_cubit.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/widgets/login_drawer_tile.dart';
 
-class MockAuthenticationCubit extends MockCubit<AuthenticationState>
-    implements AuthenticationCubit {}
+class MockAuthenticationBloc extends MockCubit<AuthenticationState>
+    implements AuthenticationBloc {}
 
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
 void main() {
-  late final MockAuthenticationCubit authCubit;
+  late final MockAuthenticationBloc authCubit;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -21,7 +21,7 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(FakeAuthenticationState());
-    authCubit = MockAuthenticationCubit();
+    authCubit = MockAuthenticationBloc();
   });
 
   testWidgets(
@@ -30,7 +30,7 @@ void main() {
       whenListen(
         authCubit,
         Stream.fromIterable([
-          const AuthenticationSuccess(tAuthData),
+          const AuthenticationAuthenticated(tAuthData),
         ]),
         initialState: AuthenticationInitial(),
       );
@@ -46,9 +46,9 @@ void main() {
       whenListen(
         authCubit,
         Stream.fromIterable([
-          const AuthenticationSuccess(tAuthData),
+          const AuthenticationAuthenticated(tAuthData),
         ]),
-        initialState: const AuthenticationSuccess(tAuthData),
+        initialState: const AuthenticationAuthenticated(tAuthData),
       );
       await pumpLoginDrawer(tester, authCubit);
       expect(find.byType(LogoutTile), findsOneWidget);
@@ -62,9 +62,9 @@ void main() {
       whenListen(
         authCubit,
         Stream.fromIterable([
-          AuthenticationLoading(),
+          AuthenticationInitial(),
         ]),
-        initialState: AuthenticationLoading(),
+        initialState: AuthenticationInitial(),
       );
       await pumpLoginDrawer(tester, authCubit);
       expect(find.byType(LoadingAuthenticationDataTile), findsOneWidget);
@@ -75,11 +75,11 @@ void main() {
 
 Future<void> pumpLoginDrawer(
   WidgetTester tester,
-  AuthenticationCubit authCubit,
+  AuthenticationBloc authCubit,
 ) async {
   await tester.pumpWidget(
     MaterialApp(
-      home: BlocProvider<AuthenticationCubit>(
+      home: BlocProvider<AuthenticationBloc>(
         create: (BuildContext context) => authCubit,
         child: const Scaffold(
           body: LoginDrawerTile(),

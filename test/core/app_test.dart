@@ -8,7 +8,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_cubit.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/bloc/login_bloc.dart';
 
 // LoginBloc mocks
@@ -19,16 +19,16 @@ class FakeLoginState extends Fake implements LoginState {}
 
 class FakeLoginEvent extends Fake implements LoginEvent {}
 
-// AuthenticationCubit Mocks
+// AuthenticationBloc Mocks
 class MockAuthCubit extends MockCubit<AuthenticationState>
-    implements AuthenticationCubit {}
+    implements AuthenticationBloc {}
 
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
 void main() {
   late final GetIt sl;
   late final LoginBloc loginBloc;
-  late final AuthenticationCubit authCubit;
+  late final AuthenticationBloc authBloc;
 
   setUpAll(() {
     registerFallbackValue(FakeLoginState());
@@ -36,9 +36,9 @@ void main() {
     registerFallbackValue(FakeAuthenticationState());
     sl = GetIt.instance;
     loginBloc = MockLoginBloc();
-    authCubit = MockAuthCubit();
+    authBloc = MockAuthCubit();
     sl.registerFactory<LoginBloc>(() => loginBloc);
-    sl.registerFactory<AuthenticationCubit>(() => authCubit);
+    sl.registerFactory<AuthenticationBloc>(() => authBloc);
   });
   testWidgets('Title displays', (WidgetTester tester) async {
     await tester.pumpWidget(const App());
@@ -58,28 +58,26 @@ void main() {
         initialState: LoginInitial(),
       );
       whenListen(
-        authCubit,
+        authBloc,
         Stream.fromIterable([
           AuthenticationInitial(),
-          AuthenticationLoading(),
-          const AuthenticationSuccess(tAuthData),
+          const AuthenticationAuthenticated(tAuthData),
         ]),
       );
     });
 
     testWidgets('LoginScreen displays', (WidgetTester tester) async {
       whenListen(
-        authCubit,
+        authBloc,
         Stream.fromIterable([
-          AuthenticationLoading(),
-          AuthenticationFailed(),
+          AuthenticationUnauthenticated(),
         ]),
-        initialState: AuthenticationFailed(),
+        initialState: AuthenticationInitial(),
       );
       await tester.pumpWidget(
         MaterialApp(
           home: BlocProvider(
-            create: (BuildContext context) => authCubit,
+            create: (BuildContext context) => authBloc,
             child: const App(),
           ),
         ),

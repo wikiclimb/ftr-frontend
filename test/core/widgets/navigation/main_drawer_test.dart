@@ -5,18 +5,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/widgets/navigation/main_drawer.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_cubit.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/home/presentation/screens/home_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/screens/login_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/widgets/login_drawer_tile.dart';
 
-class MockAuthenticationCubit extends MockCubit<AuthenticationState>
-    implements AuthenticationCubit {}
+class MockAuthenticationBloc extends MockCubit<AuthenticationState>
+    implements AuthenticationBloc {}
 
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
 void main() {
-  late final MockAuthenticationCubit authCubit;
+  late final MockAuthenticationBloc authBloc;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -24,22 +24,22 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(FakeAuthenticationState());
-    authCubit = MockAuthenticationCubit();
+    authBloc = MockAuthenticationBloc();
   });
 
   testWidgets(
     'displays login tile when not in login screen',
     (WidgetTester tester) async {
       whenListen(
-        authCubit,
+        authBloc,
         Stream.fromIterable([
-          const AuthenticationSuccess(tAuthData),
+          const AuthenticationAuthenticated(tAuthData),
         ]),
         initialState: AuthenticationInitial(),
       );
       await pumpDrawer(
         tester,
-        authCubit,
+        authBloc,
         HomeScreen.id,
       );
       expect(find.byType(LoginDrawerTile), findsOneWidget);
@@ -51,15 +51,15 @@ void main() {
     'does not display login tile when in login screen',
     (WidgetTester tester) async {
       whenListen(
-        authCubit,
+        authBloc,
         Stream.fromIterable([
-          const AuthenticationSuccess(tAuthData),
+          const AuthenticationAuthenticated(tAuthData),
         ]),
         initialState: AuthenticationInitial(),
       );
       await pumpDrawer(
         tester,
-        authCubit,
+        authBloc,
         LoginScreen.id,
       );
       expect(find.byType(LoginDrawerTile), findsNothing);
@@ -69,12 +69,12 @@ void main() {
 
 Future<void> pumpDrawer(
   WidgetTester tester,
-  AuthenticationCubit authCubit,
+  AuthenticationBloc authCubit,
   String currentRoute,
 ) async {
   await tester.pumpWidget(
     MaterialApp(
-      home: BlocProvider<AuthenticationCubit>(
+      home: BlocProvider<AuthenticationBloc>(
         create: (BuildContext context) => authCubit,
         child: Scaffold(
           body: MainDrawer(
