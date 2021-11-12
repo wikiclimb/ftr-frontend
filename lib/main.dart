@@ -7,13 +7,18 @@ import 'di.dart' as di;
 import 'features/authentication/presentation/bloc/authentication_bloc.dart';
 
 void main() async {
+  // Setup dependency injection.
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  // Trigger authentication check on startup.
   final GetIt sl = GetIt.instance;
-  final authCubit = sl<AuthenticationBloc>();
+  final authBloc = sl<AuthenticationBloc>();
+
+  // Trigger authentication check on startup.
+  authBloc.add(AuthenticationRequested());
+
+  // Launch the app.
   runApp(BlocProvider<AuthenticationBloc>(
-    create: (BuildContext context) => authCubit,
+    create: (BuildContext context) => authBloc,
     child: const App(),
   ));
 }

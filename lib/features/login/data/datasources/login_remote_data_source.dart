@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:wikiclimb_flutter_frontend/core/network/network_info.dart';
 
 import '../../../../core/environment/environment_config.dart';
 import '../../../../core/error/exception.dart';
+import '../../../../core/network/network_info.dart';
 import '../../../authentication/data/models/authentication_data_model.dart';
 
 abstract class LoginRemoteDataSource {

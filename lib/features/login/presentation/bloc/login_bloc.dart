@@ -1,51 +1,64 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:formz/formz.dart';
 
-import '../../../../core/error/failure.dart';
+import '../../domain/entities/entities.dart';
 import '../../domain/usecases/log_in_with_username_password.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc({required this.loginUsecase}) : super(LoginInitial()) {
-    on<LoginRequested>(onLoginRequested);
+  LoginBloc({
+    required LogInWithUsernamePassword loginUseCase,
+  })  : _loginUseCase = loginUseCase,
+        super(const LoginState()) {
+    on<LoginUsernameChanged>(_onUsernameChanged);
+    on<LoginPasswordChanged>(_onPasswordChanged);
+    on<LoginSubmitted>(_onSubmitted);
   }
 
-  static const loginFailedMessage = 'Wrong username or password';
-  static const networkError = 'Could not connect to the server, '
-      'are you connected to the Internet?';
-  static const serverError = 'There was an error, please try again';
-  static const undefinedError = 'Something went wrong';
+  final LogInWithUsernamePassword _loginUseCase;
 
-  final LogInWithUsernamePassword loginUsecase;
+  void _onUsernameChanged(
+    LoginUsernameChanged event,
+    Emitter<LoginState> emit,
+  ) {
+    final username = Username.dirty(event.username);
+    emit(state.copyWith(
+      username: username,
+      status: Formz.validate([state.password, username]),
+    ));
+  }
 
-  /// Handle LoginRequested events.
-  void onLoginRequested(
-    LoginRequested event,
+  void _onPasswordChanged(
+    LoginPasswordChanged event,
+    Emitter<LoginState> emit,
+  ) {
+    final password = Password.dirty(event.password);
+    emit(state.copyWith(
+      password: password,
+      status: Formz.validate([password, state.username]),
+    ));
+  }
+
+  void _onSubmitted(
+    LoginSubmitted event,
     Emitter<LoginState> emit,
   ) async {
-    emit(LoginLoading());
-    // Delegate login to the usecase.
-    final result = await loginUsecase(
-      Params(
-        username: event.username,
-        password: event.password,
-      ),
-    );
-    result.fold(
-      (failure) {
-        String message = undefinedError;
-        if (failure is UnauthorizedFailure) {
-          message = loginFailedMessage;
-        } else if (failure is ServerFailure) {
-          message = serverError;
-        } else if (failure is NetworkFailure) {
-          message = networkError;
-        }
-        emit(LoginError(message: message));
-      },
-      (authenticationData) => emit(LoginSuccess()),
-    );
+    if (state.status.isValidated) {
+      emit(state.copyWith(status: FormzStatus.submissionInProgress));
+      try {
+        final result = await _loginUseCase.call(Params(
+          username: state.username.value,
+          password: state.password.value,
+        ));
+        result.fold((failure) => throw (failure), (r) {
+          emit(state.copyWith(status: FormzStatus.submissionSuccess));
+        });
+      } catch (_) {
+        emit(state.copyWith(status: FormzStatus.submissionFailure));
+      }
+    }
   }
 }

@@ -9,7 +9,7 @@ import 'presentation/bloc/login_bloc.dart';
 
 void initLoginFeature(GetIt sl) {
   // Bloc
-  sl.registerFactory(() => LoginBloc(loginUsecase: sl()));
+  sl.registerFactory(() => LoginBloc(loginUseCase: sl()));
   // Usecases
   sl.registerLazySingleton(() => LogInWithUsernamePassword(sl()));
   // Repository
