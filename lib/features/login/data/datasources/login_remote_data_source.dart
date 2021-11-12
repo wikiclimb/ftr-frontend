@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import '../../../authentication/data/models/authentication_data_model.dart';
+import 'package:wikiclimb_flutter_frontend/core/network/network_info.dart';
 
 import '../../../../core/environment/environment_config.dart';
 import '../../../../core/error/exception.dart';
+import '../../../authentication/data/models/authentication_data_model.dart';
 
 abstract class LoginRemoteDataSource {
   /// Calls the login endpoint
@@ -17,9 +18,13 @@ abstract class LoginRemoteDataSource {
 }
 
 class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
-  LoginRemoteDataSourceImpl({required this.client});
+  LoginRemoteDataSourceImpl({
+    required this.client,
+    required this.networkInfo,
+  });
 
   final http.Client client;
+  final NetworkInfo networkInfo;
 
   @override
   Future<AuthenticationDataModel> login(
@@ -29,6 +34,10 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
       'login',
     );
     try {
+      final isConnected = await networkInfo.isConnected;
+      if (!isConnected) {
+        throw NetworkException();
+      }
       final response = await client.post(
         url,
         body: jsonEncode({'username': username, 'password': password}),

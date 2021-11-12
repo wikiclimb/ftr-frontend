@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 
+import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../screens/login_screen.dart';
 
 class LoginDrawerTile extends StatelessWidget {
@@ -14,9 +14,7 @@ class LoginDrawerTile extends StatelessWidget {
       if (state is AuthenticationAuthenticated) {
         return const LogoutTile();
       }
-      if (state is AuthenticationUnauthenticated) {
-        return const LoadingAuthenticationDataTile();
-      }
+      // If the state is initial or unauthenticated show the login tile.
       return const LoginTile();
     });
   }
@@ -49,20 +47,6 @@ class LogoutTile extends StatelessWidget {
       leading: const Icon(Icons.logout),
       title: const Text('Logout'),
       // TODO create a logout usecase.
-      onTap: null,
-    );
-  }
-}
-
-class LoadingAuthenticationDataTile extends StatelessWidget {
-  const LoadingAuthenticationDataTile({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      key: UniqueKey(),
-      leading: const Icon(Icons.login),
-      title: const CircularProgressIndicator(),
       onTap: null,
     );
   }

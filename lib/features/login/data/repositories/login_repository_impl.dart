@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/exception.dart';
 import '../../../../core/error/failure.dart';
-import '../../../../core/network/network_info.dart';
 import '../../../authentication/data/datasources/authentication_local_data_source.dart';
 import '../../../authentication/domain/entities/authentication_data.dart';
 import '../../domain/repositories/login_repository.dart';
@@ -12,17 +11,14 @@ class LoginRepositoryImpl implements LoginRepository {
   LoginRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
-    required this.networkInfo,
   });
 
   final AuthenticationLocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
   final LoginRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, AuthenticationData>> logInWithUsernamePassword(
       {required String username, required String password}) async {
-    networkInfo.isConnected;
     try {
       final authData = await remoteDataSource.login(
         username: username,

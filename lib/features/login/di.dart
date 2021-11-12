@@ -17,11 +17,13 @@ void initLoginFeature(GetIt sl) {
     () => LoginRepositoryImpl(
       remoteDataSource: sl(),
       localDataSource: sl(),
-      networkInfo: sl(),
     ),
   );
   // Data sources
   sl.registerLazySingleton<LoginRemoteDataSource>(
-    () => LoginRemoteDataSourceImpl(client: sl()),
+    () => LoginRemoteDataSourceImpl(
+      client: sl(),
+      networkInfo: sl(),
+    ),
   );
 }

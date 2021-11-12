@@ -13,7 +13,7 @@ class MockAuthenticationBloc extends MockCubit<AuthenticationState>
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
 void main() {
-  late final MockAuthenticationBloc authCubit;
+  late final MockAuthenticationBloc authBloc;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -21,20 +21,14 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(FakeAuthenticationState());
-    authCubit = MockAuthenticationBloc();
+    authBloc = MockAuthenticationBloc();
   });
 
   testWidgets(
     'displays login tile when authentication data is not present',
     (WidgetTester tester) async {
-      whenListen(
-        authCubit,
-        Stream.fromIterable([
-          const AuthenticationAuthenticated(tAuthData),
-        ]),
-        initialState: AuthenticationInitial(),
-      );
-      await pumpLoginDrawer(tester, authCubit);
+      when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
+      await pumpLoginDrawer(tester, authBloc);
       expect(find.byType(LoginTile), findsOneWidget);
       expect(find.text('Login'), findsOneWidget);
     },
@@ -43,44 +37,32 @@ void main() {
   testWidgets(
     'displays logout tile when authentication data is present',
     (WidgetTester tester) async {
-      whenListen(
-        authCubit,
-        Stream.fromIterable([
-          const AuthenticationAuthenticated(tAuthData),
-        ]),
-        initialState: const AuthenticationAuthenticated(tAuthData),
-      );
-      await pumpLoginDrawer(tester, authCubit);
+      when(() => authBloc.state)
+          .thenAnswer((_) => const AuthenticationAuthenticated(tAuthData));
+      await pumpLoginDrawer(tester, authBloc);
       expect(find.byType(LogoutTile), findsOneWidget);
       expect(find.text('Logout'), findsOneWidget);
     },
   );
 
   testWidgets(
-    'displays loading auth tile when authentication data is loading',
+    'displays login tile when authentication data is loading',
     (WidgetTester tester) async {
-      whenListen(
-        authCubit,
-        Stream.fromIterable([
-          AuthenticationInitial(),
-        ]),
-        initialState: AuthenticationInitial(),
-      );
-      await pumpLoginDrawer(tester, authCubit);
-      expect(find.byType(LoadingAuthenticationDataTile), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
+      await pumpLoginDrawer(tester, authBloc);
+      expect(find.byType(LoginTile), findsOneWidget);
     },
   );
 }
 
 Future<void> pumpLoginDrawer(
   WidgetTester tester,
-  AuthenticationBloc authCubit,
+  AuthenticationBloc authBloc,
 ) async {
   await tester.pumpWidget(
     MaterialApp(
       home: BlocProvider<AuthenticationBloc>(
-        create: (BuildContext context) => authCubit,
+        create: (BuildContext context) => authBloc,
         child: const Scaffold(
           body: LoginDrawerTile(),
         ),

@@ -18,8 +18,10 @@ class App extends StatelessWidget {
       ),
       initialRoute: HomeScreen.id,
       routes: {
+        // coverage:ignore-start
         HomeScreen.id: (context) => const HomeScreen(),
         LoginScreen.id: (context) => const LoginScreen(),
+        // coverage:ignore-end
       },
     );
   }
