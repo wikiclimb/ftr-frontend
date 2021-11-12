@@ -5,10 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/home/presentation/screens/home_screen.dart';
+import 'package:wikiclimb_flutter_frontend/features/login/presentation/screens/login_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/widgets/login_drawer_tile.dart';
 
 class MockAuthenticationBloc extends MockCubit<AuthenticationState>
     implements AuthenticationBloc {}
+
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
@@ -53,6 +57,35 @@ void main() {
       expect(find.byType(LoginTile), findsOneWidget);
     },
   );
+
+  group('test navigation events', () {
+    late final MockNavigatorObserver mockNavigatorObserver;
+    setUp(() {
+      mockNavigatorObserver = MockNavigatorObserver();
+    });
+
+    testWidgets(
+      'login tile navigates to login screen',
+      (WidgetTester tester) async {
+        when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
+        await tester.pumpWidget(
+          MaterialApp(
+            navigatorObservers: [mockNavigatorObserver],
+            initialRoute: HomeScreen.id,
+            routes: {
+              HomeScreen.id: (context) => MockHomeScreen(authBloc: authBloc),
+              LoginScreen.id: (context) => const MockLoginScreen(),
+            },
+          ),
+        );
+        expect(find.byType(LoginTile), findsOneWidget);
+        expect(find.text('Login'), findsOneWidget);
+        await tester.tap(find.text('Login'));
+        await tester.pumpAndSettle();
+        expect(find.text('Login Screen'), findsOneWidget);
+      },
+    );
+  });
 }
 
 Future<void> pumpLoginDrawer(
@@ -69,4 +102,34 @@ Future<void> pumpLoginDrawer(
       ),
     ),
   );
+}
+
+class MockHomeScreen extends StatelessWidget {
+  const MockHomeScreen({
+    Key? key,
+    required this.authBloc,
+  }) : super(key: key);
+
+  final AuthenticationBloc authBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<AuthenticationBloc>(
+      create: (BuildContext context) => authBloc,
+      child: const Scaffold(
+        body: LoginDrawerTile(),
+      ),
+    );
+  }
+}
+
+class MockLoginScreen extends StatelessWidget {
+  const MockLoginScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Login Screen'),
+    );
+  }
 }
