@@ -33,6 +33,7 @@ void main() {
     const tAuthenticationDataModel = AuthenticationDataModel(
       token: 'token',
       id: 123,
+      username: 'test-username',
     );
     const AuthenticationData tAuthenticationData = tAuthenticationDataModel;
 

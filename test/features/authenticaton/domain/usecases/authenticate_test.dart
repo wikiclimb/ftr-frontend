@@ -16,6 +16,7 @@ void main() {
   const tAuthenticationData = AuthenticationData(
     token: 'secret-token',
     id: 123,
+    username: 'test-username',
   );
 
   setUp(() {

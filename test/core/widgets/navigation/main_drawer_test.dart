@@ -20,6 +20,7 @@ void main() {
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
+    username: 'test-username',
   );
 
   setUpAll(() async {

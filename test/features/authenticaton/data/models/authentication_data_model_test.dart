@@ -7,8 +7,11 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entiti
 import '../../../../fixtures/fixture_reader.dart';
 
 void main() {
-  const tAuthenticationDataModel =
-      AuthenticationDataModel(token: 'test-token', id: 123);
+  const tAuthenticationDataModel = AuthenticationDataModel(
+    token: 'test-token',
+    id: 123,
+    username: 'test-username',
+  );
 
   test('should be a subclass of AuthenticationData', () {
     expect(tAuthenticationDataModel, isA<AuthenticationData>());
@@ -29,6 +32,21 @@ void main() {
           json.decode(fixture('authentication/success.json'));
       final result = tAuthenticationDataModel.toJson();
       expect(result, jsonMap);
+    });
+  });
+
+  group('from AuthenticationData', () {
+    test('should return a new AuthenticationDataModel', () {
+      const tAuthenticationData = AuthenticationData(
+        token: 'test-token',
+        id: 123,
+        username: 'test-username',
+      );
+      final tAuthDataModel =
+          AuthenticationDataModel.fromAuthenticationData(tAuthenticationData);
+      expect(tAuthenticationDataModel.id, tAuthenticationData.id);
+      expect(tAuthDataModel.token, tAuthenticationData.token);
+      expect(tAuthDataModel.username, tAuthenticationData.username);
     });
   });
 }

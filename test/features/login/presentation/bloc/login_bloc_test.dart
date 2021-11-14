@@ -32,8 +32,11 @@ void main() {
   });
 
   group('login submitted', () {
-    const tAuthenticationData =
-        AuthenticationData(token: 'test-token', id: 321);
+    const tAuthenticationData = AuthenticationData(
+      token: 'test-token',
+      id: 321,
+      username: 'test-username',
+    );
     const Right<Failure, AuthenticationData> tSuccessResponse =
         Right(tAuthenticationData);
 

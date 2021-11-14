@@ -33,6 +33,7 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
       EnvironmentConfig.apiUrl,
       'login',
     );
+    // final url = Uri.parse('${EnvironmentConfig.apiUrl}/login');
     try {
       final isConnected = await networkInfo.isConnected;
       if (!isConnected) {

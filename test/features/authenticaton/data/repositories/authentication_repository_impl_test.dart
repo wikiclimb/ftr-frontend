@@ -38,6 +38,7 @@ void main() {
     const tAuthenticationDataModel = AuthenticationDataModel(
       token: 'token',
       id: 123,
+      username: 'test-username',
     );
     const AuthenticationData tAuthenticationData = tAuthenticationDataModel;
     test('login saves the data to cache', () async {
@@ -120,6 +121,7 @@ void main() {
     const tAuthenticationDataModel = AuthenticationDataModel(
       token: 'token',
       id: 123,
+      username: 'test-username',
     );
     const AuthenticationData tAuthenticationData = tAuthenticationDataModel;
 

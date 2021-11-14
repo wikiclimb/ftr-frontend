@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/navigation/main_drawer.dart';
+import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,14 +16,23 @@ class HomeScreen extends StatelessWidget {
       drawer: const MainDrawer(currentRoute: HomeScreen.id),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: const <Widget>[
-          Center(
+        children: <Widget>[
+          const Center(
             child: SizedBox(
               width: 200,
               child: Image(
                 image: AssetImage('graphics/wikiclimb-logo.png'),
               ),
             ),
+          ),
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              if (state is AuthenticationAuthenticated) {
+                return Text('Hello ${state.authenticationData.username}');
+              } else {
+                return const Text('Hello guest');
+              }
+            },
           ),
         ],
       ),

@@ -23,6 +23,7 @@ void main() {
   const tAuthenticationData = AuthenticationData(
     token: 'secret-token',
     id: 123,
+    username: 'test-username',
   );
 
   test('should return authentication data when successful sign up', () async {

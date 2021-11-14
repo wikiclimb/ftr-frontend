@@ -9,7 +9,7 @@
 class EnvironmentConfig {
   static const apiUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'apiv1.wikiclimb.org',
+    defaultValue: 'api.wikiclimb.org',
   );
 
   static const appName = String.fromEnvironment(

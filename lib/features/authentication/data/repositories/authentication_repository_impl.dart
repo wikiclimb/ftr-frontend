@@ -8,6 +8,7 @@ import '../../domain/repositories/authentication_repository.dart';
 import '../datasources/authentication_local_data_source.dart';
 import '../models/authentication_data_model.dart';
 
+/// Implementation of the [AuthenticationRepository] contract.
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
   AuthenticationRepositoryImpl({
     required this.localDataSource,
@@ -32,6 +33,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     } catch (_) {}
   }
 
+  /// Subscription to authentication state changes.
   @override
   Stream<Either<Failure, AuthenticationData>> get authenticationData async* {
     try {
@@ -51,10 +53,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<bool> login(AuthenticationData authenticationData) async {
     try {
       final result = await localDataSource.cacheAuthenticationData(
-        AuthenticationDataModel(
-          id: authenticationData.id,
-          token: authenticationData.token,
-        ),
+        AuthenticationDataModel.fromAuthenticationData(authenticationData),
       );
       if (result) {
         _controller.add(Right(authenticationData));

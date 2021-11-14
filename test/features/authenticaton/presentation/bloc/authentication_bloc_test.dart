@@ -35,6 +35,7 @@ void main() {
     const tAuthenticationData = AuthenticationData(
       token: 'test-token',
       id: 123,
+      username: 'test-username',
     );
 
     blocTest<AuthenticationBloc, AuthenticationState>(

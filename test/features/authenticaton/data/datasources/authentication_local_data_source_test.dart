@@ -68,6 +68,7 @@ void main() {
     const tAuthenticationDataModel = AuthenticationDataModel(
       token: 'test-token',
       id: 753,
+      username: 'test-username',
     );
 
     test('should call SharedPreferences', () async {
