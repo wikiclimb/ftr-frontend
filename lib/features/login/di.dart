@@ -16,7 +16,7 @@ void initLoginFeature(GetIt sl) {
   sl.registerLazySingleton<LoginRepository>(
     () => LoginRepositoryImpl(
       remoteDataSource: sl(),
-      localDataSource: sl(),
+      authenticationRepository: sl(),
     ),
   );
   // Data sources

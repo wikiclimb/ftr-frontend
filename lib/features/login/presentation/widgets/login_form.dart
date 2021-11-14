@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
+import '../../../home/presentation/screens/home_screen.dart';
 import '../bloc/login_bloc.dart';
 
 /// LoginForm renders a form that allows a registered user to login.
@@ -20,6 +21,9 @@ class LoginForm extends StatelessWidget {
             ..showSnackBar(
               const SnackBar(content: Text('Authentication Failure')),
             );
+        } else if (state.status.isSubmissionSuccess) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              HomeScreen.id, (Route<dynamic> route) => false);
         }
       },
       child: Column(

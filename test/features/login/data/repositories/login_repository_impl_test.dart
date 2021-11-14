@@ -2,28 +2,29 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/data/models/authentication_data_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/repositories/authentication_repository.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/data/datasources/login_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/data/repositories/login_repository_impl.dart';
 
 import 'login_repository_impl_test.mocks.dart';
 
-@GenerateMocks([LoginRemoteDataSource, AuthenticationLocalDataSource])
+@GenerateMocks([LoginRemoteDataSource, AuthenticationRepository])
 void main() {
   late LoginRepositoryImpl repository;
   late MockLoginRemoteDataSource mockRemoteDataSource;
-  late MockAuthenticationLocalDataSource mockLocalDataSource;
+  late MockAuthenticationRepository mockAuthenticationRepository;
 
   setUp(() {
     mockRemoteDataSource = MockLoginRemoteDataSource();
-    mockLocalDataSource = MockAuthenticationLocalDataSource();
+    mockAuthenticationRepository = MockAuthenticationRepository();
     repository = LoginRepositoryImpl(
       remoteDataSource: mockRemoteDataSource,
-      localDataSource: mockLocalDataSource,
+      authenticationRepository: mockAuthenticationRepository,
     );
   });
 
@@ -38,7 +39,7 @@ void main() {
     const AuthenticationData tAuthenticationData = tAuthenticationDataModel;
 
     setUp(() {
-      when(mockLocalDataSource.cacheAuthenticationData(any))
+      when(mockAuthenticationRepository.login(any))
           .thenAnswer((_) async => true);
     });
 
@@ -78,8 +79,7 @@ void main() {
           username: tUsername,
           password: tPassword,
         ));
-        verify(mockLocalDataSource
-            .cacheAuthenticationData(tAuthenticationDataModel));
+        verify((mockAuthenticationRepository.login)(tAuthenticationDataModel));
       },
     );
 
@@ -99,7 +99,7 @@ void main() {
           username: tUsername,
           password: tPassword,
         ));
-        verifyZeroInteractions(mockLocalDataSource);
+        verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(UnauthorizedFailure())));
       },
     );
@@ -120,7 +120,7 @@ void main() {
           username: tUsername,
           password: tPassword,
         ));
-        verifyZeroInteractions(mockLocalDataSource);
+        verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(ServerFailure())));
       },
     );
@@ -141,8 +141,31 @@ void main() {
           username: tUsername,
           password: tPassword,
         ));
-        verifyZeroInteractions(mockLocalDataSource);
+        verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(NetworkFailure())));
+      },
+    );
+
+    test(
+      'should return [CacheFailure] when the call to '
+      '[AuthenticationRepository] login fails',
+      () async {
+        when(mockRemoteDataSource.login(
+          username: tUsername,
+          password: tPassword,
+        )).thenAnswer((_) async => tAuthenticationDataModel);
+        when(mockAuthenticationRepository.login(tAuthenticationData))
+            .thenAnswer((_) async => false);
+        final result = await repository.logInWithUsernamePassword(
+          username: tUsername,
+          password: tPassword,
+        );
+        verify(mockRemoteDataSource.login(
+          username: tUsername,
+          password: tPassword,
+        ));
+        verify(mockAuthenticationRepository.login(tAuthenticationData));
+        expect(result, equals(Left(CacheFailure())));
       },
     );
 
@@ -162,7 +185,7 @@ void main() {
           username: tUsername,
           password: tPassword,
         ));
-        verifyZeroInteractions(mockLocalDataSource);
+        verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(ServerFailure())));
       },
     );
