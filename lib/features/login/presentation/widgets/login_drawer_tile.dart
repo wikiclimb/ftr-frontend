@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../screens/login_screen.dart';
 
+/// Render a [LoginTile] or [LogoutTile] depending on authentication status.
 class LoginDrawerTile extends StatelessWidget {
   const LoginDrawerTile({Key? key}) : super(key: key);
 
@@ -20,6 +21,7 @@ class LoginDrawerTile extends StatelessWidget {
   }
 }
 
+/// Render a tile that lets the user navigate to the [LoginScreen].
 class LoginTile extends StatelessWidget {
   const LoginTile({Key? key}) : super(key: key);
 
@@ -37,6 +39,7 @@ class LoginTile extends StatelessWidget {
   }
 }
 
+/// Render a tile that lets the user request to logout.
 class LogoutTile extends StatelessWidget {
   const LogoutTile({Key? key}) : super(key: key);
 
@@ -46,8 +49,14 @@ class LogoutTile extends StatelessWidget {
       key: UniqueKey(),
       leading: const Icon(Icons.logout),
       title: const Text('Logout'),
-      // TODO create a logout usecase.
-      onTap: null,
+      onTap: () {
+        // Hide the drawer.
+        Navigator.pop(context);
+        // Request logout.
+        context.read<AuthenticationBloc>().add(LogoutRequested());
+        // Navigate to [HomeScreen].
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      },
     );
   }
 }

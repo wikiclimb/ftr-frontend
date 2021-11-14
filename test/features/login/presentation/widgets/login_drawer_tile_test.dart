@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +27,8 @@ class FakeLoginState extends Fake implements LoginState {}
 
 class FakeLoginEvent extends Fake implements LoginEvent {}
 
+class FakeRoute extends Fake implements MaterialPageRoute {}
+
 void main() {
   late final GetIt sl;
   late final MockAuthenticationBloc authBloc;
@@ -40,6 +44,7 @@ void main() {
     registerFallbackValue(FakeAuthenticationState());
     registerFallbackValue(FakeLoginState());
     registerFallbackValue(FakeLoginEvent());
+    registerFallbackValue(FakeRoute());
 
     authBloc = MockAuthenticationBloc();
     loginBloc = MockLoginBloc();
@@ -47,44 +52,84 @@ void main() {
     sl.registerFactory<LoginBloc>(() => loginBloc);
   });
 
-  testWidgets(
-    'displays login tile when authentication data is not present',
-    (WidgetTester tester) async {
-      when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
-      await pumpLoginDrawer(tester, authBloc);
-      expect(find.byType(LoginTile), findsOneWidget);
-      expect(find.text('Login'), findsOneWidget);
-    },
-  );
+  group('login drawer', () {
+    testWidgets(
+      'displays login tile when authentication data is not present',
+      (WidgetTester tester) async {
+        when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
+        await pumpLoginDrawer(tester, authBloc);
+        expect(find.byType(LoginTile), findsOneWidget);
+        expect(find.text('Login'), findsOneWidget);
+      },
+    );
 
-  testWidgets(
-    'displays logout tile when authentication data is present',
-    (WidgetTester tester) async {
-      when(() => authBloc.state)
-          .thenAnswer((_) => const AuthenticationAuthenticated(tAuthData));
-      await pumpLoginDrawer(tester, authBloc);
-      expect(find.byType(LogoutTile), findsOneWidget);
-      expect(find.text('Logout'), findsOneWidget);
-    },
-  );
+    testWidgets(
+      'displays logout tile when authentication data is present',
+      (WidgetTester tester) async {
+        when(() => authBloc.state)
+            .thenAnswer((_) => const AuthenticationAuthenticated(tAuthData));
+        await pumpLoginDrawer(tester, authBloc);
+        expect(find.byType(LogoutTile), findsOneWidget);
+        expect(find.text('Logout'), findsOneWidget);
+      },
+    );
 
-  testWidgets(
-    'displays login tile when authentication data is loading',
-    (WidgetTester tester) async {
-      when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
-      await pumpLoginDrawer(tester, authBloc);
-      expect(find.byType(LoginTile), findsOneWidget);
-    },
-  );
+    testWidgets(
+      'displays login tile when authentication data is loading',
+      (WidgetTester tester) async {
+        when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
+        await pumpLoginDrawer(tester, authBloc);
+        expect(find.byType(LoginTile), findsOneWidget);
+      },
+    );
+  });
 
-  group('test navigation events', () {
+  group('logout tile', () {
     late final MockNavigatorObserver mockNavigatorObserver;
     setUp(() {
       mockNavigatorObserver = MockNavigatorObserver();
     });
 
     testWidgets(
-      'login tile navigates to login screen',
+      'navigates to home screen',
+      (WidgetTester tester) async {
+        const tAuthData = AuthenticationData(
+          token: 'token',
+          id: 12,
+          username: 'username',
+        );
+        when(() => loginBloc.state).thenAnswer((_) => const LoginState());
+        when(() => authBloc.state).thenAnswer(
+          (_) => AuthenticationAuthenticated(tAuthData),
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            navigatorObservers: [mockNavigatorObserver],
+            initialRoute: HomeScreen.id,
+            routes: {
+              HomeScreen.id: (context) => MockHomeScreen(authBloc: authBloc),
+              LoginScreen.id: (context) => const MockLoginScreen(),
+            },
+          ),
+        );
+        expect(find.byType(LogoutTile), findsOneWidget);
+        expect(find.text('Logout'), findsOneWidget);
+        await tester.tap(find.text('Logout'));
+        await tester.pumpAndSettle();
+        verify(() => authBloc.add(LogoutRequested())).called(1);
+        verify(() => mockNavigatorObserver.didPop(any(), any()));
+      },
+    );
+  });
+
+  group('login tile', () {
+    late final MockNavigatorObserver mockNavigatorObserver;
+    setUp(() {
+      mockNavigatorObserver = MockNavigatorObserver();
+    });
+
+    testWidgets(
+      'navigates to login screen',
       (WidgetTester tester) async {
         when(() => loginBloc.state).thenAnswer((_) => const LoginState());
         when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());

@@ -6,6 +6,7 @@ import '../../../../core/usecases/usecase.dart';
 import '../../../authentication/domain/entities/authentication_data.dart';
 import '../repositories/login_repository.dart';
 
+/// Contract for the log in with username and password usecase.
 class LogInWithUsernamePassword extends UseCase<AuthenticationData, Params> {
   LogInWithUsernamePassword(this.repository);
 
@@ -24,9 +25,6 @@ class Params extends Equatable {
   final String password;
   final String username;
 
-  // coverage:ignore-start
   @override
   List<Object?> get props => [username, password];
-
-  // coverage:ignore-end
 }

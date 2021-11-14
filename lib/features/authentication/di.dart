@@ -2,6 +2,7 @@
 
 import 'package:get_it/get_it.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/usecases/authenticate.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/usecases/logout.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 
 import 'data/datasources/authentication_local_data_source.dart';
@@ -13,10 +14,12 @@ void initAuthenticationFeature(GetIt sl) {
   sl.registerFactory(
     () => AuthenticationBloc(
       usecase: sl(),
+      logout: sl(),
     ),
   );
   // Usecases
   sl.registerLazySingleton(() => Authenticate(sl()));
+  sl.registerLazySingleton(() => Logout(sl()));
   // Repository
   sl.registerLazySingleton<AuthenticationRepository>(
     () => AuthenticationRepositoryImpl(

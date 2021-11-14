@@ -43,4 +43,9 @@ void main() {
         username: tUsername, password: tPassword));
     verifyNoMoreInteractions(mockLoginRepository);
   });
+
+  test('login usecase params props should return username and password', () {
+    const params = Params(username: 'test-username', password: 'test-password');
+    expect(params.props, ['test-username', 'test-password']);
+  });
 }
