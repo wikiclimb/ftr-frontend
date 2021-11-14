@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "type": 1,
+    "parentId": null,
+    "name": "test-area-1",
+    "description": "test-area-1-description",
+    "pointId": null,
+    "coverUrl": null,
+    "createdBy": "user-1",
+    "createdAt": 1636899203,
+    "updatedBy": "user-2",
+    "updatedAt": 1636899203
+  },
+  {
+    "id": 2,
+    "type": 1,
+    "parentId": null,
+    "name": "test-area-2",
+    "description": "test-area-2-description",
+    "pointId": null,
+    "coverUrl": null,
+    "createdBy": "user-2",
+    "createdAt": 1636899203,
+    "updatedBy": "user-2",
+    "updatedAt": 1636899203
+  }
+]
