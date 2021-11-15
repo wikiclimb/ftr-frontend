@@ -4,15 +4,15 @@ import '../../../../core/collections/page.dart';
 import '../../../../core/error/failure.dart';
 import '../../../node/domain/entities/node.dart';
 
-/// Provides contracts to interact with area data.
-abstract class AreaRepository {
-  /// Subscribe to a stream of Area data.
+/// Provides contracts to interact with node data.
+abstract class NodeRepository {
+  /// Subscribe to a stream of [Node] data.
   Stream<Either<Failure, Page<Node>>> get subscribe;
 
-  /// Push one page of data to the subscription.
+  /// Push one page of data to the subscription with the given parameters.
   void fetchPage({Map<String, String>? params, int? page});
 
-  /// Fetch data for one area.
+  /// Fetch data for one [Node].
   Future<Either<Failure, Node>> one(int id);
 
   /// Update a [Node]'s values.
