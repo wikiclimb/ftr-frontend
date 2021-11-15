@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
 
+import '../collections/page.dart';
 import '../error/failure.dart';
 
 /// This class allows treating collections

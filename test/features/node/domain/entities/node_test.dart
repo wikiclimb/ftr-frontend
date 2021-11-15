@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
@@ -76,7 +77,7 @@ void main() {
       ..name = 'test-area-1'
       ..description = 'test-area-description'
       ..rating = 3.4
-      ..breadcrumbs = ['One', 'Two']
+      ..breadcrumbs = BuiltList<String>(['One', 'Two']).toBuilder()
       ..pointId = 20
       ..coverUrl = 'https://coolpics/02210.jpg'
       ..createdBy = 'test-user'

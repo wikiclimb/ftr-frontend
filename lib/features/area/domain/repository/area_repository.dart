@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
-import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
+
+import '../../../../core/collections/page.dart';
+import '../../../../core/error/failure.dart';
+import '../../../node/domain/entities/node.dart';
 
 /// Provides contracts to interact with area data.
 abstract class AreaRepository {

@@ -1,74 +1,82 @@
-// ignore_for_file: overridden_fields
-// Need to override the fields for them to register with Json serializer.
+library node_model;
 
-// import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert';
 
-// import '../../domain/entities/node.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
-// part 'node_model.g.dart';
+import '../../../../core/utils/serializers.dart';
 
-// @JsonSerializable()
-// class NodeModel extends ANode {
-//   const NodeModel({
-//     id,
-//     required type,
-//     this.parentId,
-//     required name,
-//     required description,
-//     rating,
-//     this.breadcrumbs,
-//     this.pointId,
-//     this.coverUrl,
-//     required this.createdBy,
-//     required this.createdAt,
-//     this.updatedBy,
-//     this.updatedAt,
-//   }) : super(
-//           id: id,
-//           type: type,
-//           parentId: parentId,
-//           name: name,
-//           description: description,
-//           rating: rating,
-//           breadcrumbs: breadcrumbs,
-//           pointId: parentId,
-//           coverUrl: coverUrl,
-//           createdBy: createdBy,
-//           createdAt: createdAt,
-//           updatedBy: updatedBy,
-//           updatedAt: updatedAt,
-//         );
+part 'node_model.g.dart';
 
-//   factory NodeModel.fromJson(Map<String, dynamic> json) =>
-//       _$NodeModelFromJson(json);
+abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
+  factory NodeModel([void Function(NodeModelBuilder) updates]) = _$NodeModel;
 
-//   @override
-//   final List<String>? breadcrumbs;
-//   @override
-//   @JsonKey(name: 'parent_id')
-//   final int? parentId;
-//   @override
-//   @JsonKey(name: 'cover_url')
-//   final String? coverUrl;
+  NodeModel._();
 
-//   @override
-//   @JsonKey(name: 'point_id')
-//   final int? pointId;
+  // Fields
 
-//   @override
-//   @JsonKey(name: 'created_by')
-//   final String createdBy;
+  int? get id;
 
-//   @override
-//   @JsonKey(name: 'created_at')
-//   final int createdAt;
-//   @override
-//   @JsonKey(name: 'updated_by')
-//   final String? updatedBy;
+  int get type;
 
-//   @override
-//   @JsonKey(name: 'updated_at')
-//   final int? updatedAt;
+  @BuiltValueField(wireName: 'parent_id')
+  int? get parentId;
 
-//   Map<String, dynamic> toJson() => _$NodeModelToJson(this);
-// }
+  String get name;
+
+  String? get description;
+
+  double? get rating;
+
+  BuiltList<String>? get breadcrumbs;
+
+  @BuiltValueField(wireName: 'cover_url')
+  String? get coverUrl;
+
+  @BuiltValueField(wireName: 'created_at')
+  int get createdAt;
+
+  @BuiltValueField(wireName: 'created_by')
+  String get createdBy;
+
+  @BuiltValueField(wireName: 'point_id')
+  int? get pointId;
+
+  @BuiltValueField(wireName: 'updated_at')
+  int? get updatedAt;
+
+  @BuiltValueField(wireName: 'updated_by')
+  String? get updatedBy;
+
+  String toJson() {
+    return json.encode(serializers.serializeWith(NodeModel.serializer, this));
+  }
+
+  /// Return the [Node] corresponding to this [NodeModel].
+  Node toNode() {
+    return Node((n) => n
+      ..id = id
+      ..type = type
+      ..parentId = parentId
+      ..name = name
+      ..description = description
+      ..breadcrumbs = breadcrumbs?.toBuilder()
+      ..coverUrl = coverUrl
+      ..rating = rating
+      ..pointId = pointId
+      ..createdBy = createdBy
+      ..createdAt = createdAt
+      ..updatedBy = updatedBy
+      ..updatedAt = updatedAt);
+  }
+
+  static NodeModel? fromJson(String jsonString) {
+    return serializers.deserializeWith(
+        NodeModel.serializer, json.decode(jsonString));
+  }
+
+  static Serializer<NodeModel> get serializer => _$nodeModelSerializer;
+}

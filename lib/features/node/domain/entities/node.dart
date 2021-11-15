@@ -1,5 +1,6 @@
 library node;
 
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 
 part 'node.g.dart';
@@ -26,7 +27,7 @@ abstract class Node implements Built<Node, NodeBuilder> {
 
   double? get rating;
 
-  List<String>? get breadcrumbs;
+  BuiltList<String>? get breadcrumbs;
 
   String? get coverUrl;
 

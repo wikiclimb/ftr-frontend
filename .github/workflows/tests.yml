@@ -29,6 +29,10 @@ jobs:
         run: flutter analyze lib test
       - name: Run tests
         run: flutter test --no-pub --coverage --test-randomize-ordering-seed random
+      - name: Install lcov
+        run: sudo apt install -y lcov
+      - name: Remove generated files from coverage report
+        run: lcov -r coverage/lcov.info '*.g.dart' -o coverage/lcov.info;
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
         with:
