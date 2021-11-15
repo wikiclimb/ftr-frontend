@@ -1,0 +1,15 @@
+{
+  "id": 2,
+  "type": 1,
+  "parent_id": null,
+  "name": "test-area-2",
+  "description": "test-area-2-description",
+  "rating": 4.9,
+  "breadcrumbs": ["One", "Two", "Three"],
+  "point_id": null,
+  "cover_url": null,
+  "created_by": "user-2",
+  "created_at": 1636899203,
+  "updated_by": "user-2",
+  "updated_at": 1636899203
+}

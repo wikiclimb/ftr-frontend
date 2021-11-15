@@ -9,6 +9,8 @@ class Node extends Equatable {
   final int? parentId;
   final String name;
   final String description;
+  final double? rating;
+  final List<String>? breadcrumbs;
   final int? pointId;
   final String? coverUrl;
   final String createdBy;
@@ -22,6 +24,8 @@ class Node extends Equatable {
     this.parentId,
     required this.name,
     required this.description,
+    this.rating,
+    this.breadcrumbs,
     this.pointId,
     this.coverUrl,
     required this.createdBy,
@@ -37,6 +41,8 @@ class Node extends Equatable {
         parentId,
         name,
         description,
+        rating,
+        breadcrumbs,
         pointId,
         coverUrl,
         createdBy,

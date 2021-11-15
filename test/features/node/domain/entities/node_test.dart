@@ -2,13 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
 void main() {
-  test('props returns id', () {
+  test('props', () {
     const tNode = Node(
       id: 1243,
       type: 1,
       parentId: null,
       name: 'test-area',
       description: 'test-area-description',
+      rating: 4.9,
       pointId: null,
       createdBy: 'test-user',
       createdAt: 1636899203,
@@ -23,6 +24,8 @@ void main() {
         null,
         'test-area',
         'test-area-description',
+        4.9,
+        null,
         null,
         null,
         'test-user',

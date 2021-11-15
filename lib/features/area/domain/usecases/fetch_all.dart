@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
-import 'package:wikiclimb_flutter_frontend/core/usecases/paged_subscription.dart';
 
+import '../../../../core/collections/page.dart';
 import '../../../../core/error/failure.dart';
+import '../../../../core/usecases/paged_subscription.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../node/domain/entities/node.dart';
 import '../repository/area_repository.dart';
