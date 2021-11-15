@@ -28,7 +28,7 @@
 
 # Build runner generated code
 test/**/*_test.mocks.dart
-**/models/*.g.dart
+*.g.dart
 
 # Web related
 lib/generated_plugin_registrant.dart

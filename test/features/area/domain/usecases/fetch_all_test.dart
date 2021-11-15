@@ -15,30 +15,26 @@ class MockAreaRepository extends Mock implements AreaRepository {}
 void main() {
   late AreaRepository mockAreaRepository;
   late FetchAllAreas fetchAllAreas;
-  const tArea1 = Node(
-    id: 1243,
-    type: 1,
-    parentId: null,
-    name: 'test-area-1',
-    description: 'test-area-description',
-    pointId: null,
-    createdBy: 'test-user',
-    createdAt: 1636899203,
-    updatedBy: 'test-user',
-    updatedAt: 1636899203,
-  );
-  const tArea2 = Node(
-    id: 123,
-    type: 1,
-    parentId: null,
-    name: 'test-area-2',
-    description: 'test-area-2-description',
-    pointId: null,
-    createdBy: 'test-user',
-    createdAt: 1636899203,
-    updatedBy: 'test-user',
-    updatedAt: 1636899203,
-  );
+  final tArea1 = Node((n) => n
+    ..id = 1234
+    ..type = 1
+    ..name = 'test-area-1'
+    ..description = 'test-area-description'
+    ..createdBy = 'test-user'
+    ..createdAt = 1636899203
+    ..updatedBy = 'test-user'
+    ..updatedAt = 1636899203);
+
+  final tArea2 = Node((n) => n
+    ..id = 123
+    ..type = 1
+    ..name = 'test-area-2'
+    ..description = 'test-area-2-description'
+    ..createdBy = 'test-user'
+    ..createdAt = 1636899203
+    ..updatedBy = 'test-user'
+    ..updatedAt = 1636899203);
+
   Page<Node> page1 = Page(
     items: [tArea1, tArea2],
     pageNumber: 1,

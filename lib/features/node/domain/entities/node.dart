@@ -1,53 +1,42 @@
-import 'package:equatable/equatable.dart';
+library node;
+
+import 'package:built_value/built_value.dart';
+
+part 'node.g.dart';
 
 /// Node entity is an information container entity.
 ///
 /// Some important entities, like areas and routes, are modeled using [Node].
-class Node extends Equatable {
-  final int? id;
-  final int type;
-  final int? parentId;
-  final String name;
-  final String description;
-  final double? rating;
-  final List<String>? breadcrumbs;
-  final int? pointId;
-  final String? coverUrl;
-  final String createdBy;
-  final int createdAt;
-  final String? updatedBy;
-  final int? updatedAt;
+abstract class Node implements Built<Node, NodeBuilder> {
+  factory Node([void Function(NodeBuilder) updates]) = _$Node;
 
-  const Node({
-    this.id,
-    required this.type,
-    this.parentId,
-    required this.name,
-    required this.description,
-    this.rating,
-    this.breadcrumbs,
-    this.pointId,
-    this.coverUrl,
-    required this.createdBy,
-    required this.createdAt,
-    this.updatedBy,
-    this.updatedAt,
-  });
+  Node._();
 
-  @override
-  List<Object?> get props => [
-        id,
-        type,
-        parentId,
-        name,
-        description,
-        rating,
-        breadcrumbs,
-        pointId,
-        coverUrl,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+  // Fields
+
+  int? get id;
+
+  int get type;
+
+  int? get parentId;
+
+  String get name;
+
+  String? get description;
+
+  double? get rating;
+
+  List<String>? get breadcrumbs;
+
+  String? get coverUrl;
+
+  int get createdAt;
+
+  String get createdBy;
+
+  int? get pointId;
+
+  int? get updatedAt;
+
+  String? get updatedBy;
 }

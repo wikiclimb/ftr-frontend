@@ -2,100 +2,89 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
 void main() {
-  test('props', () {
-    const tNode = Node(
-      id: 1243,
-      type: 1,
-      parentId: null,
-      name: 'test-area',
-      description: 'test-area-description',
-      rating: 4.9,
-      pointId: null,
-      createdBy: 'test-user',
-      createdAt: 1636899203,
-      updatedBy: 'test-user',
-      updatedAt: 1636899203,
-    );
-    expect(
-      tNode.props,
-      [
-        1243,
-        1,
-        null,
-        'test-area',
-        'test-area-description',
-        4.9,
-        null,
-        null,
-        null,
-        'test-user',
-        1636899203,
-        'test-user',
-        1636899203,
-      ],
-      reason: 'Equatable node props should only consider ID',
-    );
-  });
-
   test('authentication data equality comparison should work', () {
-    const tNode1 = Node(
-      id: 1243,
-      type: 10,
-      parentId: 4,
-      name: 'test-area-2',
-      description: 'test-area-description-2',
-      pointId: null,
-      createdBy: 'test-user-2',
-      createdAt: 1636899103,
-      updatedBy: 'test-user-2',
-      updatedAt: 1636899103,
-    );
-    const tNode2 = Node(
-      id: 1243,
-      type: 10,
-      parentId: 4,
-      name: 'test-area-2',
-      description: 'test-area-description-2',
-      pointId: null,
-      createdBy: 'test-user-2',
-      createdAt: 1636899103,
-      updatedBy: 'test-user-2',
-      updatedAt: 1636899103,
-    );
+    final tNode1 = Node((n) => n
+      ..id = 1234
+      ..type = 1
+      ..name = 'test-area-1'
+      ..description = 'test-area-description'
+      ..createdBy = 'test-user'
+      ..createdAt = 1636899203
+      ..updatedBy = 'test-user'
+      ..updatedAt = 1636899203);
+
+    final tNode2 = Node((n) => n
+      ..id = 1234
+      ..type = 1
+      ..name = 'test-area-1'
+      ..description = 'test-area-description'
+      ..createdBy = 'test-user'
+      ..createdAt = 1636899203
+      ..updatedBy = 'test-user'
+      ..updatedAt = 1636899203);
+
     expect(
       tNode1,
       tNode2,
       reason: 'models with same data should be considered equal',
     );
+
+    expect(
+      tNode1.hashCode,
+      tNode2.hashCode,
+      reason: 'equal models should have equal hash code',
+    );
+
+    expect(
+      tNode1.toString(),
+      tNode2.toString(),
+      reason: 'equal models should have equal hash code',
+    );
   });
 
   test('authentication data equality comparison should fail', () {
-    const tNode1 = Node(
-      type: 10,
-      parentId: 4,
-      name: 'test-area-2',
-      description: 'test-area-description-2',
-      pointId: null,
-      createdBy: 'test-user-2',
-      createdAt: 1636899103,
-      updatedBy: 'test-user-2',
-      updatedAt: 1636899103,
-    );
-    const tNode2 = Node(
-      type: 10,
-      parentId: 4,
-      name: 'test-area',
-      description: 'test-area-description-2',
-      pointId: null,
-      createdBy: 'test-user-2',
-      createdAt: 1636899103,
-      updatedBy: 'test-user-2',
-      updatedAt: 1636899103,
-    );
+    final tNode1 = Node((n) => n
+      ..id = 1234
+      ..type = 1
+      ..name = 'test-area-1'
+      ..description = 'test-area-description'
+      ..createdBy = 'test-user'
+      ..createdAt = 1636899203
+      ..updatedBy = 'test-user'
+      ..updatedAt = 1636899203);
+    final tNode2 = Node((n) => n
+      ..id = 123
+      ..type = 1
+      ..name = 'test-area-1'
+      ..description = 'test-area-description'
+      ..createdBy = 'test-user'
+      ..createdAt = 1636899203
+      ..updatedBy = 'test-user'
+      ..updatedAt = 1636899203);
     expect(
       tNode1,
       isNot(equals(tNode2)),
       reason: 'models with different data should not be considered equal',
     );
+  });
+
+  test('updating properties', () {
+    final tNode = Node((n) => n
+      ..id = 1234
+      ..type = 1
+      ..parentId = 10
+      ..name = 'test-area-1'
+      ..description = 'test-area-description'
+      ..rating = 3.4
+      ..breadcrumbs = ['One', 'Two']
+      ..pointId = 20
+      ..coverUrl = 'https://coolpics/02210.jpg'
+      ..createdBy = 'test-user'
+      ..createdAt = 1636899203
+      ..updatedBy = 'test-user'
+      ..updatedAt = 1636899203);
+    final updatedNode = tNode.rebuild((n) => n..parentId = 8);
+    expect(updatedNode.id, 1234);
+    expect(updatedNode.parentId, 8);
   });
 }
