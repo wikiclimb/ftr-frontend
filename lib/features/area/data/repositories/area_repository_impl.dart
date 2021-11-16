@@ -23,10 +23,10 @@ class AreaRepositoryImpl extends AreaRepository {
   void dispose() => nodeRepository.dispose();
 
   @override
-  void fetchPage({Map<String, String>? params, int? page}) {
-    Map<String, String> newParams = {'type': '1'};
+  void fetchPage({Map<String, dynamic>? params, int? page}) {
+    Map<String, dynamic> newParams = {'type': '1'};
     newParams.addAll(params ?? {});
-    return nodeRepository.fetchPage(params: newParams, page: page);
+    return nodeRepository.fetchPage(params: newParams);
   }
 
   @override

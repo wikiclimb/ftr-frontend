@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,16 +36,16 @@ void main() {
     ..updatedBy = 'test-user'
     ..updatedAt = 1636899203);
 
-  Page<Node> page1 = Page(
-    items: [tArea1, tArea2],
-    pageNumber: 1,
-    isLastPage: false,
-  );
-  Page<Node> emptyPage = Page(
-    items: [],
-    pageNumber: 1,
-    isLastPage: true,
-  );
+  Page<Node> page1 = Page((p) => p
+    ..items = ListBuilder([tArea1, tArea2])
+    ..pageNumber = 1
+    ..nextPageNumber = 2
+    ..isLastPage = false);
+  Page<Node> emptyPage = Page((p) => p
+    ..items = ListBuilder([])
+    ..pageNumber = 1
+    ..nextPageNumber = 2
+    ..isLastPage = false);
 
   setUp(() {
     mockAreaRepository = MockAreaRepository();

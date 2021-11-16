@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,16 +21,16 @@ void main() {
   final tArea1 = nodes.elementAt(1);
   final tArea2 = nodes.elementAt(2);
 
-  Page<Node> page1 = Page(
-    items: [tArea1, tArea2],
-    pageNumber: 1,
-    isLastPage: false,
-  );
-  Page<Node> emptyPage = Page(
-    items: [],
-    pageNumber: 1,
-    isLastPage: true,
-  );
+  Page<Node> page1 = Page((p) => p
+    ..items = ListBuilder([tArea1, tArea2])
+    ..pageNumber = 1
+    ..nextPageNumber = 2
+    ..isLastPage = false);
+  Page<Node> emptyPage = Page((p) => p
+    ..items = ListBuilder([])
+    ..pageNumber = 1
+    ..nextPageNumber = -1
+    ..isLastPage = true);
 
   setUp(() {
     mockNodeRepository = MockNodeRepository();
@@ -80,7 +81,6 @@ void main() {
       repository.fetchPage();
       verify(() => mockNodeRepository.fetchPage(
             params: {'type': '1'},
-            page: null,
           )).called(1);
       verifyNoMoreInteractions(mockNodeRepository);
     },
@@ -91,16 +91,14 @@ void main() {
     'adding type 1 for area to the parameters',
     () {
       when(() => mockNodeRepository.fetchPage(
-            params: {'q': 'test'},
-            page: 3,
+            params: {'q': 'test', 'page': 3},
           )).thenReturn(null);
       repository.fetchPage(
-        params: {'q': 'test'},
+        params: {'q': 'test', 'page': 3},
         page: 3,
       );
       verify(() => mockNodeRepository.fetchPage(
-            params: {'type': '1', 'q': 'test'},
-            page: 3,
+            params: {'type': '1', 'q': 'test', 'page': 3},
           )).called(1);
       verifyNoMoreInteractions(mockNodeRepository);
     },
