@@ -1,6 +1,6 @@
 part of 'areas_bloc.dart';
 
-enum AreasStatus { loading, loaded }
+enum AreasStatus { loading, loaded, initial }
 
 class AreasState extends Equatable {
   const AreasState({

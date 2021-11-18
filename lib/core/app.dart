@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../features/area/presentation/screens/area_list_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
 import '../features/login/presentation/screens/login_screen.dart';
 
@@ -19,6 +20,7 @@ class App extends StatelessWidget {
       initialRoute: HomeScreen.id,
       routes: {
         // coverage:ignore-start
+        AreaListScreen.id: (context) => const AreaListScreen(),
         HomeScreen.id: (context) => const HomeScreen(),
         LoginScreen.id: (context) => const LoginScreen(),
         // coverage:ignore-end

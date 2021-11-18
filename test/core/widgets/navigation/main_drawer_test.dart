@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/widgets/navigation/main_drawer.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_list_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/home/presentation/screens/home_screen.dart';
@@ -66,6 +67,26 @@ void main() {
       expect(find.byType(LoginDrawerTile), findsNothing);
     },
   );
+
+  testWidgets(
+    'displays area tile',
+    (WidgetTester tester) async {
+      whenListen(
+        authBloc,
+        Stream.fromIterable([
+          const AuthenticationAuthenticated(tAuthData),
+        ]),
+        initialState: AuthenticationInitial(),
+      );
+      await pumpDrawer(
+        tester,
+        authBloc,
+        LoginScreen.id,
+      );
+      expect(find.text('Areas'), findsOneWidget);
+      await tester.tap(find.text('Areas'));
+    },
+  );
 }
 
 Future<void> pumpDrawer(
@@ -83,6 +104,20 @@ Future<void> pumpDrawer(
           ),
         ),
       ),
+      routes: {
+        AreaListScreen.id: (context) => const MockAreaListScreen(),
+      },
     ),
   );
+}
+
+class MockAreaListScreen extends StatelessWidget {
+  const MockAreaListScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Mock areas Screen'),
+    );
+  }
 }

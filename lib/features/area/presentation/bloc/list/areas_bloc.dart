@@ -19,7 +19,7 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
       : _usecase = usecase,
         // Set the initial bloc state.
         super(AreasState(
-          status: AreasStatus.loading,
+          status: AreasStatus.initial,
           areas: BuiltSet(),
           hasError: false,
           nextPage: 1,

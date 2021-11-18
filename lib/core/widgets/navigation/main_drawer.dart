@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../features/area/presentation/screens/area_list_screen.dart';
 import '../../../features/login/presentation/screens/login_screen.dart';
 import '../../../features/login/presentation/widgets/login_drawer_tile.dart';
 
@@ -14,6 +15,16 @@ class MainDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
+          if (currentRoute != AreaListScreen.id)
+            ListTile(
+              key: UniqueKey(),
+              leading: const Icon(Icons.list_outlined),
+              title: const Text('Areas'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, AreaListScreen.id);
+              },
+            ),
           if (currentRoute != LoginScreen.id) const LoginDrawerTile(),
         ],
       ),

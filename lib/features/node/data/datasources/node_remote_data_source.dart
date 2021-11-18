@@ -23,7 +23,7 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource {
   NodeRemoteDataSourceImpl({required this.client});
 
   final http.Client client;
-  final endpoint = 'node';
+  final endpoint = 'nodes';
 
   @override
   Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params) async {

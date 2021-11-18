@@ -27,7 +27,7 @@ void main() {
     expect(
         AreasBloc(usecase: mockUsecase).state,
         AreasState(
-          status: AreasStatus.loading,
+          status: AreasStatus.initial,
           areas: BuiltSet(),
           hasError: false,
           nextPage: 1,
@@ -42,24 +42,6 @@ void main() {
       act: (bloc) => bloc.add(NextPageRequested()),
       verify: (_) => {verify(() => mockUsecase.fetchPage()).called(1)},
     );
-
-    // blocTest<AreasBloc, AreasState>(
-    //   'data requests are forwarded with parameters added',
-    //   setUp: () => when(() => mockUsecase.subscribe).thenAnswer(
-    //     (_) => Stream.value(Right(areaPages.first)),
-    //   ),
-    //   build: () => AreasBloc(usecase: mockUsecase),
-    //   seed: () => AreaDataRefreshed(areaPages.first.items.toBuiltSet()),
-    //   act: (bloc) {
-    //     bloc.add(NextPageRequested());
-    //     bloc.add(NextPageRequested());
-    //   },
-    //   verify: (_) => {
-    //     verify(
-    //       () => mockUsecase.fetchPage(params: {'page': 2}),
-    //     ).called(1)
-    //   },
-    // );
   });
 
   group('response received', () {
