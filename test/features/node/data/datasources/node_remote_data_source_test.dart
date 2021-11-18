@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
-
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_remote_data_source.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
@@ -81,11 +80,21 @@ void main() {
 
     test('fetch converts network errors to failures', () async {
       when(() => mockClient.get(any())).thenThrow(
-        (_) async => const SocketException('Could not connect'),
+        const SocketException('Socket exception'),
       );
       expect(
         () async => await dataSource.fetchAll({}),
         throwsA(const TypeMatcher<NetworkException>()),
+      );
+      verify(() => mockClient.get(any())).called(1);
+      verifyNoMoreInteractions(mockClient);
+    });
+
+    test('fetch converts other errors to application failures', () async {
+      when(() => mockClient.get(any())).thenThrow(const FormatException());
+      expect(
+        () async => await dataSource.fetchAll({}),
+        throwsA(const TypeMatcher<ApplicationException>()),
       );
       verify(() => mockClient.get(any())).called(1);
       verifyNoMoreInteractions(mockClient);

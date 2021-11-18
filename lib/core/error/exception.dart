@@ -1,3 +1,6 @@
+/// General catch-all exception type, try to use a more concrete class.
+class ApplicationException implements Exception {}
+
 /// There was an error recovering local data.
 class CacheException implements Exception {}
 

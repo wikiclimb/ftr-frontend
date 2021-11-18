@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 
 import '../../../../core/collections/page.dart';
 import '../../../../core/error/failure.dart';
@@ -15,10 +16,9 @@ class NodeRepositoryImpl implements NodeRepository {
 
   final NodeRemoteDataSource remoteDataSource;
 
-  final _controller = StreamController<Either<Failure, Page<Node>>>();
+  final _controller = StreamController<Either<Failure, Page<Node>>>.broadcast();
 
   @override
-  // TODO: implement subscribe
   Stream<Either<Failure, Page<Node>>> get subscribe async* {
     yield* _controller.stream;
   }
@@ -41,7 +41,7 @@ class NodeRepositoryImpl implements NodeRepository {
   }
 
   @override
-  void fetchPage({Map<String, dynamic>? params}) async {
+  Future<void> fetchPage({Map<String, dynamic>? params}) async {
     try {
       final nodeModelPage = await remoteDataSource.fetchAll(params ?? {});
       final nodePage = Page<Node>(
@@ -52,7 +52,17 @@ class NodeRepositoryImpl implements NodeRepository {
           ..items = ListBuilder(nodeModelPage.items.map((nm) => nm.toNode())),
       );
       _controller.add(Right(nodePage));
-    } catch (_) {}
+    } on UnauthorizedException {
+      _controller.add(Left(UnauthorizedFailure()));
+    } on ForbiddenException {
+      _controller.add(Left(ForbiddenFailure()));
+    } on ServerException {
+      _controller.add(Left(ServerFailure()));
+    } on NetworkException {
+      _controller.add(Left(NetworkFailure()));
+    } catch (e) {
+      _controller.add(Left(ApplicationFailure()));
+    }
   }
 
   @override

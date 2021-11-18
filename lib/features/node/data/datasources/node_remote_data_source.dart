@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:http/http.dart' as http;
@@ -54,8 +55,10 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource {
       throw ForbiddenException();
     } on ServerException {
       throw ServerException();
-    } catch (_) {
+    } on SocketException {
       throw NetworkException();
+    } catch (e) {
+      throw ApplicationException();
     }
   }
 }

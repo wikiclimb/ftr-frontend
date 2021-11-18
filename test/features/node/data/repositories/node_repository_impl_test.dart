@@ -47,6 +47,61 @@ void main() {
       repository.fetchPage();
       verify(() => mockRemoteDataSource.fetchAll({})).called(1);
     });
+
+    // test('Unauthorized failure', () async {
+    //   when(() => mockRemoteDataSource.fetchAll(any()))
+    //       .thenThrow((_) => UnauthorizedException());
+    //   expectLater(
+    //     repository.subscribe,
+    //     emitsInOrder([Left(UnauthorizedFailure())]),
+    //   );
+    //   repository.fetchPage(params: {});
+    //   verify(() => mockRemoteDataSource.fetchAll(any())).called(1);
+    // });
+
+    // test('Forbidden failure', () async {
+    //   when(() => mockRemoteDataSource.fetchAll({}))
+    //       .thenThrow(ForbiddenException());
+    //   expectLater(
+    //     repository.subscribe,
+    //     emitsInOrder([Left(ForbiddenFailure())]),
+    //   );
+    //   repository.fetchPage();
+    //   verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+    // });
+
+    // test('Server failure', () async {
+    //   when(() => mockRemoteDataSource.fetchAll({}))
+    //       .thenThrow(ServerException());
+    //   expectLater(
+    //     repository.subscribe,
+    //     emitsInOrder([Left(ServerFailure())]),
+    //   );
+    //   repository.fetchPage();
+    //   verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+    // });
+
+    // test('Network failure', () async {
+    //   when(() => mockRemoteDataSource.fetchAll({}))
+    //       .thenThrow(NetworkException());
+    //   expectLater(
+    //     repository.subscribe,
+    //     emitsInOrder([Left(NetworkFailure())]),
+    //   );
+    //   repository.fetchPage();
+    //   verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+    // });
+
+    // test('Application failure', () async {
+    //   when(() => mockRemoteDataSource.fetchAll({}))
+    //       .thenThrow(ApplicationException());
+    //   expectLater(
+    //     repository.subscribe,
+    //     emitsInOrder([Left(ApplicationFailure())]),
+    //   );
+    //   repository.fetchPage();
+    //   verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+    // });
   });
 
   group('one', () {});

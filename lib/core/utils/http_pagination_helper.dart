@@ -26,7 +26,7 @@ class HttpPaginationHelper {
           .trim();
       final sections = url.split(RegExp(r'(\?|&)'));
       final String page = sections.singleWhere(
-        (element) => element.contains('page='),
+        (element) => element.contains(RegExp(r'^(?<!per-)page=')),
       );
       final pageNumber = page.replaceAll('page=', '');
       return int.tryParse(pageNumber) ?? -1;

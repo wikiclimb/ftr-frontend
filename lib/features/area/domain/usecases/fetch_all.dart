@@ -20,7 +20,7 @@ class FetchAllAreas extends PagedSubscription<Node, Map<String, dynamic>> {
 
   @override
   void fetchPage({Map<String, dynamic>? params}) {
-    _repository.fetchPage();
+    _repository.fetchPage(params: params);
   }
 
   @override

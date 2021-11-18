@@ -71,7 +71,7 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
   Map<String, dynamic> _getParams() {
     Map<String, dynamic> params = {};
     if (state.nextPage > 0) {
-      params.addAll({'page': state.nextPage});
+      params.addAll({'page': state.nextPage.toString()});
     }
     // Add query parameters.
     return params;
