@@ -17,13 +17,23 @@ void main() async {
 
   // Setup application blocs
   if (kDebugMode) {
-    Bloc.observer = MyBlocObserver();
-  }
-  final authBloc = sl<AuthenticationBloc>();
+    BlocOverrides.runZoned(
+      () {
+        final authBloc = sl<AuthenticationBloc>();
 
-  // Launch the app.
-  runApp(BlocProvider<AuthenticationBloc>(
-    create: (BuildContext context) => authBloc,
-    child: const App(),
-  ));
+        // Launch the app.
+        runApp(BlocProvider<AuthenticationBloc>(
+          create: (BuildContext context) => authBloc,
+          child: const App(),
+        ));
+      },
+      blocObserver: MyBlocObserver(),
+    );
+  } else {
+    final authBloc = sl<AuthenticationBloc>();
+    runApp(BlocProvider<AuthenticationBloc>(
+      create: (BuildContext context) => authBloc,
+      child: const App(),
+    ));
+  }
 }
