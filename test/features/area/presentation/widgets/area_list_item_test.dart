@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
+
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_list_item.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
@@ -27,7 +29,7 @@ void main() {
       expect(find.text(tArea.breadcrumbs![1]), findsOneWidget);
       await tester.tap(find.byType(InkWell).first);
       await mockNetworkImagesFor(() => tester.pumpAndSettle());
-      expect(find.text('Not implemented yet'), findsOneWidget);
+      expect(find.byType(AreaDetailsScreen), findsOneWidget);
     },
   );
 }

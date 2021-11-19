@@ -31,6 +31,9 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
 
   double? get rating;
 
+  @BuiltValueField(wireName: 'ratings_count')
+  double? get ratingsCount;
+
   BuiltList<String>? get breadcrumbs;
 
   @BuiltValueField(wireName: 'cover_url')

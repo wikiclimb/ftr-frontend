@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wikiclimb_flutter_frontend/core/environment/environment_config.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 
 import '../../../node/domain/entities/node.dart';
 
@@ -12,9 +14,10 @@ class AreaListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Not implemented yet'),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AreaDetailsScreen(area: area),
           ),
         );
       },
@@ -27,7 +30,7 @@ class AreaListItem extends StatelessWidget {
                   FadeInImage.assetNetwork(
                     // height: 200,
                     placeholder: 'graphics/wikiclimb-logo.png',
-                    image: 'https://wikiclimb.org/static/img/${area.coverUrl!}',
+                    image: '${EnvironmentConfig.baseImgUrl}${area.coverUrl!}',
                   )
                 else
                   // Provide a placeholder box in case the image does not exist.

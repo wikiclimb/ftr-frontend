@@ -4,6 +4,10 @@ import '../features/area/presentation/screens/area_list_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
 import '../features/login/presentation/screens/login_screen.dart';
 
+/// The root [Widget] of the application.
+///
+/// Handles wrapping children in a [MaterialApp] and providing routes for
+/// the [Navigator].
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
 

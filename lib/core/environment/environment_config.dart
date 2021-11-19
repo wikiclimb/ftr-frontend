@@ -16,4 +16,12 @@ class EnvironmentConfig {
     'APP_NAME',
     defaultValue: 'WikiClimb',
   );
+
+  static const baseImgUrl = String.fromEnvironment(
+    'BASE_IMG_URL',
+    defaultValue: 'https://wikiclimb.org/static/img/',
+  );
+
+  static const sliverAppBarBackgroundPlaceholder =
+      'graphics/wikiclimb-logo.png';
 }
