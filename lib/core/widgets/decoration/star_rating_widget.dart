@@ -28,6 +28,7 @@ class StarRatingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final fullStars = _rating.truncate();
     final bool displayHalfStar = _rating - fullStars > 0.5;
+    final int emptyStars = 5 - fullStars - (displayHalfStar ? 1 : 0);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -47,6 +48,15 @@ class StarRatingWidget extends StatelessWidget {
             size: 16,
             color: Colors.purple,
           ),
+        // Generate as many empty stars as needed to reach 5.
+        ...List.generate(
+          emptyStars,
+          (i) => const Icon(
+            Icons.star_outline,
+            size: 16,
+            color: Colors.purple,
+          ),
+        ),
         if (_displayRatingDigits)
           Text(
             '$_rating',

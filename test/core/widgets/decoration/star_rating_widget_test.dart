@@ -51,6 +51,17 @@ void main() {
       ratingsCount: 33441,
     );
     expect(find.byIcon(Icons.star_half), findsOneWidget);
+    expect(find.byIcon(Icons.star_outline), findsOneWidget);
+  });
+
+  testWidgets('displays empty stars', (tester) async {
+    await tester.pumpStarWidget(
+      rating: 2.4,
+      ratingsCount: 33441,
+    );
+    expect(find.byIcon(Icons.star), findsNWidgets(2));
+    expect(find.byIcon(Icons.star_half), findsNothing);
+    expect(find.byIcon(Icons.star_outline), findsNWidgets(3));
   });
 
   testWidgets('does not display half stars', (tester) async {
@@ -61,7 +72,7 @@ void main() {
     expect(find.byIcon(Icons.star_half), findsNothing);
   });
 
-  testWidgets('displays widget', (tester) async {
+  testWidgets('hides ratings count', (tester) async {
     await tester.pumpStarWidget(
       rating: 3.9,
       ratingsCount: 33441,
@@ -72,7 +83,7 @@ void main() {
     expect(find.text('(33441)'), findsNothing);
   });
 
-  testWidgets('displays widget', (tester) async {
+  testWidgets('hides rating digits', (tester) async {
     await tester.pumpStarWidget(
       rating: 3.9,
       ratingsCount: 33441,
