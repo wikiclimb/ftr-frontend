@@ -18,5 +18,9 @@ void initNodeFeature(GetIt sl) {
   );
   // Data sources
   sl.registerLazySingleton<NodeRemoteDataSource>(
-      () => NodeRemoteDataSourceImpl(client: sl()));
+    () => NodeRemoteDataSourceImpl(
+      client: sl(),
+      authenticationProvider: sl(),
+    ),
+  );
 }

@@ -23,6 +23,7 @@ void initAuthenticationFeature(GetIt sl) {
   // Repository
   sl.registerLazySingleton<AuthenticationRepository>(
     () => AuthenticationRepositoryImpl(
+      authenticationProvider: sl(),
       localDataSource: sl(),
     ),
   );

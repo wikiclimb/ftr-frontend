@@ -88,4 +88,6 @@ void main() {
     expect(updatedNode.id, 1234);
     expect(updatedNode.parentId, 8);
   });
+
+  group('default values', () {});
 }

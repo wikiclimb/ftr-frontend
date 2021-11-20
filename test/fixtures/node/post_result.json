@@ -1,0 +1,15 @@
+{
+  "id": 123,
+  "type": 1,
+  "parent_id": 4,
+  "name": "test-node",
+  "description": "test-node-description",
+  "rating": 4.9,
+  "breadcrumbs": ["One", "Two", "Three"],
+  "point_id": 9,
+  "cover_url": "https://placeholder.com/1243",
+  "created_by": "test-user-2",
+  "created_at": 1636879203,
+  "updated_by": "test-user-2",
+  "updated_at": 1636899203
+}

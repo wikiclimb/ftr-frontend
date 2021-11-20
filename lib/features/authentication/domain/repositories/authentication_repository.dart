@@ -5,14 +5,13 @@ import '../entities/authentication_data.dart';
 
 enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
+/// Repository contracts to interact with the Authentication data layer.
 abstract class AuthenticationRepository {
-  // Future<Either<Failure, AuthenticationData>> getAuthenticationData();
-
   /// Trigger a check of the current authenticated status.
   ///
   /// This method triggers a check of the authenticated status that gets
   /// pushed to the stream controller for subscribers to receive.
-  void checkAuthenticatedData();
+  Future<AuthenticationData?> checkAuthenticatedData();
 
   /// Stream of authentication status.
   Stream<Either<Failure, AuthenticationData>> get authenticationData;

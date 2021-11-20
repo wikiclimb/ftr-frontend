@@ -42,4 +42,9 @@ abstract class Node implements Built<Node, NodeBuilder> {
   int? get updatedAt;
 
   String? get updatedBy;
+
+  static void _finalizeBuilder(NodeBuilder b) {
+    b._$this._createdBy ??= 'placeholder';
+    b._$this._createdAt ??= -1;
+  }
 }

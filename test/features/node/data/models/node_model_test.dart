@@ -66,6 +66,18 @@ void main() {
     });
   });
 
+  group('from node', () {
+    test('node model from node', () {
+      final node = nodes.elementAt(0);
+      final nodeModel = nodeModels.elementAt(0);
+      expect(
+        NodeModel.fromNode(node),
+        nodeModel,
+        reason: 'factory from [Node] should work',
+      );
+    });
+  });
+
   group('built value methods', () {
     test('to string', () {
       expect(

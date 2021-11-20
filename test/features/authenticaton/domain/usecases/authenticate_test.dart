@@ -21,6 +21,8 @@ void main() {
 
   setUp(() {
     repository = MockAuthenticationRepository();
+    when(() => repository.checkAuthenticatedData())
+        .thenAnswer((_) async => tAuthenticationData);
     usecase = Authenticate(repository);
   });
 

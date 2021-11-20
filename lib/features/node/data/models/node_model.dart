@@ -81,5 +81,22 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
         NodeModel.serializer, json.decode(jsonString));
   }
 
+  static NodeModel? fromNode(Node node) {
+    return NodeModel((n) => n
+      ..id = node.id
+      ..type = node.type
+      ..parentId = node.parentId
+      ..name = node.name
+      ..description = node.description
+      ..breadcrumbs = node.breadcrumbs?.toBuilder()
+      ..coverUrl = node.coverUrl
+      ..rating = node.rating
+      ..pointId = node.pointId
+      ..createdBy = node.createdBy
+      ..createdAt = node.createdAt
+      ..updatedBy = node.updatedBy
+      ..updatedAt = node.updatedAt);
+  }
+
   static Serializer<NodeModel> get serializer => _$nodeModelSerializer;
 }

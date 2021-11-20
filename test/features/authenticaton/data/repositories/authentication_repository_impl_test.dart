@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+
+import 'package:wikiclimb_flutter_frontend/core/authentication/authentication_provider.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/data/datasources/authentication_local_data_source.dart';
@@ -10,22 +11,34 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/data/reposito
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/repositories/authentication_repository.dart';
 
-import 'authentication_repository_impl_test.mocks.dart';
+class MockAuthenticationLocalDataSource extends Mock
+    implements AuthenticationLocalDataSource {}
 
-@GenerateMocks([AuthenticationLocalDataSource])
+class MockAuthenticationProvider extends Mock
+    implements AuthenticationProvider {}
+
+class FakeAuthenticationData extends Fake implements AuthenticationData {}
+
 void main() {
   late AuthenticationRepository repository;
   late MockAuthenticationLocalDataSource mockLocalDataSource;
+  late MockAuthenticationProvider mockAuthenticationProvider;
+
+  setUpAll(() {
+    registerFallbackValue(FakeAuthenticationData());
+  });
 
   setUp(() {
     mockLocalDataSource = MockAuthenticationLocalDataSource();
+    mockAuthenticationProvider = MockAuthenticationProvider();
     repository = AuthenticationRepositoryImpl(
+      authenticationProvider: mockAuthenticationProvider,
       localDataSource: mockLocalDataSource,
     );
   });
 
   test('dispose', () async {
-    when(mockLocalDataSource.getAuthenticationData())
+    when(() => mockLocalDataSource.getAuthenticationData())
         .thenAnswer((_) async => null);
     repository.dispose();
     expectLater(
@@ -44,7 +57,9 @@ void main() {
     test('login saves the data to cache', () async {
       // arrange
       when(
-        mockLocalDataSource.cacheAuthenticationData(tAuthenticationDataModel),
+        () => mockLocalDataSource.cacheAuthenticationData(
+          tAuthenticationDataModel,
+        ),
       ).thenAnswer((_) async => true);
       final expected = [
         Left(CacheFailure()),
@@ -57,14 +72,24 @@ void main() {
       // assert
       expect(result, true);
       verify(
-        mockLocalDataSource.cacheAuthenticationData(tAuthenticationDataModel),
+        () => mockLocalDataSource.cacheAuthenticationData(
+          tAuthenticationDataModel,
+        ),
       ).called(1);
+      verify(
+        () => mockAuthenticationProvider.cacheAuthenticationData(
+          tAuthenticationData,
+        ),
+      ).called(1);
+      verifyNoMoreInteractions(mockAuthenticationProvider);
     });
 
     test('failed login does not update stream', () async {
       // arrange
       when(
-        mockLocalDataSource.cacheAuthenticationData(tAuthenticationDataModel),
+        () => mockLocalDataSource.cacheAuthenticationData(
+          tAuthenticationDataModel,
+        ),
       ).thenThrow(CacheException());
       final expected = [
         Left(CacheFailure()),
@@ -76,15 +101,21 @@ void main() {
       // assert
       expect(result, false);
       verify(
-        mockLocalDataSource.cacheAuthenticationData(tAuthenticationDataModel),
+        () => mockLocalDataSource.cacheAuthenticationData(
+          tAuthenticationDataModel,
+        ),
       ).called(1);
+      verifyNever(
+          () => mockAuthenticationProvider.cacheAuthenticationData(any()));
+      verifyNoMoreInteractions(mockAuthenticationProvider);
     });
   });
+
   group('logout', () {
     test('logout removes data from the cache', () async {
       // arrange
       when(
-        mockLocalDataSource.removeAuthenticationData(),
+        () => mockLocalDataSource.removeAuthenticationData(),
       ).thenAnswer((_) async => true);
       final expected = [
         Left(CacheFailure()),
@@ -96,13 +127,17 @@ void main() {
       final result = await repository.logout();
       // assert
       expect(result, true);
-      verify(mockLocalDataSource.removeAuthenticationData()).called(1);
+      verify(() => mockLocalDataSource.removeAuthenticationData()).called(1);
+
+      verify(() => mockAuthenticationProvider.removeAuthenticationData())
+          .called(1);
+      verifyNoMoreInteractions(mockAuthenticationProvider);
     });
 
     test('failed logout does not update stream', () async {
       // arrange
       when(
-        mockLocalDataSource.removeAuthenticationData(),
+        () => mockLocalDataSource.removeAuthenticationData(),
       ).thenAnswer((_) async => false);
       final expected = [
         Left(CacheFailure()),
@@ -113,7 +148,9 @@ void main() {
       final result = await repository.logout();
       // assert
       expect(result, false);
-      verify(mockLocalDataSource.removeAuthenticationData()).called(1);
+      verify(() => mockLocalDataSource.removeAuthenticationData()).called(1);
+      verifyNever(() => mockAuthenticationProvider.removeAuthenticationData());
+      verifyNoMoreInteractions(mockAuthenticationProvider);
     });
   });
 
@@ -129,19 +166,25 @@ void main() {
       'should return locally cached data when present',
       () async {
         // arrange
-        when(mockLocalDataSource.getAuthenticationData())
+        when(() => mockLocalDataSource.getAuthenticationData())
             .thenAnswer((_) async => tAuthenticationDataModel);
         // act
-        repository.checkAuthenticatedData();
+        await repository.checkAuthenticatedData();
         // assert
-        verify(mockLocalDataSource.getAuthenticationData()).called(1);
+        verify(() => mockLocalDataSource.getAuthenticationData()).called(1);
         final expected = [
           const Right(tAuthenticationData),
         ];
         // assert later
         expectLater(repository.authenticationData, emitsInOrder(expected));
-        // act
+        // assert
         verifyNoMoreInteractions(mockLocalDataSource);
+        verify(
+          () => mockAuthenticationProvider.cacheAuthenticationData(
+            tAuthenticationData,
+          ),
+        ).called(1);
+        verifyNoMoreInteractions(mockAuthenticationProvider);
       },
     );
   });
@@ -151,12 +194,12 @@ void main() {
       'should return AuthenticationFailure when no cached data present',
       () async {
         // arrange
-        when(mockLocalDataSource.getAuthenticationData())
+        when(() => mockLocalDataSource.getAuthenticationData())
             .thenAnswer((_) async => null);
         // act
         repository.checkAuthenticatedData();
         // assert
-        verify(mockLocalDataSource.getAuthenticationData()).called(1);
+        verify(() => mockLocalDataSource.getAuthenticationData()).called(1);
         final expected = [
           Left(AuthenticationFailure()),
         ];
@@ -164,6 +207,10 @@ void main() {
         expectLater(repository.authenticationData, emitsInOrder(expected));
         // act
         verifyNoMoreInteractions(mockLocalDataSource);
+        verifyNever(
+          () => mockAuthenticationProvider.cacheAuthenticationData(any()),
+        );
+        verifyNoMoreInteractions(mockAuthenticationProvider);
       },
     );
 
@@ -171,12 +218,12 @@ void main() {
       'should return CacheFailure on error',
       () async {
         // arrange
-        when(mockLocalDataSource.getAuthenticationData())
+        when(() => mockLocalDataSource.getAuthenticationData())
             .thenThrow(Exception());
         // act
         repository.checkAuthenticatedData();
         // assert
-        verify(mockLocalDataSource.getAuthenticationData()).called(1);
+        verify(() => mockLocalDataSource.getAuthenticationData()).called(1);
         final expected = [
           Left(CacheFailure()),
         ];
@@ -184,6 +231,10 @@ void main() {
         expectLater(repository.authenticationData, emitsInOrder(expected));
         // act
         verifyNoMoreInteractions(mockLocalDataSource);
+        verifyNever(
+          () => mockAuthenticationProvider.cacheAuthenticationData(any()),
+        );
+        verifyNoMoreInteractions(mockAuthenticationProvider);
       },
     );
   });

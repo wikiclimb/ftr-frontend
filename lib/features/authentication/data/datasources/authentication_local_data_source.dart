@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/error/exception.dart';
 import '../models/authentication_data_model.dart';
 
-/// Class that manages low-level local access to authentication data.
+/// Contracts to interact with data layer local access to authentication data.
 abstract class AuthenticationLocalDataSource {
   static const String authCacheKey = 'WKC_CACHED_AUTHENTICATION_DATA';
 
@@ -17,6 +17,7 @@ abstract class AuthenticationLocalDataSource {
   Future<bool> removeAuthenticationData();
 }
 
+/// Implementation of the [AuthenticationLocalDataSource] contracts.
 class AuthenticationLocalDataSourceImpl
     implements AuthenticationLocalDataSource {
   AuthenticationLocalDataSourceImpl({required this.sharedPreferences});

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
@@ -11,13 +10,21 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/domain/reposi
 import 'package:wikiclimb_flutter_frontend/features/login/data/datasources/login_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/data/repositories/login_repository_impl.dart';
 
-import 'login_repository_impl_test.mocks.dart';
+class MockLoginRemoteDataSource extends Mock implements LoginRemoteDataSource {}
 
-@GenerateMocks([LoginRemoteDataSource, AuthenticationRepository])
+class MockAuthenticationRepository extends Mock
+    implements AuthenticationRepository {}
+
+class FakeAuthenticationData extends Fake implements AuthenticationData {}
+
 void main() {
   late LoginRepositoryImpl repository;
   late MockLoginRemoteDataSource mockRemoteDataSource;
   late MockAuthenticationRepository mockAuthenticationRepository;
+
+  setUpAll(() {
+    registerFallbackValue(FakeAuthenticationData());
+  });
 
   setUp(() {
     mockRemoteDataSource = MockLoginRemoteDataSource();
@@ -39,7 +46,7 @@ void main() {
     const AuthenticationData tAuthenticationData = tAuthenticationDataModel;
 
     setUp(() {
-      when(mockAuthenticationRepository.login(any))
+      when(() => mockAuthenticationRepository.login(any()))
           .thenAnswer((_) async => true);
     });
 
@@ -47,19 +54,19 @@ void main() {
       'should return remote data when the call '
       'to remote data source is successful',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenAnswer((_) async => tAuthenticationDataModel);
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenAnswer((_) async => tAuthenticationDataModel);
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
         expect(result, equals(const Right(tAuthenticationData)));
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
       },
     );
 
@@ -67,19 +74,21 @@ void main() {
       'should cache the data locally when the call to '
       'remote data source is successful',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenAnswer((_) async => tAuthenticationDataModel);
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenAnswer((_) async => tAuthenticationDataModel);
         await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
-        verify((mockAuthenticationRepository.login)(tAuthenticationDataModel));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
+        verify(() =>
+                mockAuthenticationRepository.login(tAuthenticationDataModel))
+            .called(1);
       },
     );
 
@@ -87,18 +96,18 @@ void main() {
       'should return UnauthorizedFailure when the call to '
       'remote data source returns login failure',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenThrow(UnauthorizedException());
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenThrow(UnauthorizedException());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
         verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(UnauthorizedFailure())));
       },
@@ -108,18 +117,18 @@ void main() {
       'should return [ServerFailure] when the call to '
       'remote data source returns [ServerException]',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenThrow(ServerException());
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenThrow(ServerException());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
         verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(ServerFailure())));
       },
@@ -129,18 +138,18 @@ void main() {
       'should return [NetworkFailure] when the call to '
       'remote data source returns [NetworkException]',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenThrow(NetworkException());
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenThrow(NetworkException());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
         verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(NetworkFailure())));
       },
@@ -150,21 +159,21 @@ void main() {
       'should return [CacheFailure] when the call to '
       '[AuthenticationRepository] login fails',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenAnswer((_) async => tAuthenticationDataModel);
-        when(mockAuthenticationRepository.login(tAuthenticationData))
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenAnswer((_) async => tAuthenticationDataModel);
+        when(() => mockAuthenticationRepository.login(tAuthenticationData))
             .thenAnswer((_) async => false);
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
-        verify(mockAuthenticationRepository.login(tAuthenticationData));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
+        verify(() => mockAuthenticationRepository.login(tAuthenticationData));
         expect(result, equals(Left(CacheFailure())));
       },
     );
@@ -173,18 +182,18 @@ void main() {
       'should return [ServerFailure] when the call to '
       'remote data source returns other [Exception]',
       () async {
-        when(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        )).thenThrow(Exception());
+        when(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            )).thenThrow(Exception());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
         );
-        verify(mockRemoteDataSource.login(
-          username: tUsername,
-          password: tPassword,
-        ));
+        verify(() => mockRemoteDataSource.login(
+              username: tUsername,
+              password: tPassword,
+            ));
         verifyZeroInteractions(mockAuthenticationRepository);
         expect(result, equals(Left(ServerFailure())));
       },

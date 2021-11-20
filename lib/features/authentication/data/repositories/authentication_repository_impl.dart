@@ -2,19 +2,22 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 
+import '../../../../core/authentication/authentication_provider.dart';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/authentication_data.dart';
 import '../../domain/repositories/authentication_repository.dart';
 import '../datasources/authentication_local_data_source.dart';
 import '../models/authentication_data_model.dart';
 
-/// Implementation of the [AuthenticationRepository] contract.
+/// Implementation of the [AuthenticationRepository] contracts.
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
   AuthenticationRepositoryImpl({
     required this.localDataSource,
+    required this.authenticationProvider,
   });
 
   final AuthenticationLocalDataSource localDataSource;
+  final AuthenticationProvider authenticationProvider;
 
   final _controller = StreamController<Either<Failure, AuthenticationData>>();
 
@@ -24,13 +27,18 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   }
 
   @override
-  Future<void> checkAuthenticatedData() async {
+  Future<AuthenticationData?> checkAuthenticatedData() async {
     try {
       final authenticationData = await localDataSource.getAuthenticationData();
       if (authenticationData != null) {
+        authenticationProvider.cacheAuthenticationData(authenticationData);
         _controller.add(Right(authenticationData));
+        return authenticationData;
       }
-    } catch (_) {}
+      throw AuthenticationFailure();
+    } catch (e) {
+      _controller.add(Left(AuthenticationFailure()));
+    }
   }
 
   /// Subscription to authentication state changes.
@@ -39,6 +47,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     try {
       final result = await localDataSource.getAuthenticationData();
       if (result != null) {
+        authenticationProvider.cacheAuthenticationData(result);
         yield Right(result);
       } else {
         yield Left(AuthenticationFailure());
@@ -56,6 +65,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
         AuthenticationDataModel.fromAuthenticationData(authenticationData),
       );
       if (result) {
+        authenticationProvider.cacheAuthenticationData(authenticationData);
         _controller.add(Right(authenticationData));
       }
       return result;
@@ -69,6 +79,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     try {
       final result = await localDataSource.removeAuthenticationData();
       if (result) {
+        authenticationProvider.removeAuthenticationData();
         _controller.add(
           Left(AuthenticationFailure()),
         );
