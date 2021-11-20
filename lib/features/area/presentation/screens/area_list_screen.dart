@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/add_area_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_list.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 
 import '../../../../di.dart';
 import '../bloc/list/areas_bloc.dart';
@@ -26,6 +28,26 @@ class AreaListScreen extends StatelessWidget {
           create: (context) => sl<AreasBloc>(),
           child: const AreaList(),
         ),
+      ),
+      floatingActionButton:
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+          if (state is AuthenticationAuthenticated) {
+            return FloatingActionButton(
+              key: const Key('add_area_fab'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddAreaScreen(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            );
+          }
+          return Container();
+        },
       ),
     );
   }

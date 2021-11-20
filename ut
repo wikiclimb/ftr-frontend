@@ -7,6 +7,9 @@
 # Start with a clean slate.
 clear
 
+# Check the formatting 
+flutter format --set-exit-if-changed  lib test
+
 # Analize the code.
 flutter analyze
 
