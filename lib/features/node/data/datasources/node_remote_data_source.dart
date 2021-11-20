@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../../../core/collections/page.dart';
 import '../../../../core/environment/environment_config.dart';
 import '../../../../core/error/exception.dart';
+import '../../../../core/network/request_handler.dart';
 import '../../../../core/utils/http_pagination_helper.dart';
 import '../models/node_model.dart';
 
@@ -20,7 +20,8 @@ abstract class NodeRemoteDataSource {
 }
 
 /// Provides implementations to the methods exposed on [NodeRemoteDataSource].
-class NodeRemoteDataSourceImpl extends NodeRemoteDataSource {
+class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
+    with RequestHandler {
   NodeRemoteDataSourceImpl({required this.client});
 
   final http.Client client;
@@ -28,35 +29,17 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource {
 
   @override
   Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params) async {
+    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
+    final response = await handleRequest(client: client, uri: uri);
     try {
-      final url = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
-      final response = await client.get(url);
-      switch (response.statusCode) {
-        case 200:
-          final jsonMap = jsonDecode(response.body);
-          return Page<NodeModel>((p) => p
-            ..items = ListBuilder(jsonMap.map(
-              (n) => NodeModel.fromJson(jsonEncode(n)),
-            ))
-            ..pageNumber = HttpPaginationHelper.pageNumber(response)
-            ..nextPageNumber = HttpPaginationHelper.nextPageNumber(response)
-            ..isLastPage = HttpPaginationHelper.isLastPage(response));
-        case 401:
-          throw UnauthorizedException();
-        case 403:
-          throw ForbiddenException();
-        default:
-          // We got a response from the server but not one of the expected ones.
-          throw ServerException();
-      }
-    } on UnauthorizedException {
-      throw UnauthorizedException();
-    } on ForbiddenException {
-      throw ForbiddenException();
-    } on ServerException {
-      throw ServerException();
-    } on SocketException {
-      throw NetworkException();
+      final jsonMap = jsonDecode(response.body);
+      return Page<NodeModel>((p) => p
+        ..items = ListBuilder(jsonMap.map(
+          (n) => NodeModel.fromJson(jsonEncode(n)),
+        ))
+        ..pageNumber = HttpPaginationHelper.pageNumber(response)
+        ..nextPageNumber = HttpPaginationHelper.nextPageNumber(response)
+        ..isLastPage = HttpPaginationHelper.isLastPage(response));
     } catch (e) {
       throw ApplicationException();
     }

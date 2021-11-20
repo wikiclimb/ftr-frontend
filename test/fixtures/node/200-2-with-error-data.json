@@ -1,0 +1,30 @@
+[
+  {
+    "id": 53,
+    "type": 1,
+    "parent_id": null,
+    "name": "test-area-3",
+    "description": "test-area-3-description",
+    "cover_url": "https://placeimg.com/1990",
+    "rating": 4.9,
+    "point_id": 7,
+    "created_by": "test-user-2",
+    "created_at": 1636879203,
+    "updated_by": "test-user-2",
+    "updated_at": 1636899403
+  },
+  {
+    "id": 123,
+    "type": 1,
+    "parent_id": 53,
+    "description": "test-area-4-description",
+    "cover_url": "https://placeimg.com/19903",
+    "rating": 4.7,
+    "breadcrumbs": ["One", "Three"],
+    "point_id": 77,
+    "created_by": "test-user-2",
+    "created_at": 1636879203,
+    "updated_by": "test-user-2",
+    "updated_at": 1636899403
+  }
+]

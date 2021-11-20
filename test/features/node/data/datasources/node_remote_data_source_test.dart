@@ -99,5 +99,21 @@ void main() {
       verify(() => mockClient.get(any())).called(1);
       verifyNoMoreInteractions(mockClient);
     });
+
+    test('json serializing errors result in ApplicationException', () async {
+      when(() => mockClient.get(any())).thenAnswer(
+        (_) async => http.Response(
+          fixture('node/200-2-with-error-data.json'),
+          200,
+          headers: linkHeaders['hasNextPage']!,
+        ),
+      );
+      expect(() async => await dataSource.fetchAll({}),
+          throwsA(const TypeMatcher<ApplicationException>()),
+          reason: 'second node is missing a name, serializing should throw an '
+              'exception that should be rethrown as an ApplicationException');
+      verify(() => mockClient.get(any())).called(1);
+      verifyNoMoreInteractions(mockClient);
+    });
   });
 }
