@@ -154,8 +154,7 @@ void main() {
         ),
       );
       final expected = nodeModels.elementAt(1);
-      expect(tParam, isNotNull);
-      final tNodeModel = await dataSource.create(tParam!);
+      final tNodeModel = await dataSource.create(tParam);
       expect(expected, tNodeModel);
     });
 
@@ -177,8 +176,7 @@ void main() {
         (_) => tAuthData,
       );
       // act / assert
-      expect(tParam, isNotNull);
-      expect(() async => await dataSource.create(tParam!),
+      expect(() async => await dataSource.create(tParam),
           throwsA(const TypeMatcher<UnauthorizedException>()),
           reason: 'unauthorized should propagate');
       verify(
@@ -216,8 +214,7 @@ void main() {
       when(() => mockAuthenticationProvider.authenticationData).thenAnswer(
         (_) => tAuthData,
       );
-      expect(tParam, isNotNull);
-      expect(() async => await dataSource.create(tParam!),
+      expect(() async => await dataSource.create(tParam),
           throwsA(const TypeMatcher<ApplicationException>()),
           reason: 'response node is missing a name, serializing should throw '
               'exception that should be rethrown as an ApplicationException');
@@ -256,8 +253,7 @@ void main() {
       when(() => mockAuthenticationProvider.authenticationData).thenAnswer(
         (_) => tAuthData,
       );
-      expect(tParam, isNotNull);
-      expect(() async => await dataSource.create(tParam!),
+      expect(() async => await dataSource.create(tParam),
           throwsA(const TypeMatcher<ApplicationException>()),
           reason: 'response node is missing a name, serializing should throw '
               'exception that should be rethrown as an ApplicationException');

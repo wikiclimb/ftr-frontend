@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 
 import '../../../../core/collections/page.dart';
 import '../../../../core/error/failure.dart';
@@ -11,7 +12,7 @@ import '../../domain/repositories/node_repository.dart';
 import '../datasources/node_remote_data_source.dart';
 
 /// Provides implementations to the methods exposed on [NodeRepository].
-class NodeRepositoryImpl implements NodeRepository {
+class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {
   NodeRepositoryImpl({required this.remoteDataSource});
 
   final NodeRemoteDataSource remoteDataSource;
@@ -24,9 +25,13 @@ class NodeRepositoryImpl implements NodeRepository {
   }
 
   @override
-  Future<Either<Failure, Node>> create(Node node) {
-    // TODO: implement create
-    throw UnimplementedError();
+  Future<Either<Failure, Node>> create(Node node) async {
+    try {
+      final response = await remoteDataSource.create(NodeModel.fromNode(node));
+      return Right(response.toNode());
+    } on Exception catch (e) {
+      return Left(exceptionToFailure(e));
+    }
   }
 
   @override
@@ -41,7 +46,8 @@ class NodeRepositoryImpl implements NodeRepository {
   }
 
   @override
-  Future<void> fetchPage({Map<String, dynamic>? params}) async {
+  Future<Either<Failure, Page<Node>>> fetchPage(
+      {Map<String, dynamic>? params}) async {
     try {
       final nodeModelPage = await remoteDataSource.fetchAll(params ?? {});
       final nodePage = Page<Node>(
@@ -52,16 +58,11 @@ class NodeRepositoryImpl implements NodeRepository {
           ..items = ListBuilder(nodeModelPage.items.map((nm) => nm.toNode())),
       );
       _controller.add(Right(nodePage));
-    } on UnauthorizedException {
-      _controller.add(Left(UnauthorizedFailure()));
-    } on ForbiddenException {
-      _controller.add(Left(ForbiddenFailure()));
-    } on ServerException {
-      _controller.add(Left(ServerFailure()));
-    } on NetworkException {
-      _controller.add(Left(NetworkFailure()));
-    } catch (e) {
-      _controller.add(Left(ApplicationFailure()));
+      return Right(nodePage);
+    } on Exception catch (e) {
+      final Left<Failure, Page<Node>> result = Left(exceptionToFailure(e));
+      _controller.add(result);
+      return result;
     }
   }
 
@@ -75,5 +76,21 @@ class NodeRepositoryImpl implements NodeRepository {
   Future<Either<Failure, Node>> update(Node node) {
     // TODO: implement update
     throw UnimplementedError();
+  }
+}
+
+/// Handles the common code that deals with converting exceptions to failures.
+mixin ExceptionHandler {
+  Failure exceptionToFailure(Exception e) {
+    if (e is UnauthorizedException) {
+      return UnauthorizedFailure();
+    } else if (e is ForbiddenException) {
+      return ForbiddenFailure();
+    } else if (e is ServerException) {
+      return ServerFailure();
+    } else if (e is NetworkException) {
+      return NetworkFailure();
+    }
+    return ApplicationFailure();
   }
 }

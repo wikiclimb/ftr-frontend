@@ -11,6 +11,7 @@ import 'package:wikiclimb_flutter_frontend/features/area/data/repositories/area_
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/repositories/node_repository.dart';
 
+import '../../../../fixtures/node/node_pages.dart';
 import '../../../../fixtures/node/nodes.dart';
 
 class MockNodeRepository extends Mock implements NodeRepository {}
@@ -75,13 +76,18 @@ void main() {
   });
 
   test(
-    'should forward fetchPage calls adding type 1 for area to the parameters',
+    'should forward fetchPage calls adding type 1 '
+    'for area to the parameters',
     () {
-      when(() => mockNodeRepository.fetchPage()).thenReturn(null);
+      final tNodePage = nodePages.first;
+      when(() => mockNodeRepository.fetchPage(params: any(named: 'params')))
+          .thenAnswer((_) async => Right(tNodePage));
       repository.fetchPage();
-      verify(() => mockNodeRepository.fetchPage(
-            params: {'type': '1'},
-          )).called(1);
+      verify(
+        () => mockNodeRepository.fetchPage(
+          params: {'type': '1'},
+        ),
+      ).called(1);
       verifyNoMoreInteractions(mockNodeRepository);
     },
   );
@@ -90,9 +96,9 @@ void main() {
     'should forward fetchPage call parameters and page '
     'adding type 1 for area to the parameters',
     () {
-      when(() => mockNodeRepository.fetchPage(
-            params: {'q': 'test', 'page': 3},
-          )).thenReturn(null);
+      final tNodePage = nodePages.first;
+      when(() => mockNodeRepository.fetchPage(params: any(named: 'params')))
+          .thenAnswer((_) async => Right(tNodePage));
       repository.fetchPage(
         params: {'q': 'test', 'page': 3},
         page: 3,

@@ -10,7 +10,10 @@ abstract class NodeRepository {
   Stream<Either<Failure, Page<Node>>> get subscribe;
 
   /// Push one page of data to the stream, with the given parameters.
-  void fetchPage({Map<String, dynamic>? params});
+  ///
+  /// The method also returns the given page in case the consumer does not want
+  /// to subscribe to the [Stream].
+  Future<Either<Failure, Page<Node>>> fetchPage({Map<String, dynamic>? params});
 
   /// Fetch data for one [Node].
   Future<Either<Failure, Node>> one(int id);

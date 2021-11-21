@@ -26,6 +26,9 @@ mixin RequestHandler {
       switch (response.statusCode) {
         case 200:
         case 201:
+          // TODO: check why the return line shows as not covered by tests.
+          // There are two tests in request_handler_test.dart that cover it.
+          // Debugging shows the execution flow go passed this point.
           return response;
         case 401:
           throw UnauthorizedException();

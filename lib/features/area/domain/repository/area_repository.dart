@@ -10,7 +10,8 @@ abstract class AreaRepository {
   Stream<Either<Failure, Page<Node>>> get subscribe;
 
   /// Push one page of data to the subscription.
-  void fetchPage({Map<String, dynamic>? params, int? page});
+  Future<Either<Failure, Page<Node>>> fetchPage(
+      {Map<String, dynamic>? params, int? page});
 
   /// Fetch data for one area.
   Future<Either<Failure, Node>> one(int id);

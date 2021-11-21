@@ -21,6 +21,20 @@ void main() {
     fake = FakeClass();
   });
 
+  test('mixin returns response when 200', () async {
+    final tResponse = http.Response(
+      'body',
+      200,
+    );
+    when(() => mockClient.get(any()))
+        .thenAnswer((invocation) async => tResponse);
+    final response = await fake.handleRequest(
+      client: mockClient,
+      uri: FakeUri(),
+    );
+    expect(response, tResponse);
+  });
+
   test('get returns response when 200', () async {
     final tResponse = http.Response(
       'body',
@@ -44,7 +58,7 @@ void main() {
         )).thenAnswer(
       (_) async => tResponse,
     );
-    final response = await fake.request(
+    final response = await fake.handleRequest(
       client: mockClient,
       uri: FakeUri(),
       method: 'post',

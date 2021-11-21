@@ -9,6 +9,10 @@
 
 WikiClimb's multiplatform frontend.
 
+## Data
+
+The application fetches data from [https://api.wikipedia.org] by default. The endpoint can be configured updating the value of the environmental configuration constant `API_URL` on [lib/core/environment/environment_config.dart].
+
 ## Testing
 
 The project has been developed using a TDD approach. Some caveats found.

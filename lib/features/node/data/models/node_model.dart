@@ -81,7 +81,7 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
         NodeModel.serializer, json.decode(jsonString));
   }
 
-  static NodeModel? fromNode(Node node) {
+  static NodeModel fromNode(Node node) {
     return NodeModel((n) => n
       ..id = node.id
       ..type = node.type

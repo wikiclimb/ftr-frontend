@@ -11,6 +11,8 @@ import 'package:wikiclimb_flutter_frontend/features/area/domain/repository/area_
 import 'package:wikiclimb_flutter_frontend/features/area/domain/usecases/fetch_all.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
+import '../../../../fixtures/area/area_pages.dart';
+
 class MockAreaRepository extends Mock implements AreaRepository {}
 
 void main() {
@@ -89,7 +91,9 @@ void main() {
   test(
     'should forward fetchPage calls',
     () {
-      when(() => mockAreaRepository.fetchPage()).thenReturn(null);
+      final tAreaPage = areaPages.first;
+      when(() => mockAreaRepository.fetchPage())
+          .thenAnswer((_) async => Right(tAreaPage));
       fetchAllAreas.fetchPage();
       verify(() => mockAreaRepository.fetchPage()).called(1);
     },
@@ -98,8 +102,9 @@ void main() {
   test(
     'should forward refresh calls',
     () {
+      final tAreaPage = areaPages.first;
       when(() => mockAreaRepository.fetchPage(page: any(named: 'page')))
-          .thenReturn(null);
+          .thenAnswer((_) async => Right(tAreaPage));
       fetchAllAreas.refresh();
       verify(() => mockAreaRepository.fetchPage(
             page: any(named: 'page', that: isNull),
