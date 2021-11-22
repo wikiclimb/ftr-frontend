@@ -20,6 +20,7 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
 
   int? get id;
 
+  @BuiltValueField(wireName: 'node_type_id')
   int get type;
 
   @BuiltValueField(wireName: 'parent_id')

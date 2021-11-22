@@ -184,7 +184,7 @@ void main() {
           any(),
           headers: {
             'Content-Type': 'Application/json',
-            'Authentication': 'Bearer secret-token',
+            'Authorization': 'Bearer secret-token',
           },
           body: any(named: 'body'),
         ),
@@ -223,7 +223,7 @@ void main() {
           any(),
           headers: {
             'Content-Type': 'Application/json',
-            'Authentication': 'Bearer secret-token',
+            'Authorization': 'Bearer secret-token',
           },
           body: any(named: 'body'),
         ),
@@ -262,7 +262,7 @@ void main() {
           any(),
           headers: {
             'Content-Type': 'Application/json',
-            'Authentication': 'Bearer secret-token',
+            'Authorization': 'Bearer secret-token',
           },
           body: any(named: 'body'),
         ),

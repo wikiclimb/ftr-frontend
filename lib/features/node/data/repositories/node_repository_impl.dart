@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
-import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 
 import '../../../../core/collections/page.dart';
+import '../../../../core/error/exception.dart';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/node.dart';
 import '../../domain/repositories/node_repository.dart';
 import '../datasources/node_remote_data_source.dart';
+import '../models/node_model.dart';
 
 /// Provides implementations to the methods exposed on [NodeRepository].
 class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {

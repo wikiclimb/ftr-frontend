@@ -1,6 +1,7 @@
 {
   "id": 2,
-  "type": 1,
+  "node_type_id": 1,
+  "type": "Area",
   "parent_id": 4,
   "name": "test-area-2",
   "description": "test-area-2-description",

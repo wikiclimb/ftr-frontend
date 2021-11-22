@@ -54,7 +54,6 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
 
   @override
   Future<NodeModel> create(NodeModel nodeModel) async {
-    final jsonString = nodeModel.toJson();
     final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint);
     final response = await handleRequest(
       client: client,
@@ -62,10 +61,10 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
       method: 'post',
       headers: {
         'Content-Type': 'Application/json',
-        'Authentication':
+        'Authorization':
             'Bearer ' + (authenticationProvider.authenticationData?.token ?? '')
       },
-      body: jsonDecode(jsonString),
+      body: nodeModel.toJson(),
     );
     try {
       return NodeModel.fromJson(response.body)!;

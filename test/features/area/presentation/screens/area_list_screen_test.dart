@@ -14,6 +14,7 @@ import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/ar
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 
 class MockAreasBloc extends MockBloc<AreasEvent, AreasState>
     implements AreasBloc {}
@@ -21,6 +22,9 @@ class MockAreasBloc extends MockBloc<AreasEvent, AreasState>
 class MockAuthenticationBloc
     extends MockBloc<AuthenticationEvent, AuthenticationState>
     implements AuthenticationBloc {}
+
+class MockNodeEditBloc extends MockBloc<NodeEditEvent, NodeEditState>
+    implements NodeEditBloc {}
 
 class FakeAreasState extends Fake implements AreasState {}
 
@@ -59,6 +63,7 @@ void main() {
   late final GetIt sl;
   late final AreasBloc bloc;
   late final AuthenticationBloc authBloc;
+  late final MockNodeEditBloc mockNodeEditBloc;
 
   setUpAll(() async {
     registerFallbackValue(FakeAreasState());
@@ -69,6 +74,8 @@ void main() {
     sl.registerFactory<AreasBloc>(() => bloc);
     authBloc = MockAuthenticationBloc();
     sl.registerFactory<AuthenticationBloc>(() => authBloc);
+    mockNodeEditBloc = MockNodeEditBloc();
+    sl.registerFactory<NodeEditBloc>(() => mockNodeEditBloc);
   });
 
   group('without area data', () {
@@ -102,6 +109,9 @@ void main() {
         );
         when(() => authBloc.state).thenAnswer(
           (_) => AuthenticationAuthenticated(tAuthData),
+        );
+        when(() => mockNodeEditBloc.state).thenAnswer(
+          (_) => NodeEditState(),
         );
       });
 

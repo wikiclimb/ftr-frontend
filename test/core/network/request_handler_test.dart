@@ -62,7 +62,7 @@ void main() {
       client: mockClient,
       uri: FakeUri(),
       method: 'post',
-      body: {'one': 'uno', 'two': 'dos'},
+      body: '{"one": "uno", "two": "dos"}',
     );
     expect(response, tResponse);
   });
@@ -73,7 +73,7 @@ class FakeClass with RequestHandler {
     required http.Client client,
     required Uri uri,
     String method = 'get',
-    Map<String, dynamic>? body,
+    String? body,
     Map<String, String>? headers,
   }) async {
     return await handleRequest(

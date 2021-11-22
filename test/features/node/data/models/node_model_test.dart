@@ -26,7 +26,7 @@ void main() {
       final json = jsonDecode(jsonString);
       const expectedJsonMap = {
         'id': 123,
-        'type': 1,
+        'node_type_id': 1,
         'parent_id': 42,
         'name': 'test-area-3',
         'description': 'test-area-3-description',

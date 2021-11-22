@@ -1,0 +1,49 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
+
+import '../../../../../fixtures/node/nodes.dart';
+
+void main() {
+  group('node edit initialize', () {});
+  test('supports value comparisons', () {
+    final tNode = nodes.first;
+    expect(NodeEditInitialize(tNode).props, [tNode]);
+    expect(NodeEditInitialize(tNode), NodeEditInitialize(tNode));
+    expect(
+      NodeEditInitialize(tNode),
+      isNot(
+        equals(
+          NodeEditInitialize(tNode.rebuild((p0) => p0..name = 'new-name')),
+        ),
+      ),
+    );
+  });
+
+  group('node name changed', () {
+    test('supports value comparisons', () {
+      const name = 'test name';
+      expect(NodeNameChanged(name), NodeNameChanged(name));
+      expect(NodeNameChanged(name).props, [name]);
+    });
+  });
+
+  group('node description changed', () {
+    test('supports value comparisons', () {
+      const description = 'test description';
+      expect(
+        NodeDescriptionChanged(description),
+        NodeDescriptionChanged(description),
+      );
+      expect(NodeDescriptionChanged(description).props, [description]);
+    });
+  });
+
+  group('node submission requested', () {
+    test('supports value comparisons', () {
+      expect(NodeSubmissionRequested(), NodeSubmissionRequested());
+    });
+  });
+}

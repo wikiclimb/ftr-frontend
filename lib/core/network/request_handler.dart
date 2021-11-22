@@ -13,7 +13,7 @@ mixin RequestHandler {
     required http.Client client,
     required Uri uri,
     String method = 'get',
-    Map<String, dynamic>? body,
+    String? body,
     Map<String, String>? headers,
   }) async {
     try {
