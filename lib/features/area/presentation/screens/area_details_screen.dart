@@ -26,7 +26,7 @@ class AreaDetailsScreen extends StatelessWidget {
         slivers: <Widget>[
           PhotoSliverAppBar(
             title: area.name,
-            imageUrl: area.coverUrl ?? '',
+            imageUrl: area.coverUrl,
           ),
           AreaDetailsList(area: area),
         ],

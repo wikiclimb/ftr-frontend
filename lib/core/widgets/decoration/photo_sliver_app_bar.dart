@@ -13,8 +13,9 @@ class PhotoSliverAppBar extends StatelessWidget {
     required this.imageUrl,
   }) : super(key: key);
 
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
+  final placeholder = EnvironmentConfig.sliverAppBarBackgroundPlaceholder;
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +51,17 @@ class PhotoSliverAppBar extends StatelessWidget {
           StretchMode.zoomBackground,
           StretchMode.blurBackground,
         ],
-        background: FadeInImage.assetNetwork(
-          placeholder: EnvironmentConfig.sliverAppBarBackgroundPlaceholder,
-          fit: BoxFit.cover,
-          image: '${EnvironmentConfig.baseImgUrl}$imageUrl',
-        ),
+        background: imageUrl != null
+            ? FadeInImage.assetNetwork(
+                placeholder: placeholder,
+                fit: BoxFit.cover,
+                image: '${EnvironmentConfig.baseImgUrl}$imageUrl',
+                imageErrorBuilder: (_, __, ___) =>
+                    Center(child: Image.asset(placeholder)))
+            : Center(
+                key: const Key(
+                    'photoSliverAppBar_backgroundImage_nullPlaceholder'),
+                child: Image.asset(placeholder)),
       ),
       expandedHeight: 240,
     );

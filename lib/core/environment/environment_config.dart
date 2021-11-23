@@ -23,5 +23,5 @@ class EnvironmentConfig {
   );
 
   static const sliverAppBarBackgroundPlaceholder =
-      'graphics/wikiclimb-logo.png';
+      'graphics/wikiclimb-logo-800-450.png';
 }
