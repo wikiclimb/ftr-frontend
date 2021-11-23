@@ -19,25 +19,28 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
   }
 
   final EditNode editNode;
+  late Node _node;
 
   void _onNodeEditInitialize(
     NodeEditInitialize event,
     emit,
   ) {
+    // Assign the node to the bloc.
+    _node = event.node;
     // Pre-fill the form with the values found on the [Node].
-    final node = event.node;
-    final name = NodeName.pure(node.name);
-    final description = NodeDescription.pure(node.description ?? '');
+    final name = NodeName.pure(_node.name);
+    final description = NodeDescription.pure(_node.description ?? '');
     emit(
       state.copyWith(
-        type: node.type,
+        type: _node.type,
         name: name,
         description: description,
       ),
     );
   }
 
-  void _onNodeNameChanged(event, emit) {
+  void _onNodeNameChanged(NodeNameChanged event, Emitter emit) {
+    _node = _node.rebuild((n) => n..name = event.name);
     final name = NodeName.dirty(event.name);
     emit(state.copyWith(
       name: name,
@@ -45,7 +48,8 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     ));
   }
 
-  void _onNodeDescriptionChanged(event, emit) {
+  void _onNodeDescriptionChanged(NodeDescriptionChanged event, Emitter emit) {
+    _node = _node.rebuild((n) => n..description = event.description);
     final description = NodeDescription.dirty(event.description);
     emit(state.copyWith(
       description: description,
@@ -53,15 +57,14 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     ));
   }
 
-  void _onNodeSubmissionRequested(event, emit) async {
+  void _onNodeSubmissionRequested(
+    NodeSubmissionRequested event,
+    Emitter emit,
+  ) async {
     emit(state.copyWith(
       status: FormzStatus.submissionInProgress,
     ));
-    final node = Node((n) => n
-      ..type = state.type
-      ..name = state.name.value
-      ..description = state.description.value);
-    final result = await editNode(node);
+    final result = await editNode(_node);
     result.fold((failure) {
       emit(state.copyWith(
         status: FormzStatus.submissionFailure,
