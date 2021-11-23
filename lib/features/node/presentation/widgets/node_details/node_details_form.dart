@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 
 import '../../bloc/node_edit/node_edit_bloc.dart';
 
@@ -34,6 +35,14 @@ class NodeDetailsForm extends StatelessWidget {
                 content: Text('Submission success'),
               ),
             );
+          final node = state.node;
+          if (node != null) {
+            if (node.type == 1) {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => AreaDetailsScreen(area: node),
+              ));
+            }
+          }
         }
       },
       child: Scaffold(

@@ -112,13 +112,12 @@ void main() {
         await mockNetworkImagesFor(
           () => tester.pumpAreasList(bloc),
         );
-        expect(find.byType(AreaListItem), findsNWidgets(5));
         final itemFinder = find.byType(AreaListLastItem);
         final listFinder = find.byType(Scrollable).first;
         verifyNever(() => bloc.add(NextPageRequested()));
         await tester.scrollUntilVisible(
           itemFinder,
-          50.0,
+          500.0,
           scrollable: listFinder,
         );
         expect(find.byType(AreaListLastItem), findsOneWidget);
@@ -247,13 +246,12 @@ void main() {
       await mockNetworkImagesFor(
         () => tester.pumpAreasList(bloc),
       );
-      expect(find.byType(AreaListItem), findsNWidgets(5));
       final itemFinder = find.byType(AreaListLastItem);
       final listFinder = find.byType(Scrollable).first;
       verifyNever(() => bloc.add(NextPageRequested()));
       await tester.scrollUntilVisible(
         itemFinder,
-        50.0,
+        500.0,
         scrollable: listFinder,
       );
       expect(find.byType(AreaListLastItem), findsOneWidget);

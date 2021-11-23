@@ -6,28 +6,39 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
 import 'package:mocktail/mocktail.dart';
-
+import 'package:network_image_mock/network_image_mock.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_form.dart';
 
+import '../../../../../fixtures/node/nodes.dart';
+
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}
+
 extension on WidgetTester {
   Future<void> pumpForm(NodeEditBloc bloc) {
-    return pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: BlocProvider.value(
+    return pumpWidget(
+      MaterialApp(
+        home: BlocProvider.value(
           value: bloc,
           child: NodeDetailsForm(),
         ),
       ),
-    ));
+    );
   }
 }
 
 class MockNodeEditBloc extends MockBloc<NodeEditEvent, NodeEditState>
     implements NodeEditBloc {}
 
+class FakeRoute extends Fake implements Route<dynamic> {}
+
 main() {
   late NodeEditBloc mockBloc;
+
+  setUpAll(() {
+    registerFallbackValue(FakeRoute());
+  });
 
   setUp(() {
     mockBloc = MockNodeEditBloc();
@@ -90,6 +101,41 @@ main() {
       await tester.pump();
       expect(find.byType(SnackBar), findsOneWidget);
       expectLater(find.text('Submission success'), findsOneWidget);
+    });
+
+    testWidgets('success triggers navigation', (tester) async {
+      final mockObserver = MockNavigatorObserver();
+      whenListen(
+        mockBloc,
+        Stream.fromIterable([
+          const NodeEditState(status: FormzStatus.submissionInProgress),
+          NodeEditState(
+            status: FormzStatus.submissionSuccess,
+            node: nodes.first,
+          ),
+        ]),
+      );
+      when(() => mockBloc.state).thenReturn(
+        NodeEditState(status: FormzStatus.submissionSuccess, node: nodes.first),
+      );
+      await tester.pumpForm(mockBloc);
+      await mockNetworkImagesFor(
+        () => tester.pumpWidget(
+          MaterialApp(
+            navigatorObservers: [mockObserver],
+            home: BlocProvider.value(
+              value: mockBloc,
+              child: NodeDetailsForm(),
+            ),
+          ),
+        ),
+      );
+      expect(find.byType(SnackBar), findsOneWidget);
+      expectLater(find.text('Submission success'), findsOneWidget);
+      await tester.pumpAndSettle();
+      // TODO check why NavigatorObserver does not receive the call.
+      // verify(() => mockObserver.didPush(any(), any()));
+      expect(find.byType(AreaDetailsScreen), findsOneWidget);
     });
   });
 

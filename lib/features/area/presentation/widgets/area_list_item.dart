@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:wikiclimb_flutter_frontend/core/environment/environment_config.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 
 import '../../../node/domain/entities/node.dart';
+import '../../../node/presentation/widgets/list_item/node_list_item_cover.dart';
+import '../screens/area_details_screen.dart';
 
-/// Renders a widget that displays area information inside a list
+/// Renders a widget that displays area information inside a list.
+///
+/// The information is rendered inside a tappable material [Card].
+/// This widget will try to render the item's cover image and name in a
+/// prominent placement, with detailed information relegated to a secondary
+/// placement. It is meant to give a quick overview of an item.
 class AreaListItem extends StatelessWidget {
   const AreaListItem({Key? key, required this.area}) : super(key: key);
 
@@ -24,39 +29,7 @@ class AreaListItem extends StatelessWidget {
       child: Card(
         child: Column(
           children: [
-            Stack(
-              children: [
-                if (area.coverUrl != null)
-                  FadeInImage.assetNetwork(
-                    // height: 200,
-                    placeholder: 'graphics/wikiclimb-logo.png',
-                    image: '${EnvironmentConfig.baseImgUrl}${area.coverUrl!}',
-                  )
-                else
-                  // Provide a placeholder box in case the image does not exist.
-                  const SizedBox(
-                    height: 300,
-                  ),
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: Text(
-                    area.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      shadows: <Shadow>[
-                        Shadow(
-                          offset: Offset.zero,
-                          blurRadius: 3.0,
-                          color: Colors.black87,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            NodeListItemCover(area),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(

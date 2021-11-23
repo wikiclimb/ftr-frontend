@@ -69,9 +69,9 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     }, (resultNode) {
       emit(state.copyWith(
         status: FormzStatus.submissionSuccess,
+        node: resultNode,
       ));
     });
-    // TODO navigate to node details screen.
   }
 
   // Extract the validation logic to avoid copying property names
