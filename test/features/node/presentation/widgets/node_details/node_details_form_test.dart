@@ -8,20 +8,37 @@ import 'package:formz/formz.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_form.dart';
 
 import '../../../../../fixtures/node/nodes.dart';
 
+class MockAuthenticationBloc
+    extends MockBloc<AuthenticationEvent, AuthenticationState>
+    implements AuthenticationBloc {}
+
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
+class FakeAuthenticationState extends Fake implements AuthenticationState {}
+
 extension on WidgetTester {
-  Future<void> pumpForm(NodeEditBloc bloc) {
+  Future<void> pumpForm({
+    required NodeEditBloc nodeEditBloc,
+    required AuthenticationBloc authenticationBloc,
+  }) {
     return pumpWidget(
-      MaterialApp(
-        home: BlocProvider.value(
-          value: bloc,
-          child: NodeDetailsForm(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<NodeEditBloc>(create: (context) => nodeEditBloc),
+          BlocProvider<AuthenticationBloc>(
+              create: (context) => authenticationBloc),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: NodeDetailsForm(),
+          ),
         ),
       ),
     );
@@ -34,35 +51,51 @@ class MockNodeEditBloc extends MockBloc<NodeEditEvent, NodeEditState>
 class FakeRoute extends Fake implements Route<dynamic> {}
 
 main() {
-  late NodeEditBloc mockBloc;
+  late final MockAuthenticationBloc mockAuthBloc;
+  const tAuthData = AuthenticationData(
+    token: 'token',
+    id: 123,
+    username: 'test-username',
+  );
+  late NodeEditBloc mockNodeEditBloc;
 
   setUpAll(() {
     registerFallbackValue(FakeRoute());
+    registerFallbackValue(FakeAuthenticationState());
+    mockAuthBloc = MockAuthenticationBloc();
+    when(() => mockAuthBloc.state)
+        .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
   });
 
   setUp(() {
-    mockBloc = MockNodeEditBloc();
-    when(() => mockBloc.state).thenAnswer((_) => NodeEditState());
+    mockNodeEditBloc = MockNodeEditBloc();
+    when(() => mockNodeEditBloc.state).thenAnswer((_) => NodeEditState());
   });
 
   testWidgets('creates the widget', (WidgetTester tester) async {
-    await tester.pumpForm(mockBloc);
+    await tester.pumpForm(
+      nodeEditBloc: mockNodeEditBloc,
+      authenticationBloc: mockAuthBloc,
+    );
     expect(find.byType(NodeDetailsForm), findsOneWidget);
   });
 
   group('form submission', () {
     testWidgets('displays loading indicator', (tester) async {
       whenListen(
-        mockBloc,
+        mockNodeEditBloc,
         Stream.fromIterable([
           const NodeEditState(status: FormzStatus.submissionInProgress),
           const NodeEditState(status: FormzStatus.submissionSuccess),
         ]),
       );
-      when(() => mockBloc.state).thenReturn(
+      when(() => mockNodeEditBloc.state).thenReturn(
         const NodeEditState(status: FormzStatus.submissionInProgress),
       );
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       // If we wait more frames the success state arrives and hides the loader.
       // await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -70,16 +103,19 @@ main() {
 
     testWidgets('failure triggers snackbar', (tester) async {
       whenListen(
-        mockBloc,
+        mockNodeEditBloc,
         Stream.fromIterable([
           const NodeEditState(status: FormzStatus.submissionInProgress),
           const NodeEditState(status: FormzStatus.submissionFailure),
         ]),
       );
-      when(() => mockBloc.state).thenReturn(
+      when(() => mockNodeEditBloc.state).thenReturn(
         const NodeEditState(status: FormzStatus.submissionFailure),
       );
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       // Wait for the snackbar animations to complete.
       await tester.pump();
       expect(find.byType(SnackBar), findsOneWidget);
@@ -88,16 +124,19 @@ main() {
 
     testWidgets('success triggers snackbar', (tester) async {
       whenListen(
-        mockBloc,
+        mockNodeEditBloc,
         Stream.fromIterable([
           const NodeEditState(status: FormzStatus.submissionInProgress),
           const NodeEditState(status: FormzStatus.submissionSuccess),
         ]),
       );
-      when(() => mockBloc.state).thenReturn(
+      when(() => mockNodeEditBloc.state).thenReturn(
         const NodeEditState(status: FormzStatus.submissionSuccess),
       );
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       await tester.pump();
       expect(find.byType(SnackBar), findsOneWidget);
       expectLater(find.text('Submission success'), findsOneWidget);
@@ -106,7 +145,7 @@ main() {
     testWidgets('success triggers navigation', (tester) async {
       final mockObserver = MockNavigatorObserver();
       whenListen(
-        mockBloc,
+        mockNodeEditBloc,
         Stream.fromIterable([
           const NodeEditState(status: FormzStatus.submissionInProgress),
           NodeEditState(
@@ -115,26 +154,39 @@ main() {
           ),
         ]),
       );
-      when(() => mockBloc.state).thenReturn(
+      when(() => mockNodeEditBloc.state).thenReturn(
         NodeEditState(status: FormzStatus.submissionSuccess, node: nodes.first),
       );
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       await mockNetworkImagesFor(
         () => tester.pumpWidget(
-          MaterialApp(
-            navigatorObservers: [mockObserver],
-            home: BlocProvider.value(
-              value: mockBloc,
-              child: NodeDetailsForm(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider<NodeEditBloc>(
+                create: (context) => mockNodeEditBloc,
+              ),
+              BlocProvider<AuthenticationBloc>(
+                create: (context) => mockAuthBloc,
+              ),
+            ],
+            child: MaterialApp(
+              navigatorObservers: [mockObserver],
+              home: Scaffold(body: NodeDetailsForm()),
             ),
           ),
         ),
       );
-      expect(find.byType(SnackBar), findsOneWidget);
+      // await tester.pump();
+      expectLater(find.byType(SnackBar), findsOneWidget);
       expectLater(find.text('Submission success'), findsOneWidget);
       await tester.pumpAndSettle();
       // TODO check why NavigatorObserver does not receive the call.
       // verify(() => mockObserver.didPush(any(), any()));
+      // pop-and-push removes the AuthBloc from the context, this test fails
+      // unless BlocProvider is above MaterialApp on the widget tree.
       expect(find.byType(AreaDetailsScreen), findsOneWidget);
     });
   });
@@ -143,10 +195,13 @@ main() {
     testWidgets('name input triggers event', (tester) async {
       const tName = 'gibberish';
       final nameInput = find.byKey(Key('nodeEditForm_nodeNameInput_textField'));
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       expect(nameInput, findsOneWidget);
       await tester.enterText(nameInput, tName);
-      verify(() => mockBloc.add(NodeNameChanged(tName)));
+      verify(() => mockNodeEditBloc.add(NodeNameChanged(tName)));
     });
 
     testWidgets('description input triggers event', (tester) async {
@@ -154,31 +209,40 @@ main() {
       final textInput = find.byKey(
         Key('nodeEditForm_nodeDescriptionInput_textField'),
       );
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       expect(textInput, findsOneWidget);
       await tester.enterText(textInput, tDescription);
-      verify(() => mockBloc.add(NodeDescriptionChanged(tDescription)));
+      verify(() => mockNodeEditBloc.add(NodeDescriptionChanged(tDescription)));
     });
   });
 
   group('submission', () {
     testWidgets('does not trigger event if form is invalid', (tester) async {
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       await tester.tap(find.byKey(
         Key('nodeEditForm_submitButton_elevatedButton'),
       ));
-      verifyNever(() => mockBloc.add(NodeSubmissionRequested()));
+      verifyNever(() => mockNodeEditBloc.add(NodeSubmissionRequested()));
     });
 
-    testWidgets('if form i valid it does not trigger event', (tester) async {
-      when(() => mockBloc.state).thenAnswer(
+    testWidgets('if form is valid it triggers the event', (tester) async {
+      when(() => mockNodeEditBloc.state).thenAnswer(
         (_) => NodeEditState(status: FormzStatus.valid),
       );
-      await tester.pumpForm(mockBloc);
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
       await tester.tap(find.byKey(
         Key('nodeEditForm_submitButton_elevatedButton'),
       ));
-      verify(() => mockBloc.add(NodeSubmissionRequested())).called(1);
+      verify(() => mockNodeEditBloc.add(NodeSubmissionRequested())).called(1);
     });
   });
 }
