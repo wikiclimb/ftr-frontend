@@ -12,21 +12,23 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          if (currentRoute != AreaListScreen.id)
-            ListTile(
-              key: UniqueKey(),
-              leading: const Icon(Icons.list_outlined),
-              title: const Text('Areas'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, AreaListScreen.id);
-              },
-            ),
-          if (currentRoute != LoginScreen.id) const LoginDrawerTile(),
-        ],
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            if (currentRoute != AreaListScreen.id)
+              ListTile(
+                key: UniqueKey(),
+                leading: const Icon(Icons.list_outlined),
+                title: const Text('Areas'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, AreaListScreen.id);
+                },
+              ),
+            if (currentRoute != LoginScreen.id) const LoginDrawerTile(),
+          ],
+        ),
       ),
     );
   }
