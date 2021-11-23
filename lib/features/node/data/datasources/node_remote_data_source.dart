@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:http/http.dart' as http;
-import 'package:wikiclimb_flutter_frontend/core/authentication/authentication_provider.dart';
 
+import '../../../../core/authentication/authentication_provider.dart';
 import '../../../../core/collections/page.dart';
 import '../../../../core/environment/environment_config.dart';
 import '../../../../core/error/exception.dart';
@@ -19,7 +19,17 @@ abstract class NodeRemoteDataSource {
   /// Throws a [NetworkException] for network errors.
   Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params);
 
+  /// Calls the node POST endpoint with the given parameters.
+  ///
+  /// Throws a [ServerException] for server response codes.
+  /// Throws a [NetworkException] for network errors.
   Future<NodeModel> create(NodeModel nodeModel);
+
+  /// Calls the node PATCH endpoint with the given parameters.
+  ///
+  /// Throws a [ServerException] for server response codes.
+  /// Throws a [NetworkException] for network errors.
+  Future<NodeModel> update(NodeModel nodeModel);
 }
 
 /// Provides implementations to the methods exposed on [NodeRemoteDataSource].
@@ -59,6 +69,28 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
       client: client,
       uri: uri,
       method: 'post',
+      headers: {
+        'Content-Type': 'Application/json',
+        'Authorization':
+            'Bearer ' + (authenticationProvider.authenticationData?.token ?? '')
+      },
+      body: nodeModel.toJson(),
+    );
+    try {
+      return NodeModel.fromJson(response.body)!;
+    } catch (_) {
+      throw ApplicationException();
+    }
+  }
+
+  @override
+  Future<NodeModel> update(NodeModel nodeModel) async {
+    final uri =
+        Uri.https(EnvironmentConfig.apiUrl, '$endpoint/${nodeModel.id}');
+    final response = await handleRequest(
+      client: client,
+      uri: uri,
+      method: 'patch',
       headers: {
         'Content-Type': 'Application/json',
         'Authorization':

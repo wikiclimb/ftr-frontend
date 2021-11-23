@@ -270,4 +270,81 @@ void main() {
       verifyNoMoreInteractions(mockClient);
     });
   });
+
+  group('update node', () {
+    test('success', () async {
+      final tParam = nodeModels.first;
+      when(() => mockClient.patch(
+            any(),
+            headers: any(named: 'headers'),
+            body: tParam.toJson(),
+          )).thenAnswer(
+        (_) async => http.Response(
+          fixture('node/post_result.json'),
+          200,
+        ),
+      );
+      final expected = nodeModels.elementAt(1);
+      final tNodeModel = await dataSource.update(tParam);
+      expect(expected, tNodeModel);
+    });
+
+    test('failed', () async {
+      final tParam = nodeModels.first;
+      when(() => mockAuthenticationProvider.authenticationData)
+          .thenAnswer((_) => tAuthData);
+      when(() => mockClient.patch(
+            any(),
+            headers: any(named: 'headers'),
+            body: tParam.toJson(),
+          )).thenThrow(NetworkException());
+      expect(() async => await dataSource.update(tParam),
+          throwsA(const TypeMatcher<NetworkException>()),
+          reason: 'NetworkException should propagate');
+      verify(
+        () => mockClient.patch(
+          any(),
+          headers: {
+            'Content-Type': 'Application/json',
+            'Authorization': 'Bearer secret-token',
+          },
+          body: any(named: 'body'),
+        ),
+      ).called(1);
+      verifyNoMoreInteractions(mockClient);
+    });
+
+    test('throws ApplicationException if it fails to serialize the response',
+        () async {
+      final tParam = nodeModels.first;
+      when(
+        () => mockClient.patch(
+          any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response(
+          fixture('node/post_result_parsing_error.json'),
+          200,
+        ),
+      );
+      when(() => mockAuthenticationProvider.authenticationData).thenAnswer(
+        (_) => tAuthData,
+      );
+      expect(() async => await dataSource.update(tParam),
+          throwsA(const TypeMatcher<ApplicationException>()));
+      verify(
+        () => mockClient.patch(
+          any(),
+          headers: {
+            'Content-Type': 'Application/json',
+            'Authorization': 'Bearer secret-token',
+          },
+          body: any(named: 'body'),
+        ),
+      ).called(1);
+      verifyNoMoreInteractions(mockClient);
+    });
+  });
 }

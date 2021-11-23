@@ -73,9 +73,13 @@ class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {
   }
 
   @override
-  Future<Either<Failure, Node>> update(Node node) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<Either<Failure, Node>> update(Node node) async {
+    try {
+      final response = await remoteDataSource.update(NodeModel.fromNode(node));
+      return Right(response.toNode());
+    } on Exception catch (e) {
+      return Left(exceptionToFailure(e));
+    }
   }
 }
 

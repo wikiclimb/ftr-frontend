@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
-
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/repositories/node_repository_impl.dart';
@@ -141,5 +140,28 @@ void main() {
 
   group('subscriptions', () {});
 
-  group('update', () {});
+  group('update', () {
+    test('returns updated node instance if successful', () async {
+      final tNode = nodes.first;
+      final tParam = NodeModel.fromNode(tNode);
+      final tNodeModel = NodeModel.fromNode(tNode);
+      when(() => mockRemoteDataSource.update(tParam))
+          .thenAnswer((_) async => tNodeModel);
+      final result = await repository.update(tNode);
+      expect(result, Right(tNode));
+      verify(() => mockRemoteDataSource.update(tParam)).called(1);
+      verifyNoMoreInteractions(mockRemoteDataSource);
+    });
+
+    test('returns failure matching failure if failed', () async {
+      final tNode = nodes.first;
+      final tParam = NodeModel.fromNode(tNode);
+      when(() => mockRemoteDataSource.update(tParam))
+          .thenThrow(NetworkException());
+      final result = await repository.update(tNode);
+      expect(result, Left(NetworkFailure()));
+      verify(() => mockRemoteDataSource.update(tParam)).called(1);
+      verifyNoMoreInteractions(mockRemoteDataSource);
+    });
+  });
 }

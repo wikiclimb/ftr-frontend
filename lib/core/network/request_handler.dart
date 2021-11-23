@@ -20,6 +20,8 @@ mixin RequestHandler {
       late final http.Response response;
       if (method == 'post') {
         response = await client.post(uri, headers: headers, body: body);
+      } else if (method == 'patch') {
+        response = await client.patch(uri, headers: headers, body: body);
       } else {
         response = await client.get(uri);
       }
@@ -45,6 +47,8 @@ mixin RequestHandler {
     } on ServerException {
       throw ServerException();
     } on SocketException {
+      throw NetworkException();
+    } on NetworkException {
       throw NetworkException();
     } catch (e) {
       throw ApplicationException();
