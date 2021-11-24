@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:wikiclimb_flutter_frontend/core/error/error_handler.dart';
 
 import '../../../../core/collections/page.dart';
-import '../../../../core/error/exception.dart';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/node.dart';
 import '../../domain/repositories/node_repository.dart';
@@ -80,21 +80,5 @@ class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {
     } on Exception catch (e) {
       return Left(exceptionToFailure(e));
     }
-  }
-}
-
-/// Handles the common code that deals with converting exceptions to failures.
-mixin ExceptionHandler {
-  Failure exceptionToFailure(Exception e) {
-    if (e is UnauthorizedException) {
-      return UnauthorizedFailure();
-    } else if (e is ForbiddenException) {
-      return ForbiddenFailure();
-    } else if (e is ServerException) {
-      return ServerFailure();
-    } else if (e is NetworkException) {
-      return NetworkFailure();
-    }
-    return ApplicationFailure();
   }
 }

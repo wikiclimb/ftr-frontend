@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
 
 import '../../../../core/widgets/decoration/photo_sliver_app_bar.dart';
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
@@ -52,6 +53,7 @@ class AreaDetailsScreen extends StatelessWidget {
             imageUrl: area.coverUrl,
           ),
           AreaDetailsList(area: area),
+          NodeSliverImageList(area),
         ],
       ),
     );

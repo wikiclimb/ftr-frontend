@@ -13,6 +13,7 @@ import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/ar
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
@@ -123,6 +124,16 @@ void main() {
       await tester.tap(fabFinder);
       await tester.pumpAndSettle();
       expect(find.byType(EditNodeScreen), findsOneWidget);
+    });
+
+    testWidgets('renders node images', (tester) async {
+      await mockNetworkImagesFor(
+        () => tester.pumpDetailsScreen(
+          area: areaNodes.first,
+          mockAuthBloc: mockAuthBloc,
+        ),
+      );
+      expect(find.byType(NodeSliverImageList), findsOneWidget);
     });
   });
 }
