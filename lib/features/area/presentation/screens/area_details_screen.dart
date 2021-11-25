@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
 
 import '../../../../core/widgets/decoration/photo_sliver_app_bar.dart';
+import '../../../../di.dart';
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../node/domain/entities/node.dart';
 import '../../../node/presentation/screens/edit_node_screen.dart';
@@ -25,6 +27,8 @@ class AreaDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ImageListBloc imageListBloc = sl<ImageListBloc>();
+    imageListBloc.add(InitializationRequested(node: area));
     return Scaffold(
       floatingActionButton:
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -53,7 +57,10 @@ class AreaDetailsScreen extends StatelessWidget {
             imageUrl: area.coverUrl,
           ),
           AreaDetailsList(area: area),
-          NodeSliverImageList(area),
+          BlocProvider(
+            create: (context) => sl<ImageListBloc>(),
+            child: NodeSliverImageList(area),
+          ),
         ],
       ),
     );

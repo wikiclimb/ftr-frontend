@@ -7,6 +7,7 @@ import 'core/authentication/authentication_provider.dart';
 import 'core/di.dart';
 import 'features/area/di.dart';
 import 'features/authentication/di.dart';
+import 'features/image/di.dart';
 import 'features/login/di.dart';
 import 'features/node/di.dart';
 
@@ -19,6 +20,7 @@ Future<void> init() async {
   );
   initAreaFeature(sl);
   initAuthenticationFeature(sl);
+  initImageFeature(sl);
   initLoginFeature(sl);
   initNodeFeature(sl);
   initCore(sl);

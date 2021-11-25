@@ -1,15 +1,18 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_form.dart';
 
@@ -18,6 +21,9 @@ import '../../../../../fixtures/node/nodes.dart';
 class MockAuthenticationBloc
     extends MockBloc<AuthenticationEvent, AuthenticationState>
     implements AuthenticationBloc {}
+
+class MockImageListBloc extends MockBloc<ImageListEvent, ImageListState>
+    implements ImageListBloc {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
@@ -58,6 +64,7 @@ main() {
     username: 'test-username',
   );
   late NodeEditBloc mockNodeEditBloc;
+  late final ImageListBloc mockImageListBloc;
 
   setUpAll(() {
     registerFallbackValue(FakeRoute());
@@ -65,6 +72,16 @@ main() {
     mockAuthBloc = MockAuthenticationBloc();
     when(() => mockAuthBloc.state)
         .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
+    mockImageListBloc = MockImageListBloc();
+    when(() => mockImageListBloc.state).thenAnswer(
+      (_) => ImageListState(
+        status: ImageListStatus.initial,
+        images: BuiltSet(),
+        hasError: false,
+        nextPage: 1,
+      ),
+    );
+    GetIt.I.registerLazySingleton<ImageListBloc>(() => mockImageListBloc);
   });
 
   setUp(() {
@@ -182,7 +199,8 @@ main() {
       // await tester.pump();
       expectLater(find.byType(SnackBar), findsOneWidget);
       expectLater(find.text('Submission success'), findsOneWidget);
-      await tester.pumpAndSettle();
+      // The destination route has a circular PI, pumpAndSettle times out.
+      await tester.pump();
       // TODO check why NavigatorObserver does not receive the call.
       // verify(() => mockObserver.didPush(any(), any()));
       // pop-and-push removes the AuthBloc from the context, this test fails

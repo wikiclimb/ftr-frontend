@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +14,7 @@ import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/ar
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
@@ -26,6 +28,9 @@ class MockAuthenticationBloc
     implements AuthenticationBloc {}
 
 class MockEditNode extends Mock implements EditNode {}
+
+class MockImageListBloc extends MockBloc<ImageListEvent, ImageListState>
+    implements ImageListBloc {}
 
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
@@ -48,7 +53,8 @@ extension on WidgetTester {
 }
 
 void main() {
-  late final MockAuthenticationBloc mockAuthBloc;
+  late final AuthenticationBloc mockAuthBloc;
+  late final ImageListBloc mockImageListBloc;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -59,6 +65,16 @@ void main() {
     final sl = GetIt.instance;
     sl.registerLazySingleton<NodeEditBloc>(() => NodeEditBloc(MockEditNode()));
     registerFallbackValue(FakeAuthenticationState());
+    mockImageListBloc = MockImageListBloc();
+    when(() => mockImageListBloc.state).thenAnswer(
+      (_) => ImageListState(
+        status: ImageListStatus.initial,
+        images: BuiltSet(),
+        hasError: false,
+        nextPage: 1,
+      ),
+    );
+    sl.registerLazySingleton<ImageListBloc>(() => mockImageListBloc);
     mockAuthBloc = MockAuthenticationBloc();
     when(() => mockAuthBloc.state)
         .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
