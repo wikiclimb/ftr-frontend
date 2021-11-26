@@ -1,15 +1,20 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/data/datasources/image_remote_data_source.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/data/models/image_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/data/repositories/image_repository_impl.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/domain/entities/image.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/domain/repository/image_repository.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/domain/usecases/add_images_to_node.dart';
 
 import '../../../../fixtures/image/image_model_pages.dart';
+import '../../../../fixtures/image/image_models.dart';
 import '../../../../fixtures/image/image_pages.dart';
 
 class MockRemoteDataSource extends Mock implements ImageRemoteDataSource {}
@@ -102,6 +107,33 @@ void main() {
       );
       repository.fetchPage();
       verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+    });
+  });
+
+  group('create', () {
+    final tPaths = ['path', 'path2', 'path3'];
+    final tParams = Params(
+      filePaths: tPaths,
+      nodeId: 1,
+      name: 'name',
+      description: 'description',
+    );
+    test('success converts to image', () async {
+      final dataSourceReturn = BuiltList<ImageModel>(imageModels);
+      final expected = Right<Failure, BuiltList<Image>>(
+        BuiltList(dataSourceReturn.map((im) => im.toImage())),
+      );
+      when(() => mockRemoteDataSource.create(tParams))
+          .thenAnswer((_) async => dataSourceReturn);
+      final result = await repository.create(tParams);
+      expect(result, expected);
+    });
+
+    test('failures are passed on', () async {
+      when(() => mockRemoteDataSource.create(tParams))
+          .thenAnswer((_) async => throw UnauthorizedException());
+      final result = await repository.create(tParams);
+      expect(result, Left(UnauthorizedFailure()));
     });
   });
 }

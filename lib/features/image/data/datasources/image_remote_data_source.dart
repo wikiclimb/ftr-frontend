@@ -9,6 +9,7 @@ import '../../../../core/environment/environment_config.dart';
 import '../../../../core/error/exception.dart';
 import '../../../../core/network/request_handler.dart';
 import '../../../../core/utils/http_pagination_helper.dart';
+import '../../domain/usecases/add_images_to_node.dart';
 import '../models/image_model.dart';
 
 /// Remote data source for image data.
@@ -20,6 +21,9 @@ abstract class ImageRemoteDataSource {
   /// Throws a [ServerException] for server response codes.
   /// Throws a [NetworkException] for network errors.
   Future<Page<ImageModel>> fetchAll(Map<String, dynamic>? params);
+
+  /// Call the image POST endpoint with a list of images.
+  Future<BuiltList<ImageModel>> create(Params params);
 }
 
 /// Provides implementations for the methods exposed on [ImageRemoteDataSource].
@@ -29,9 +33,11 @@ class ImageRemoteDataSourceImpl
   ImageRemoteDataSourceImpl({
     required this.authenticationProvider,
     required this.client,
+    required this.multipartRequest,
   });
 
   final AuthenticationProvider authenticationProvider;
+  final http.MultipartRequest multipartRequest;
   final http.Client client;
   final endpoint = 'images';
 
@@ -52,6 +58,41 @@ class ImageRemoteDataSourceImpl
       return result;
     } catch (_) {
       throw ApplicationException();
+    }
+  }
+
+  @override
+  Future<BuiltList<ImageModel>> create(Params params) async {
+    late final http.Response response;
+    try {
+      final request = multipartRequest
+        ..fields['name'] = params.name ?? ''
+        ..fields['description'] = params.description ?? '';
+      for (var path in params.filePaths) {
+        request.files.add(await http.MultipartFile.fromPath('files', path));
+      }
+      final streamedResponse = await request.send();
+      response = await http.Response.fromStream(streamedResponse);
+    } on Exception {
+      throw ApplicationException();
+    }
+    switch (response.statusCode) {
+      case 201:
+        try {
+          final jsonMap = jsonDecode(response.body);
+          final result = ListBuilder<ImageModel>(jsonMap.map(
+            (n) => ImageModel.fromJson(jsonEncode(n)),
+          )).build();
+          return result;
+        } catch (_) {
+          throw ApplicationException();
+        }
+      case 401:
+        throw UnauthorizedException();
+      case 403:
+        throw ForbiddenException();
+      default:
+        throw ApplicationException();
     }
   }
 }

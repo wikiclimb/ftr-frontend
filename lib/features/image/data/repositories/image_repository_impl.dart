@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/domain/usecases/add_images_to_node.dart';
 
 import '../../../../core/collections/page.dart';
 import '../../../../core/error/error_handler.dart';
@@ -34,7 +35,7 @@ class ImageRepositoryImpl with ExceptionHandler implements ImageRepository {
           ..isLastPage = imageModelPage.isLastPage
           ..nextPageNumber = imageModelPage.nextPageNumber
           ..pageNumber = imageModelPage.pageNumber
-          ..items = ListBuilder(imageModelPage.items.map((nm) => nm.toImage())),
+          ..items = ListBuilder(imageModelPage.items.map((im) => im.toImage())),
       );
       _controller.add(Right(imagePage));
       return Right(imagePage);
@@ -48,5 +49,18 @@ class ImageRepositoryImpl with ExceptionHandler implements ImageRepository {
   @override
   Stream<Either<Failure, Page<Image>>> get subscribe async* {
     yield* _controller.stream;
+  }
+
+  @override
+  Future<Either<Failure, BuiltList<Image>>> create(Params params) async {
+    try {
+      final imageModels = await _remoteDataSource.create(params);
+      final images = ListBuilder<Image>(
+        imageModels.map((im) => im.toImage()),
+      ).build();
+      return Right(images);
+    } on Exception catch (e) {
+      return Left(exceptionToFailure(e));
+    }
   }
 }

@@ -1,8 +1,10 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
-import 'package:wikiclimb_flutter_frontend/core/environment/environment_config.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/domain/entities/image.dart'
-    as wkc;
+
+import '../../../../core/environment/environment_config.dart';
+import '../../../node/domain/entities/node.dart';
+import '../../domain/entities/image.dart' as wkc;
+import '../screens/add_node_image_screen.dart';
 
 /// This widget renders a list of images.
 ///
@@ -11,19 +13,56 @@ import 'package:wikiclimb_flutter_frontend/features/image/domain/entities/image.
 class SliverImageList extends StatelessWidget {
   const SliverImageList(
     this.images, {
+    required this.node,
     Key? key,
   }) : super(key: key);
 
   final BuiltSet<wkc.Image> images;
+  final Node node;
 
   @override
   Widget build(BuildContext context) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-        (context, index) => SliverImageListItem(
-          image: images.elementAt(index),
-        ),
-        childCount: images.length,
+        (context, index) {
+          if (index == 0) {
+            return SliverImageListAddImagesButton(node: node);
+          } else {
+            return SliverImageListItem(
+              image: images.elementAt(index - 1),
+            );
+          }
+        },
+        childCount: images.length + 1,
+      ),
+    );
+  }
+}
+
+class SliverImageListAddImagesButton extends StatelessWidget {
+  const SliverImageListAddImagesButton({
+    Key? key,
+    required this.node,
+  }) : super(key: key);
+
+  final Node node;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton.icon(
+        key: const Key('sliverImageList_addNodeImages_elevatedButton'),
+        icon: const Icon(Icons.add_a_photo),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddNodeImageScreen(node),
+            ),
+          );
+        },
+        label: const Text('Add Photos'),
       ),
     );
   }

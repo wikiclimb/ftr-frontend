@@ -32,6 +32,7 @@ class NodeSliverImageList extends StatelessWidget {
             return SliverImageList(
               state.images,
               key: const Key('${keyStart}imageList'),
+              node: node,
             );
           }
         }
