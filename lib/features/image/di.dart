@@ -1,7 +1,6 @@
 // coverage:ignore-file
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:wikiclimb_flutter_frontend/core/environment/environment_config.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/domain/usecases/add_images_to_node.dart';
 
 import 'data/datasources/image_remote_data_source.dart';
@@ -29,11 +28,13 @@ void initImageFeature(GetIt sl) {
     () => ImageRemoteDataSourceImpl(
       client: sl(),
       authenticationProvider: sl(),
-      // TODO check if we can avoid hardcoding this.
-      multipartRequest: http.MultipartRequest(
-        'POST',
-        Uri.https(EnvironmentConfig.apiUrl, 'images'),
-      ),
+    ),
+  );
+  // Each request requires a newly created instance with different parameters.
+  sl.registerFactoryParam<http.MultipartRequest, String, Uri>(
+    (method, uri) => http.MultipartRequest(
+      method,
+      uri,
     ),
   );
 }

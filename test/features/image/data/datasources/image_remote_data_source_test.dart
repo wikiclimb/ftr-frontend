@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
@@ -29,7 +30,6 @@ class MockAuthenticationProvider extends Mock
 class FakeUri extends Fake implements Uri {}
 
 void main() {
-  late http.MultipartRequest mockMultipartRequest;
   late ImageRemoteDataSource dataSource;
   late MockClient mockClient;
   late AuthenticationProvider mockAuthenticationProvider;
@@ -37,11 +37,9 @@ void main() {
   setUpAll(() {
     registerFallbackValue(FakeUri());
     mockClient = MockClient();
-    mockMultipartRequest = MockMultipartRequest();
     mockAuthenticationProvider = MockAuthenticationProvider();
     dataSource = ImageRemoteDataSourceImpl(
       client: mockClient,
-      multipartRequest: mockMultipartRequest,
       authenticationProvider: mockAuthenticationProvider,
     );
   });
@@ -149,11 +147,15 @@ void main() {
     final Map<String, String> fields = {};
     final List<http.MultipartFile> files = [];
     final Map<String, String> headers = {};
+    late http.MultipartRequest mockMultipartRequest;
     late http.StreamedResponse mockStreamedResponse;
+    late GetIt sl;
 
     setUpAll(() {
+      mockMultipartRequest = MockMultipartRequest();
       mockStreamedResponse = MockStreamedResponse();
       when(() => mockMultipartRequest.fields).thenAnswer((_) => fields);
+      when(() => mockMultipartRequest.headers).thenAnswer((_) => headers);
       when(() => mockMultipartRequest.files).thenAnswer((_) => files);
       when(() => mockStreamedResponse.isRedirect).thenAnswer((_) => false);
       when(() => mockStreamedResponse.persistentConnection)
@@ -163,6 +165,10 @@ void main() {
           .thenAnswer((_) => http.ByteStream(Stream.fromFuture(bytes)));
       when(() => mockMultipartRequest.send())
           .thenAnswer((_) async => mockStreamedResponse);
+      // Mock the MultipartRequest
+      sl = GetIt.instance;
+      sl.registerFactoryParam<http.MultipartRequest, void, void>(
+          (_, __) => mockMultipartRequest);
     });
 
     test('success', () async {

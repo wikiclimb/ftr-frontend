@@ -26,8 +26,7 @@ void main() {
       'body',
       200,
     );
-    when(() => mockClient.get(any()))
-        .thenAnswer((invocation) async => tResponse);
+    when(() => mockClient.get(any())).thenAnswer((_) async => tResponse);
     final response = await fake.handleRequest(
       client: mockClient,
       uri: FakeUri(),
@@ -40,8 +39,7 @@ void main() {
       'body',
       200,
     );
-    when(() => mockClient.get(any()))
-        .thenAnswer((invocation) async => tResponse);
+    when(() => mockClient.get(any())).thenAnswer((_) async => tResponse);
     final response = await fake.request(client: mockClient, uri: FakeUri());
     expect(response, tResponse);
   });

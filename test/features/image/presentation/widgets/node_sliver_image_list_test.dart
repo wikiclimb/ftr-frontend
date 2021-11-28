@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
+import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/sliver_image_list.dart';
@@ -14,18 +16,31 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.da
 import '../../../../fixtures/image/images.dart';
 import '../../../../fixtures/node/nodes.dart';
 
+class MockAuthenticationBloc
+    extends MockBloc<AuthenticationEvent, AuthenticationState>
+    implements AuthenticationBloc {}
+
 class MockImageListBloc extends MockBloc<ImageListEvent, ImageListState>
     implements ImageListBloc {}
 
 extension on WidgetTester {
-  Future<void> pumpIt(Node node, ImageListBloc bloc) {
+  Future<void> pumpIt(
+    Node node,
+    ImageListBloc mockImageListBloc,
+    AuthenticationBloc mockAuthenticationBloc,
+  ) {
     return pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: CustomScrollView(
             slivers: [
-              BlocProvider(
-                create: (context) => bloc,
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<ImageListBloc>(
+                      create: (context) => mockImageListBloc),
+                  BlocProvider<AuthenticationBloc>(
+                      create: (context) => mockAuthenticationBloc),
+                ],
                 child: NodeSliverImageList(node),
               ),
             ],
@@ -37,6 +52,7 @@ extension on WidgetTester {
 }
 
 void main() {
+  late final AuthenticationBloc mockAuthenticationBloc;
   late final ImageListBloc mockImageListBloc;
   final tInitialState = ImageListState(
     status: ImageListStatus.initial,
@@ -46,6 +62,7 @@ void main() {
   );
 
   setUpAll(() {
+    mockAuthenticationBloc = MockAuthenticationBloc();
     mockImageListBloc = MockImageListBloc();
   });
 
@@ -53,7 +70,7 @@ void main() {
     when(() => mockImageListBloc.state).thenAnswer(
       (_) => tInitialState,
     );
-    await tester.pumpIt(nodes.first, mockImageListBloc);
+    await tester.pumpIt(nodes.first, mockImageListBloc, mockAuthenticationBloc);
     expect(find.byType(NodeSliverImageList), findsOneWidget);
   });
 
@@ -64,7 +81,8 @@ void main() {
       when(() => mockImageListBloc.state).thenAnswer(
         (_) => tState,
       );
-      await tester.pumpIt(nodes.first, mockImageListBloc);
+      await tester.pumpIt(
+          nodes.first, mockImageListBloc, mockAuthenticationBloc);
       expect(
         find.byType(NodeSliverImageListStatusNotification),
         findsOneWidget,
@@ -87,7 +105,8 @@ void main() {
       when(() => mockImageListBloc.state).thenAnswer(
         (_) => tState,
       );
-      await tester.pumpIt(nodes.first, mockImageListBloc);
+      await tester.pumpIt(
+          nodes.first, mockImageListBloc, mockAuthenticationBloc);
       expect(
           find.byType(NodeSliverImageListStatusNotification), findsOneWidget);
       expect(find.text('Error fetching images.'), findsOneWidget);
@@ -100,11 +119,20 @@ void main() {
       hasError: false,
       images: BuiltSet([images.first]),
     );
+    const tAuthData = AuthenticationData(
+      token: 'token',
+      id: 123,
+      username: 'test-username',
+    );
+
     testWidgets('displays the images', (tester) async {
       when(() => mockImageListBloc.state).thenAnswer(
         (_) => tState,
       );
-      await tester.pumpIt(nodes.first, mockImageListBloc);
+      when(() => mockAuthenticationBloc.state)
+          .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
+      await tester.pumpIt(
+          nodes.first, mockImageListBloc, mockAuthenticationBloc);
       expect(find.byType(SliverImageList), findsOneWidget);
     });
   });

@@ -30,7 +30,7 @@ void main() {
 
   testWidgets('App displays', (WidgetTester tester) async {
     when(() => authBloc.state)
-        .thenAnswer((invocation) => AuthenticationUnauthenticated());
+        .thenAnswer((_) => AuthenticationUnauthenticated());
     await tester.pumpWidget(
       BlocProvider(
         create: (BuildContext context) => authBloc,

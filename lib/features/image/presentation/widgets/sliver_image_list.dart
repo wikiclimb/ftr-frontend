@@ -1,7 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/environment/environment_config.dart';
+import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../node/domain/entities/node.dart';
 import '../../domain/entities/image.dart' as wkc;
 import '../screens/add_node_image_screen.dart';
@@ -51,18 +53,26 @@ class SliverImageListAddImagesButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton.icon(
-        key: const Key('sliverImageList_addNodeImages_elevatedButton'),
-        icon: const Icon(Icons.add_a_photo),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddNodeImageScreen(node),
-            ),
-          );
+      child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+          if (state is AuthenticationAuthenticated) {
+            return ElevatedButton.icon(
+              key: const Key('sliverImageList_addNodeImages_elevatedButton'),
+              icon: const Icon(Icons.add_a_photo),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddNodeImageScreen(node),
+                  ),
+                );
+              },
+              label: const Text('Add Photos'),
+            );
+          } else {
+            return Container();
+          }
         },
-        label: const Text('Add Photos'),
       ),
     );
   }

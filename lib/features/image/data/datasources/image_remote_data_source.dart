@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/authentication/authentication_provider.dart';
@@ -33,11 +34,9 @@ class ImageRemoteDataSourceImpl
   ImageRemoteDataSourceImpl({
     required this.authenticationProvider,
     required this.client,
-    required this.multipartRequest,
   });
 
   final AuthenticationProvider authenticationProvider;
-  final http.MultipartRequest multipartRequest;
   final http.Client client;
   final endpoint = 'images';
 
@@ -65,9 +64,14 @@ class ImageRemoteDataSourceImpl
   Future<BuiltList<ImageModel>> create(Params params) async {
     late final http.Response response;
     try {
-      final request = multipartRequest
+      final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint);
+      final request = GetIt.I
+          .get<http.MultipartRequest>(param1: 'POST', param2: uri)
         ..fields['name'] = params.name ?? ''
-        ..fields['description'] = params.description ?? '';
+        ..fields['description'] = params.description ?? ''
+        ..fields['node-id'] = params.nodeId.toString()
+        ..headers['Authorization'] = 'Bearer ' +
+            (authenticationProvider.authenticationData?.token ?? '');
       for (var path in params.filePaths) {
         request.files.add(await http.MultipartFile.fromPath('files', path));
       }
@@ -77,6 +81,7 @@ class ImageRemoteDataSourceImpl
       throw ApplicationException();
     }
     switch (response.statusCode) {
+      case 200:
       case 201:
         try {
           final jsonMap = jsonDecode(response.body);

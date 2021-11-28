@@ -27,3 +27,11 @@ Some code is intentionally excluded from code coverage reports. For example abst
 // coverage:ignore-start and // coverage:ignore-end to ignore range of lines inclusive.
 // coverage:ignore-file to ignore the whole file.
 ```
+
+To test using the Android emulator and connect to the development server in localhost, we can't use `localhost` or `127.0.0.1` as it is usual, instead use `10.0.2.2` as the host name.
+
+If using the standard development server launched through docker, we can connect to the API on:
+
+```
+https://10.0.2.2:22080
+```
