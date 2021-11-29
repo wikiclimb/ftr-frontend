@@ -2,9 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/domain/entities/image.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/domain/usecases/add_images_to_node.dart';
 
+import '../../../../image/domain/entities/image.dart';
+import '../../../../image/domain/usecases/add_images_to_node.dart';
 import '../../../domain/entities/node.dart';
 
 part 'add_node_images_event.dart';

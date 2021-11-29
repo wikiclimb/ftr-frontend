@@ -50,4 +50,10 @@ void main() {
   test('status getter', () {
     expect(tState.status, tStatus);
   });
+
+  test('copy with without status', () {
+    final original = AddNodeImagesState();
+    final copy = original.copyWith(name: 'copy-name');
+    expect(copy.status, AddNodeImagesStatus.initial);
+  });
 }

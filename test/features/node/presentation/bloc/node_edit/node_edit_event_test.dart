@@ -1,13 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 
 import '../../../../../fixtures/node/nodes.dart';
 
 void main() {
-  group('node edit initialize', () {});
   test('supports value comparisons', () {
     final tNode = nodes.first;
     expect(NodeEditInitialize(tNode).props, [tNode]);
