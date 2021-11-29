@@ -50,7 +50,7 @@ class AuthenticationLocalDataSourceImpl
         model = null;
       }
     } catch (_) {
-      throw CacheException();
+      throw const CacheException();
     }
     return Future.value(model);
   }

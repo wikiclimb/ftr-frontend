@@ -45,24 +45,6 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
   final endpoint = 'nodes';
 
   @override
-  Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params) async {
-    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
-    final response = await handleRequest(client: client, uri: uri);
-    try {
-      final jsonMap = jsonDecode(response.body);
-      return Page<NodeModel>((p) => p
-        ..items = ListBuilder(jsonMap.map(
-          (n) => NodeModel.fromJson(jsonEncode(n)),
-        ))
-        ..pageNumber = HttpPaginationHelper.pageNumber(response)
-        ..nextPageNumber = HttpPaginationHelper.nextPageNumber(response)
-        ..isLastPage = HttpPaginationHelper.isLastPage(response));
-    } catch (_) {
-      throw ApplicationException();
-    }
-  }
-
-  @override
   Future<NodeModel> create(NodeModel nodeModel) async {
     final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint);
     final response = await handleRequest(
@@ -79,7 +61,25 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
     try {
       return NodeModel.fromJson(response.body)!;
     } catch (_) {
-      throw ApplicationException();
+      throw const ApplicationException();
+    }
+  }
+
+  @override
+  Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params) async {
+    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
+    final response = await handleRequest(client: client, uri: uri);
+    try {
+      final jsonMap = jsonDecode(response.body);
+      return Page<NodeModel>((p) => p
+        ..items = ListBuilder(jsonMap.map(
+          (n) => NodeModel.fromJson(jsonEncode(n)),
+        ))
+        ..pageNumber = HttpPaginationHelper.pageNumber(response)
+        ..nextPageNumber = HttpPaginationHelper.nextPageNumber(response)
+        ..isLastPage = HttpPaginationHelper.isLastPage(response));
+    } catch (_) {
+      throw const ApplicationException();
     }
   }
 
@@ -101,7 +101,7 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
     try {
       return NodeModel.fromJson(response.body)!;
     } catch (_) {
-      throw ApplicationException();
+      throw const ApplicationException();
     }
   }
 }

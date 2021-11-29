@@ -99,7 +99,7 @@ void main() {
         when(() => mockRemoteDataSource.login(
               username: tUsername,
               password: tPassword,
-            )).thenThrow(UnauthorizedException());
+            )).thenThrow(const UnauthorizedException());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
@@ -120,7 +120,7 @@ void main() {
         when(() => mockRemoteDataSource.login(
               username: tUsername,
               password: tPassword,
-            )).thenThrow(ServerException());
+            )).thenThrow(const ServerException());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,
@@ -141,7 +141,7 @@ void main() {
         when(() => mockRemoteDataSource.login(
               username: tUsername,
               password: tPassword,
-            )).thenThrow(NetworkException());
+            )).thenThrow(const NetworkException());
         final result = await repository.logInWithUsernamePassword(
           username: tUsername,
           password: tPassword,

@@ -171,7 +171,7 @@ void main() {
           headers: any(named: 'headers'),
           body: any(named: 'body'),
         ),
-      ).thenThrow(UnauthorizedException());
+      ).thenThrow(const UnauthorizedException());
       when(() => mockAuthenticationProvider.authenticationData).thenAnswer(
         (_) => tAuthData,
       );
@@ -297,7 +297,7 @@ void main() {
             any(),
             headers: any(named: 'headers'),
             body: tParam.toJson(),
-          )).thenThrow(NetworkException());
+          )).thenThrow(const NetworkException());
       expect(() async => await dataSource.update(tParam),
           throwsA(const TypeMatcher<NetworkException>()),
           reason: 'NetworkException should propagate');

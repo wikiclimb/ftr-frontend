@@ -90,7 +90,7 @@ void main() {
         () => mockLocalDataSource.cacheAuthenticationData(
           tAuthenticationDataModel,
         ),
-      ).thenThrow(CacheException());
+      ).thenThrow(const CacheException());
       final expected = [
         Left(CacheFailure()),
       ];

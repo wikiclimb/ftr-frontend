@@ -37,7 +37,7 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
     try {
       final isConnected = await networkInfo.isConnected;
       if (!isConnected) {
-        throw NetworkException();
+        throw const NetworkException();
       }
       final response = await client.post(
         url,
@@ -50,18 +50,18 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
             jsonDecode(response.body),
           );
         case 401:
-          throw UnauthorizedException();
+          throw const UnauthorizedException();
         default:
           // We got a response from the server but not one of the expected ones.
-          throw ServerException();
+          throw const ServerException();
       }
     } on UnauthorizedException {
-      throw UnauthorizedException();
+      throw const UnauthorizedException();
     } on ServerException {
-      throw ServerException();
+      throw const ServerException();
     } catch (e) {
       // We could not reach the server.
-      throw NetworkException();
+      throw const NetworkException();
     }
   }
 }

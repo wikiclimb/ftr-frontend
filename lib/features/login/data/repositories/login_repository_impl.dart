@@ -30,7 +30,7 @@ class LoginRepositoryImpl implements LoginRepository {
       if (cached) {
         return Right(authData);
       } else {
-        throw CacheException();
+        throw const CacheException();
       }
     } on UnauthorizedException {
       return Left(UnauthorizedFailure());

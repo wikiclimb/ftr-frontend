@@ -33,25 +33,25 @@ mixin RequestHandler {
           // Debugging shows the execution flow go passed this point.
           return response;
         case 401:
-          throw UnauthorizedException();
+          throw const UnauthorizedException();
         case 403:
-          throw ForbiddenException();
+          throw const ForbiddenException();
         default:
           // We got a response from the server but not one of the expected ones.
-          throw ServerException();
+          throw const ServerException();
       }
     } on UnauthorizedException {
-      throw UnauthorizedException();
+      throw const UnauthorizedException();
     } on ForbiddenException {
-      throw ForbiddenException();
+      throw const ForbiddenException();
     } on ServerException {
-      throw ServerException();
+      throw const ServerException();
     } on SocketException {
-      throw NetworkException();
+      throw const NetworkException();
     } on NetworkException {
-      throw NetworkException();
+      throw const NetworkException();
     } catch (e) {
-      throw ApplicationException();
+      throw const ApplicationException();
     }
   }
 }

@@ -41,26 +41,6 @@ class ImageRemoteDataSourceImpl
   final endpoint = 'images';
 
   @override
-  Future<Page<ImageModel>> fetchAll(Map<String, dynamic>? params) async {
-    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
-    final response = await handleRequest(client: client, uri: uri);
-    try {
-      final jsonMap = jsonDecode(response.body);
-
-      final result = Page<ImageModel>((p) => p
-        ..items = ListBuilder(jsonMap.map(
-          (n) => ImageModel.fromJson(jsonEncode(n)),
-        ))
-        ..pageNumber = HttpPaginationHelper.pageNumber(response)
-        ..nextPageNumber = HttpPaginationHelper.nextPageNumber(response)
-        ..isLastPage = HttpPaginationHelper.isLastPage(response));
-      return result;
-    } catch (_) {
-      throw ApplicationException();
-    }
-  }
-
-  @override
   Future<BuiltList<ImageModel>> create(Params params) async {
     late final http.Response response;
     try {
@@ -78,7 +58,7 @@ class ImageRemoteDataSourceImpl
       final streamedResponse = await request.send();
       response = await http.Response.fromStream(streamedResponse);
     } on Exception {
-      throw ApplicationException();
+      throw const ApplicationException();
     }
     switch (response.statusCode) {
       case 200:
@@ -90,14 +70,34 @@ class ImageRemoteDataSourceImpl
           )).build();
           return result;
         } catch (_) {
-          throw ApplicationException();
+          throw const ApplicationException();
         }
       case 401:
-        throw UnauthorizedException();
+        throw const UnauthorizedException();
       case 403:
-        throw ForbiddenException();
+        throw const ForbiddenException();
       default:
-        throw ApplicationException();
+        throw const ApplicationException();
+    }
+  }
+
+  @override
+  Future<Page<ImageModel>> fetchAll(Map<String, dynamic>? params) async {
+    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
+    final response = await handleRequest(client: client, uri: uri);
+    try {
+      final jsonMap = jsonDecode(response.body);
+
+      final result = Page<ImageModel>((p) => p
+        ..items = ListBuilder(jsonMap.map(
+          (n) => ImageModel.fromJson(jsonEncode(n)),
+        ))
+        ..pageNumber = HttpPaginationHelper.pageNumber(response)
+        ..nextPageNumber = HttpPaginationHelper.nextPageNumber(response)
+        ..isLastPage = HttpPaginationHelper.isLastPage(response));
+      return result;
+    } catch (_) {
+      throw const ApplicationException();
     }
   }
 }
