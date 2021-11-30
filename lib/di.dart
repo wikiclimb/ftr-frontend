@@ -10,6 +10,7 @@ import 'features/authentication/di.dart';
 import 'features/image/di.dart';
 import 'features/login/di.dart';
 import 'features/node/di.dart';
+import 'features/registration/di.dart';
 
 final sl = GetIt.instance;
 
@@ -23,6 +24,7 @@ Future<void> init() async {
   initImageFeature(sl);
   initLoginFeature(sl);
   initNodeFeature(sl);
+  initRegistrationFeature(sl);
   initCore(sl);
   // External dependencies
   final sharedPreferences = await SharedPreferences.getInstance();

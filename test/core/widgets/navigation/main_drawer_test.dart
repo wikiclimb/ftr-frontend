@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +12,27 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/
 import 'package:wikiclimb_flutter_frontend/features/home/presentation/screens/home_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/screens/login_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/widgets/login_drawer_tile.dart';
+import 'package:wikiclimb_flutter_frontend/features/registration/presentation/screens/registration_screen.dart';
+
+extension on WidgetTester {
+  Future<void> pumpIt(AuthenticationBloc mockAuthBloc, String currentRoute) =>
+      pumpWidget(
+        BlocProvider<AuthenticationBloc>(
+          create: (BuildContext context) => mockAuthBloc,
+          child: MaterialApp(
+            home: Scaffold(
+              body: MainDrawer(
+                currentRoute: currentRoute,
+              ),
+            ),
+            routes: {
+              AreaListScreen.id: (context) => MockAreaListScreen(),
+              RegistrationScreen.id: (context) => MockRegistrationScreen()
+            },
+          ),
+        ),
+      );
+}
 
 class MockAuthenticationBloc extends MockCubit<AuthenticationState>
     implements AuthenticationBloc {}
@@ -39,11 +62,7 @@ void main() {
         ]),
         initialState: AuthenticationInitial(),
       );
-      await pumpDrawer(
-        tester,
-        authBloc,
-        HomeScreen.id,
-      );
+      await tester.pumpIt(authBloc, HomeScreen.id);
       expect(find.byType(LoginDrawerTile), findsOneWidget);
       expect(find.text('Login'), findsOneWidget);
     },
@@ -59,11 +78,7 @@ void main() {
         ]),
         initialState: AuthenticationInitial(),
       );
-      await pumpDrawer(
-        tester,
-        authBloc,
-        LoginScreen.id,
-      );
+      await tester.pumpIt(authBloc, LoginScreen.id);
       expect(find.byType(LoginDrawerTile), findsNothing);
     },
   );
@@ -78,37 +93,54 @@ void main() {
         ]),
         initialState: AuthenticationInitial(),
       );
-      await pumpDrawer(
-        tester,
-        authBloc,
-        LoginScreen.id,
-      );
+      await tester.pumpIt(authBloc, LoginScreen.id);
       expect(find.text('Areas'), findsOneWidget);
       await tester.tap(find.text('Areas'));
     },
   );
-}
 
-Future<void> pumpDrawer(
-  WidgetTester tester,
-  AuthenticationBloc authCubit,
-  String currentRoute,
-) async {
-  await tester.pumpWidget(
-    MaterialApp(
-      home: BlocProvider<AuthenticationBloc>(
-        create: (BuildContext context) => authCubit,
-        child: Scaffold(
-          body: MainDrawer(
-            currentRoute: currentRoute,
-          ),
-        ),
-      ),
-      routes: {
-        AreaListScreen.id: (context) => const MockAreaListScreen(),
+  group('registration tile', () {
+    testWidgets(
+      'displays when not authenticated',
+      (WidgetTester tester) async {
+        when(() => authBloc.state)
+            .thenAnswer((_) => AuthenticationUnauthenticated());
+        await tester.pumpIt(authBloc, LoginScreen.id);
+        expect(
+          find.byKey(Key('mainDrawer_registrationDrawerTile')),
+          findsOneWidget,
+        );
+        expect(find.text('Sign Up'), findsOneWidget);
+        await tester.tap(find.text('Sign Up'));
+        await tester.pumpAndSettle();
+        expect(find.byType(MockRegistrationScreen), findsOneWidget);
       },
-    ),
-  );
+    );
+
+    testWidgets(
+      'does not display when on registration route',
+      (WidgetTester tester) async {
+        when(() => authBloc.state)
+            .thenAnswer((_) => AuthenticationUnauthenticated());
+        await tester.pumpIt(authBloc, RegistrationScreen.id);
+        expect(find.text('Sign Up'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'does not display when already authenticated',
+      (WidgetTester tester) async {
+        when(() => authBloc.state)
+            .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
+        await tester.pumpIt(authBloc, LoginScreen.id);
+        expect(
+          find.byKey(Key('mainDrawer_registrationDrawerTile')),
+          findsNothing,
+        );
+        expect(find.text('Sign Up'), findsNothing);
+      },
+    );
+  });
 }
 
 class MockAreaListScreen extends StatelessWidget {
@@ -118,6 +150,17 @@ class MockAreaListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text('Mock areas Screen'),
+    );
+  }
+}
+
+class MockRegistrationScreen extends StatelessWidget {
+  const MockRegistrationScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Mock Registration Screen'),
     );
   }
 }

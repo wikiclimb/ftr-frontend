@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../features/area/presentation/screens/area_list_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
 import '../features/login/presentation/screens/login_screen.dart';
+import '../features/registration/presentation/screens/registration_screen.dart';
 
 /// The root [Widget] of the application.
 ///
@@ -27,6 +28,7 @@ class App extends StatelessWidget {
         AreaListScreen.id: (context) => const AreaListScreen(),
         HomeScreen.id: (context) => const HomeScreen(),
         LoginScreen.id: (context) => const LoginScreen(),
+        RegistrationScreen.id: (context) => const RegistrationScreen(),
         // coverage:ignore-end
       },
     );
