@@ -8,6 +8,8 @@
   "rating": 4.9,
   "breadcrumbs": ["One", "Two", "Three"],
   "point_id": 42,
+  "lat": 82.099,
+  "lng": -173.09323,
   "cover_url": "https://placeholder.com/1243",
   "created_by": "user-2",
   "created_at": 1636899203,

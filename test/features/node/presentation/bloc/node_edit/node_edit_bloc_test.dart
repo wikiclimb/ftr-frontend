@@ -7,6 +7,7 @@ import 'package:formz/formz.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/node_description.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/node_name.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
@@ -68,6 +69,37 @@ void main() {
           status: FormzStatus.valid,
           type: 1,
           name: NodeName.dirty('new name'),
+          description: NodeDescription.pure(tNode.description ?? ''),
+        ),
+      ],
+    );
+  });
+
+  group('longitude changed', () {
+    final tNode = nodes.elementAt(3);
+    const tLongitude = '-50.2';
+
+    blocTest<NodeEditBloc, NodeEditState>(
+      'valid longitude emits new valid state',
+      build: () => NodeEditBloc(mockEditNode),
+      act: (bloc) {
+        bloc.add(NodeEditInitialize(tNode));
+        bloc.add(NodeLongitudeChanged(tLongitude));
+      },
+      expect: () => <NodeEditState>[
+        NodeEditState(
+          type: 1,
+          name: NodeName.pure(tNode.name),
+          longitude: NodeLongitude.pure(tNode.lng?.toString() ?? ''),
+          latitude: NodeLatitude.pure(tNode.lat?.toString() ?? ''),
+          description: NodeDescription.pure(tNode.description ?? ''),
+        ),
+        NodeEditState(
+          status: FormzStatus.valid,
+          name: NodeName.pure(tNode.name),
+          type: 1,
+          longitude: NodeLongitude.dirty(tLongitude),
+          latitude: NodeLatitude.pure(tNode.lat?.toString() ?? ''),
           description: NodeDescription.pure(tNode.description ?? ''),
         ),
       ],
@@ -151,6 +183,54 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockEditNode(expected)).called(1);
+      },
+    );
+
+    const tLat = '83';
+    const tLng = '120.003';
+    final state3latLng = state2.copyWith(
+      latitude: NodeLatitude.dirty(tLat),
+    );
+    final state4latLng = state3latLng.copyWith(
+      longitude: NodeLongitude.dirty(tLng),
+    );
+    final state5latLng = state4latLng.copyWith(
+      status: FormzStatus.submissionInProgress,
+    );
+    final state6latLng = state4latLng.copyWith(
+      status: FormzStatus.submissionSuccess,
+    );
+    final expectedLatLng = expected.rebuild((n) => n
+      ..lat = double.tryParse(tLat)
+      ..lng = double.tryParse(tLng));
+
+    blocTest<NodeEditBloc, NodeEditState>(
+      'submission success with lat/lng',
+      setUp: () {
+        when(() => mockEditNode(any())).thenAnswer(
+          (_) async => Right(nodes.first),
+        );
+      },
+      build: () => NodeEditBloc(mockEditNode),
+      act: (bloc) async {
+        bloc.add(NodeEditInitialize(tNode));
+        bloc.add(NodeNameChanged('new name'));
+        bloc.add(NodeDescriptionChanged('new description'));
+        bloc.add(NodeLatitudeChanged(tLat));
+        bloc.add(NodeLongitudeChanged(tLng));
+        bloc.add(NodeSubmissionRequested());
+      },
+      expect: () => <NodeEditState>[
+        state,
+        state1,
+        state2,
+        state3latLng,
+        state4latLng,
+        state5latLng,
+        state6latLng,
+      ],
+      verify: (_) {
+        verify(() => mockEditNode(expectedLatLng)).called(1);
       },
     );
 

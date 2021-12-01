@@ -16,6 +16,8 @@ void main() {
       expect(result, isA<NodeModel>());
       expect(result?.breadcrumbs, ['One', 'Two', 'Three']);
       expect(result?.id, 2);
+      expect(result?.lat, 82.099);
+      expect(result?.lng, -173.09323);
     });
   });
 
@@ -35,6 +37,8 @@ void main() {
         'breadcrumbs': ['One', 'Three'],
         'created_by': 'test-user-2',
         'point_id': 7,
+        'lat': 83.2024,
+        'lng': -172.09323,
         'created_at': 1636879203,
         'updated_by': 'test-user-2',
         'updated_at': 1636899403

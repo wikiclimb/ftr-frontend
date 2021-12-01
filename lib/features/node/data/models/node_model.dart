@@ -5,12 +5,15 @@ import 'dart:convert';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
 import '../../../../core/utils/serializers.dart';
+import '../../domain/entities/node.dart';
 
 part 'node_model.g.dart';
 
+/// Data layer model for domain [Node] entities.
+///
+/// Adds support for interacting with the data layer endpoints.
 abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
   factory NodeModel([void Function(NodeModelBuilder) updates]) = _$NodeModel;
 
@@ -39,6 +42,10 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
 
   @BuiltValueField(wireName: 'cover_url')
   String? get coverUrl;
+
+  double? get lat;
+
+  double? get lng;
 
   @BuiltValueField(wireName: 'created_at')
   int get createdAt;
@@ -71,6 +78,8 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
       ..coverUrl = coverUrl
       ..rating = rating
       ..pointId = pointId
+      ..lat = lat
+      ..lng = lng
       ..createdBy = createdBy
       ..createdAt = createdAt
       ..updatedBy = updatedBy
@@ -93,6 +102,8 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
       ..coverUrl = node.coverUrl
       ..rating = node.rating
       ..pointId = node.pointId
+      ..lat = node.lat
+      ..lng = node.lng
       ..createdBy = node.createdBy
       ..createdAt = node.createdAt
       ..updatedBy = node.updatedBy

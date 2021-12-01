@@ -235,6 +235,34 @@ main() {
       await tester.enterText(textInput, tDescription);
       verify(() => mockNodeEditBloc.add(NodeDescriptionChanged(tDescription)));
     });
+
+    testWidgets('latitude input triggers event', (tester) async {
+      const tLatitude = '-72.31';
+      final textInput = find.byKey(
+        Key('nodeEditForm_nodeLatitudeInput_textField'),
+      );
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
+      expect(textInput, findsOneWidget);
+      await tester.enterText(textInput, tLatitude);
+      verify(() => mockNodeEditBloc.add(NodeLatitudeChanged(tLatitude)));
+    });
+
+    testWidgets('longitude input triggers event', (tester) async {
+      const tLongitude = '183';
+      final textInput = find.byKey(
+        Key('nodeEditForm_nodeLongitudeInput_textField'),
+      );
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
+      expect(textInput, findsOneWidget);
+      await tester.enterText(textInput, tLongitude);
+      verify(() => mockNodeEditBloc.add(NodeLongitudeChanged(tLongitude)));
+    });
   });
 
   group('submission', () {

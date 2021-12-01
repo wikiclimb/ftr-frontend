@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
 void main() {
-  test('authentication data equality comparison should work', () {
+  test('equality comparison should work', () {
     final tNode1 = Node((n) => n
       ..id = 1234
       ..type = 1
@@ -43,7 +43,7 @@ void main() {
     );
   });
 
-  test('authentication data equality comparison should fail', () {
+  test('equality comparison should fail', () {
     final tNode1 = Node((n) => n
       ..id = 1234
       ..type = 1

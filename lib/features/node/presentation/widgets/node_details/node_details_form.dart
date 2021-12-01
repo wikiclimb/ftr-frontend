@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 
+import '../../../../area/presentation/screens/area_details_screen.dart';
 import '../../bloc/node_edit/node_edit_bloc.dart';
 
 /// Render a form that lets users update [Node] details.
@@ -55,6 +55,10 @@ class NodeDetailsForm extends StatelessWidget {
               _NodeNameInput(),
               SizedBox(height: fieldGap),
               _NodeDescriptionInput(),
+              SizedBox(height: fieldGap),
+              _NodeLatitudeInput(),
+              SizedBox(height: fieldGap),
+              _NodeLongitudeInput(),
               SizedBox(height: fieldGap),
               const _SubmitButton()
             ],
@@ -151,8 +155,66 @@ class _NodeDescriptionInput extends StatelessWidget {
                 NodeDescriptionChanged(description),
               ),
           decoration: InputDecoration(
-            label: const Text('description'),
-            errorText: state.description.invalid ? 'add a description' : null,
+            label: const Text('Description'),
+            errorText: state.description.invalid ? 'Add a description' : null,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _NodeLongitudeInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NodeEditBloc, NodeEditState>(
+      buildWhen: (previous, current) => previous.longitude != current.longitude,
+      builder: (context, state) {
+        return TextField(
+          minLines: 2,
+          maxLines: 10,
+          keyboardType: TextInputType.multiline,
+          controller: state.longitude.pure
+              ? TextEditingController(text: state.longitude.value)
+              : null,
+          key: const Key('nodeEditForm_nodeLongitudeInput_textField'),
+          onChanged: (longitude) => context.read<NodeEditBloc>().add(
+                NodeLongitudeChanged(longitude),
+              ),
+          decoration: InputDecoration(
+            label: const Text('Longitude'),
+            errorText: state.longitude.invalid
+                ? 'Invalid value. Try between -180.0 0.0'
+                : null,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _NodeLatitudeInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NodeEditBloc, NodeEditState>(
+      buildWhen: (previous, current) => previous.latitude != current.latitude,
+      builder: (context, state) {
+        return TextField(
+          minLines: 2,
+          maxLines: 10,
+          keyboardType: TextInputType.multiline,
+          controller: state.latitude.pure
+              ? TextEditingController(text: state.latitude.value)
+              : null,
+          key: const Key('nodeEditForm_nodeLatitudeInput_textField'),
+          onChanged: (latitude) => context.read<NodeEditBloc>().add(
+                NodeLatitudeChanged(latitude),
+              ),
+          decoration: InputDecoration(
+            label: const Text('Latitude'),
+            errorText: state.latitude.invalid
+                ? 'Invalid value. Try between -90.0 and 90.0'
+                : null,
           ),
         );
       },

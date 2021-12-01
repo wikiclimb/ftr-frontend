@@ -39,6 +39,28 @@ void main() {
     });
   });
 
+  group('node latitude changed', () {
+    test('supports value comparisons', () {
+      const latitude = '80.03';
+      expect(
+        NodeLatitudeChanged(latitude),
+        NodeLatitudeChanged(latitude),
+      );
+      expect(NodeLatitudeChanged(latitude).props, [latitude]);
+    });
+  });
+
+  group('node longitude changed', () {
+    test('supports value comparisons', () {
+      const longitude = '-170.03';
+      expect(
+        NodeLongitudeChanged(longitude),
+        NodeLongitudeChanged(longitude),
+      );
+      expect(NodeLongitudeChanged(longitude).props, [longitude]);
+    });
+  });
+
   group('node submission requested', () {
     test('supports value comparisons', () {
       expect(NodeSubmissionRequested(), NodeSubmissionRequested());

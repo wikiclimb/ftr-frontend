@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 
@@ -14,6 +15,8 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
   NodeEditBloc(this.editNode) : super(const NodeEditState()) {
     on<NodeDescriptionChanged>(_onNodeDescriptionChanged);
     on<NodeEditInitialize>(_onNodeEditInitialize);
+    on<NodeLatitudeChanged>(_onNodeLatitudeChanged);
+    on<NodeLongitudeChanged>(_onNodeLongitudeChanged);
     on<NodeNameChanged>(_onNodeNameChanged);
     on<NodeSubmissionRequested>(_onNodeSubmissionRequested);
   }
@@ -30,11 +33,16 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     // Pre-fill the form with the values found on the [Node].
     final name = NodeName.pure(_node.name);
     final description = NodeDescription.pure(_node.description ?? '');
+    final latitude = NodeLatitude.pure(_node.lat?.toString() ?? '');
+    final longitude = NodeLongitude.pure(_node.lng?.toString() ?? '');
+
     emit(
       state.copyWith(
         type: _node.type,
         name: name,
         description: description,
+        latitude: latitude,
+        longitude: longitude,
       ),
     );
   }
@@ -45,6 +53,28 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     emit(state.copyWith(
       name: name,
       status: _validate(name: name),
+    ));
+  }
+
+  void _onNodeLatitudeChanged(NodeLatitudeChanged event, Emitter emit) {
+    final latitude = NodeLatitude.dirty(event.latitude);
+    if (latitude.valid) {
+      _node = _node.rebuild((n) => n..lat = double.tryParse(event.latitude));
+    }
+    emit(state.copyWith(
+      latitude: latitude,
+      status: _validate(latitude: latitude),
+    ));
+  }
+
+  void _onNodeLongitudeChanged(NodeLongitudeChanged event, Emitter emit) {
+    final longitude = NodeLongitude.dirty(event.longitude);
+    if (longitude.valid) {
+      _node = _node.rebuild((n) => n..lng = double.tryParse(event.longitude));
+    }
+    emit(state.copyWith(
+      longitude: longitude,
+      status: _validate(longitude: longitude),
     ));
   }
 
@@ -82,10 +112,19 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
   FormzStatus _validate({
     NodeName? name,
     NodeDescription? description,
+    NodeLatitude? latitude,
+    NodeLongitude? longitude,
   }) {
-    return Formz.validate([
-      name ?? state.name,
-      description ?? state.description,
-    ]);
+    // Some fields are optional, name and description are required.
+    final fieldBuilder = BuiltSet<FormzInput>().toBuilder();
+    fieldBuilder.add(name ?? state.name);
+    fieldBuilder.add(description ?? state.description);
+    if (latitude != null || !state.latitude.pure) {
+      fieldBuilder.add(latitude ?? state.latitude);
+    }
+    if (longitude != null || !state.longitude.pure) {
+      fieldBuilder.add(longitude ?? state.longitude);
+    }
+    return Formz.validate(fieldBuilder.build().toList());
   }
 }

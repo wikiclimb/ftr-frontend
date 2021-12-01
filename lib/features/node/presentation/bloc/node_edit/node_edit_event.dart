@@ -34,4 +34,22 @@ class NodeDescriptionChanged extends NodeEditEvent {
   List<Object> get props => [description];
 }
 
+class NodeLatitudeChanged extends NodeEditEvent {
+  const NodeLatitudeChanged(this.latitude);
+
+  final String latitude;
+
+  @override
+  List<Object> get props => [latitude];
+}
+
+class NodeLongitudeChanged extends NodeEditEvent {
+  const NodeLongitudeChanged(this.longitude);
+
+  final String longitude;
+
+  @override
+  List<Object> get props => [longitude];
+}
+
 class NodeSubmissionRequested extends NodeEditEvent {}

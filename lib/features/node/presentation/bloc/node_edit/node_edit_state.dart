@@ -7,10 +7,14 @@ class NodeEditState extends Equatable {
     this.type = 0,
     this.name = const NodeName.pure(),
     this.description = const NodeDescription.pure(),
+    this.latitude = const NodeLatitude.pure(),
+    this.longitude = const NodeLongitude.pure(),
     this.node,
   });
 
   final NodeDescription description;
+  final NodeLatitude latitude;
+  final NodeLongitude longitude;
   final NodeName name;
   final Node? node;
   final FormzStatus status;
@@ -22,6 +26,8 @@ class NodeEditState extends Equatable {
         type,
         name,
         description,
+        latitude,
+        longitude,
       ];
 
   NodeEditState copyWith({
@@ -29,6 +35,8 @@ class NodeEditState extends Equatable {
     int? type,
     NodeName? name,
     NodeDescription? description,
+    NodeLatitude? latitude,
+    NodeLongitude? longitude,
     Node? node,
   }) {
     return NodeEditState(
@@ -36,6 +44,8 @@ class NodeEditState extends Equatable {
       type: type ?? this.type,
       name: name ?? this.name,
       description: description ?? this.description,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       node: node ?? this.node,
     );
   }

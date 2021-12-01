@@ -39,6 +39,10 @@ abstract class Node implements Built<Node, NodeBuilder> {
 
   int? get pointId;
 
+  double? get lat;
+
+  double? get lng;
+
   int? get updatedAt;
 
   String? get updatedBy;
