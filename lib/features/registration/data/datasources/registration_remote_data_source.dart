@@ -55,7 +55,7 @@ class RegistrationRemoteDataSourceImpl
   /// use their account.
   @override
   Future<Response> register(SignUpParams params) async {
-    final uri = Uri.https(EnvironmentConfig.apiUrl, 'register');
+    final uri = Uri.https(EnvironmentConfig.apiUrl, 'sign-up');
     final response = await handleRequest(
       method: 'post',
       client: _client,

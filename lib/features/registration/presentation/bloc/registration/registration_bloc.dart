@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
+import 'package:wikiclimb_flutter_frontend/core/entities/form_input/form_inputs.dart';
 
 import '../../../domain/entities/sign_up_params.dart';
 import '../../../domain/usecases/sign_up_with_email_password.dart';
@@ -48,9 +49,16 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     Emitter<RegistrationState> emit,
   ) {
     final password = Password.dirty(event.password);
+    final confirmedPassword = ConfirmedPassword.dirty(
+      password: password.value,
+      value: state.confirmedPassword.value,
+    );
     emit(state.copyWith(
       password: password,
-      status: _validate(password: password),
+      status: _validate(
+        password: password,
+        confirmedPassword: confirmedPassword,
+      ),
     ));
   }
 
@@ -58,11 +66,14 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     RegistrationPasswordRepeatChanged event,
     Emitter<RegistrationState> emit,
   ) {
-    final passwordRepeat = Password.dirty(event.passwordRepeat);
-    // TODO Pass a message about the problem.
+    final confirmedPassword = ConfirmedPassword.dirty(
+      value: event.passwordRepeat,
+      password: state.password.value,
+    );
     emit(state.copyWith(
-        passwordRepeat: passwordRepeat,
-        status: _validate(passwordRepeat: passwordRepeat)));
+      confirmedPassword: confirmedPassword,
+      status: _validate(confirmedPassword: confirmedPassword),
+    ));
   }
 
   void _onSubmitted(
@@ -94,13 +105,13 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     Email? email,
     Username? username,
     Password? password,
-    Password? passwordRepeat,
+    ConfirmedPassword? confirmedPassword,
   }) {
     return Formz.validate([
       email ?? state.email,
       username ?? state.username,
       password ?? state.password,
-      passwordRepeat ?? state.passwordRepeat,
+      confirmedPassword ?? state.confirmedPassword,
     ]);
   }
 }

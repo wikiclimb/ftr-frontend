@@ -108,7 +108,7 @@ class _EmailInput extends StatelessWidget {
             hintText: 'Email',
             filled: true,
             fillColor: Colors.white,
-            errorText: state.username.invalid ? 'invalid email' : null,
+            errorText: state.email.invalid ? 'Invalid email' : null,
             prefixIcon: Icon(
               Icons.email,
               color: Theme.of(context).primaryColorDark,
@@ -137,7 +137,9 @@ class _PasswordInput extends StatelessWidget {
             hintText: 'Password',
             filled: true,
             fillColor: Colors.white,
-            errorText: state.password.invalid ? 'invalid password' : null,
+            errorText: state.password.invalid
+                ? 'Invalid password. Use at least one letter and one digit'
+                : null,
             prefixIcon: Icon(
               Icons.lock,
               color: Theme.of(context).primaryColorDark,
@@ -154,7 +156,7 @@ class _PasswordRepeatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       buildWhen: (previous, current) =>
-          previous.passwordRepeat != current.passwordRepeat,
+          previous.confirmedPassword != current.confirmedPassword,
       builder: (context, state) {
         return TextField(
           key: const Key('registrationForm_passwordRepeatInput_textField'),
@@ -167,7 +169,9 @@ class _PasswordRepeatInput extends StatelessWidget {
             hintText: 'Re-enter Password',
             filled: true,
             fillColor: Colors.white,
-            errorText: state.password.invalid ? 'invalid password' : null,
+            errorText: state.confirmedPassword.invalid
+                ? 'Passwords do not match'
+                : null,
             prefixIcon: Icon(
               Icons.lock,
               color: Theme.of(context).primaryColorDark,

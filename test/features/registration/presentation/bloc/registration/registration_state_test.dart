@@ -1,12 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
+import 'package:wikiclimb_flutter_frontend/core/entities/form_input/form_inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/registration/presentation/bloc/registration/registration_bloc.dart';
 
 void main() {
   const tEmail = Email.dirty('email');
   const tUsername = Username.dirty('username');
   const tPassword = Password.dirty('password');
+  const tConfirmedPassword = ConfirmedPassword.dirty(
+    password: 'password_0',
+    value: 'password_0',
+  );
 
   group('RegistrationState', () {
     test('supports value comparisons', () {
@@ -49,8 +54,8 @@ void main() {
         'returns object with updated password repeat when '
         'password repeat is passed', () {
       expect(
-        RegistrationState().copyWith(passwordRepeat: tPassword),
-        RegistrationState(passwordRepeat: tPassword),
+        RegistrationState().copyWith(confirmedPassword: tConfirmedPassword),
+        RegistrationState(confirmedPassword: tConfirmedPassword),
       );
     });
   });

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:wikiclimb_flutter_frontend/core/entities/form_input/form_inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/registration/presentation/bloc/registration/registration_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/registration/presentation/widgets/registration_form.dart';
 

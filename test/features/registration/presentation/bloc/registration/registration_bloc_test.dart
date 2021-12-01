@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:wikiclimb_flutter_frontend/core/entities/form_input/form_inputs.dart';
 import 'package:wikiclimb_flutter_frontend/core/entities/response.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/features/registration/domain/entities/sign_up_params.dart';
@@ -17,8 +18,8 @@ class MockRegistrationWithUsernamePassword extends Mock
 void main() {
   late SignUpWithEmailPassword signUpUseCase;
   const tEmail = 't-email@example.com';
-  const tPassword = 'very-secret';
-  const tUsername = 'test-username';
+  const tPassword = 'very-secret_00!';
+  const tUsername = 'testUsername';
   final SignUpParams tParams = SignUpParams((p) => p
     ..email = tEmail
     ..password = tPassword
@@ -31,7 +32,7 @@ void main() {
     email: Email.pure(),
     username: Username.pure(),
     password: Password.pure(),
-    passwordRepeat: Password.pure(),
+    confirmedPassword: ConfirmedPassword.pure(),
   );
 
   setUpAll(() {
@@ -82,21 +83,30 @@ void main() {
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.valid,
         ),
         RegistrationState(
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.submissionInProgress,
         ),
         RegistrationState(
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.submissionSuccess,
         ),
       ],
@@ -138,21 +148,30 @@ void main() {
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.valid,
         ),
         RegistrationState(
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.submissionInProgress,
         ),
         RegistrationState(
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.submissionFailure,
         ),
       ],
@@ -194,21 +213,30 @@ void main() {
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.valid,
         ),
         RegistrationState(
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.submissionInProgress,
         ),
         RegistrationState(
           email: Email.dirty(tEmail),
           username: Username.dirty(tUsername),
           password: Password.dirty(tPassword),
-          passwordRepeat: Password.dirty(tPassword),
+          confirmedPassword: ConfirmedPassword.dirty(
+            value: tPassword,
+            password: tPassword,
+          ),
           status: FormzStatus.submissionFailure,
         ),
       ],
