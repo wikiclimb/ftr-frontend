@@ -16,6 +16,7 @@ void main() {
       expect(result, isA<NodeModel>());
       expect(result?.breadcrumbs, ['One', 'Two', 'Three']);
       expect(result?.id, 2);
+      expect(result?.ratingsCount, 27);
       expect(result?.lat, 82.099);
       expect(result?.lng, -173.09323);
     });
@@ -34,6 +35,7 @@ void main() {
         'description': 'test-area-3-description',
         'cover_url': 'https://placeimg.com/1990',
         'rating': 4.9,
+        'ratings_count': 27,
         'breadcrumbs': ['One', 'Three'],
         'created_by': 'test-user-2',
         'point_id': 7,

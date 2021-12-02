@@ -9,6 +9,8 @@ void main() {
       ..type = 1
       ..name = 'test-area-1'
       ..description = 'test-area-description'
+      ..rating = 3.4
+      ..ratingsCount = 27
       ..createdBy = 'test-user'
       ..createdAt = 1636899203
       ..updatedBy = 'test-user'
@@ -19,6 +21,8 @@ void main() {
       ..type = 1
       ..name = 'test-area-1'
       ..description = 'test-area-description'
+      ..rating = 3.4
+      ..ratingsCount = 27
       ..createdBy = 'test-user'
       ..createdAt = 1636899203
       ..updatedBy = 'test-user'
@@ -77,6 +81,7 @@ void main() {
       ..name = 'test-area-1'
       ..description = 'test-area-description'
       ..rating = 3.4
+      ..ratingsCount = 27
       ..breadcrumbs = BuiltList<String>(['One', 'Two']).toBuilder()
       ..pointId = 20
       ..coverUrl = 'https://coolpics/02210.jpg'
@@ -87,6 +92,7 @@ void main() {
     final updatedNode = tNode.rebuild((n) => n..parentId = 8);
     expect(updatedNode.id, 1234);
     expect(updatedNode.parentId, 8);
+    expect(updatedNode.ratingsCount, 27);
   });
 
   group('default values', () {});

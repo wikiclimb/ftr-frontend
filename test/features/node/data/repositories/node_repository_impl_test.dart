@@ -52,7 +52,14 @@ void main() {
     });
   });
 
-  group('delete', () {});
+  group('delete', () {
+    test('should throw unimplemented', () {
+      expect(
+        () => repository.delete(nodes.first),
+        throwsA(TypeMatcher<UnimplementedError>()),
+      );
+    });
+  });
 
   group('dispose', () {
     test('close the stream on dispose', () async {
@@ -136,7 +143,14 @@ void main() {
     });
   });
 
-  group('one', () {});
+  group('one', () {
+    test('should throw unimplemented', () {
+      expect(
+        () => repository.one(1),
+        throwsA(TypeMatcher<UnimplementedError>()),
+      );
+    });
+  });
 
   group('subscriptions', () {});
 

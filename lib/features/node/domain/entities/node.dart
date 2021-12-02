@@ -27,7 +27,7 @@ abstract class Node implements Built<Node, NodeBuilder> {
 
   double? get rating;
 
-  double? get ratingsCount;
+  int? get ratingsCount;
 
   BuiltList<String>? get breadcrumbs;
 

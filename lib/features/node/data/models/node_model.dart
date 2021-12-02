@@ -36,7 +36,7 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
   double? get rating;
 
   @BuiltValueField(wireName: 'ratings_count')
-  double? get ratingsCount;
+  int? get ratingsCount;
 
   BuiltList<String>? get breadcrumbs;
 
@@ -77,6 +77,7 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
       ..breadcrumbs = breadcrumbs?.toBuilder()
       ..coverUrl = coverUrl
       ..rating = rating
+      ..ratingsCount = ratingsCount
       ..pointId = pointId
       ..lat = lat
       ..lng = lng
@@ -101,6 +102,7 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
       ..breadcrumbs = node.breadcrumbs?.toBuilder()
       ..coverUrl = node.coverUrl
       ..rating = node.rating
+      ..ratingsCount = node.ratingsCount
       ..pointId = node.pointId
       ..lat = node.lat
       ..lng = node.lng

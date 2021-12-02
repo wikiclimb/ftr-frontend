@@ -6,6 +6,7 @@
   "name": "test-area-2",
   "description": "test-area-2-description",
   "rating": 4.9,
+  "ratings_count": 27,
   "breadcrumbs": ["One", "Two", "Three"],
   "point_id": 42,
   "lat": 82.099,
