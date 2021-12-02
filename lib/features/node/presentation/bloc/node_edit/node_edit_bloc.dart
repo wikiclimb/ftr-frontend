@@ -3,6 +3,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 
+import '../../../../../core/utils/locator.dart';
 import '../../../domain/entities/inputs/inputs.dart';
 import '../../../domain/entities/node.dart';
 import '../../../domain/usecases/edit_node.dart';
@@ -12,16 +13,22 @@ part 'node_edit_state.dart';
 
 /// Handle node edit form status.
 class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
-  NodeEditBloc(this.editNode) : super(const NodeEditState()) {
+  NodeEditBloc({
+    required this.editNode,
+    required this.locator,
+  }) : super(const NodeEditState()) {
     on<NodeDescriptionChanged>(_onNodeDescriptionChanged);
     on<NodeEditInitialize>(_onNodeEditInitialize);
     on<NodeLatitudeChanged>(_onNodeLatitudeChanged);
     on<NodeLongitudeChanged>(_onNodeLongitudeChanged);
     on<NodeNameChanged>(_onNodeNameChanged);
     on<NodeSubmissionRequested>(_onNodeSubmissionRequested);
+    on<NodeGeolocationRequested>(_onNodeGeolocationRequested);
   }
 
   final EditNode editNode;
+  final Locator locator;
+
   late Node _node;
 
   void _onNodeEditInitialize(
@@ -105,6 +112,33 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
         node: resultNode,
       ));
     });
+  }
+
+  void _onNodeGeolocationRequested(
+      NodeGeolocationRequested event, Emitter emit) async {
+    emit(state.copyWith(glStatus: GeolocationRequestStatus.requested));
+    try {
+      final position = await locator.determinePosition();
+      _node = _node.rebuild((n) => n
+        ..lng = position.longitude
+        ..lat = position.latitude);
+      final longitude = NodeLongitude.dirty(position.longitude.toString());
+      final latitude = NodeLatitude.dirty(position.latitude.toString());
+      emit(state.copyWith(
+        glStatus: GeolocationRequestStatus.success,
+        longitude: longitude,
+        latitude: latitude,
+        status: _validate(),
+      ));
+      // Restore the state
+      await Future.delayed(const Duration(milliseconds: 300));
+      emit(state.copyWith(glStatus: GeolocationRequestStatus.done));
+    } catch (_) {
+      emit(state.copyWith(glStatus: GeolocationRequestStatus.failure));
+      // Restore the state
+      await Future.delayed(const Duration(milliseconds: 300));
+      emit(state.copyWith(glStatus: GeolocationRequestStatus.initial));
+    }
   }
 
   // Extract the validation logic to avoid copying property names

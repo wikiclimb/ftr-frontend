@@ -11,7 +11,7 @@ import 'presentation/bloc/node_edit/node_edit_bloc.dart';
 void initNodeFeature(GetIt sl) {
   // Bloc
   sl.registerFactory<NodeEditBloc>(
-    () => NodeEditBloc(sl()),
+    () => NodeEditBloc(editNode: sl(), locator: sl()),
   );
   sl.registerFactory<AddNodeImagesBloc>(
     () => AddNodeImagesBloc(sl()),

@@ -4,9 +4,10 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mocktail/mocktail.dart';
-
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
+import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/node_description.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/node_name.dart';
@@ -18,19 +19,23 @@ import '../../../../../fixtures/node/nodes.dart';
 
 class MockEditNode extends Mock implements EditNode {}
 
+class MockLocator extends Mock implements Locator {}
+
 void main() {
   late EditNode mockEditNode;
+  late final Locator mockLocator;
 
   setUpAll(() {
     registerFallbackValue(nodes.first);
-  });
-
-  setUp(() {
+    mockLocator = MockLocator();
     mockEditNode = MockEditNode();
   });
 
   test('initial state', () {
-    final bloc = NodeEditBloc(mockEditNode);
+    final bloc = NodeEditBloc(
+      editNode: mockEditNode,
+      locator: mockLocator,
+    );
     expect(bloc.state, NodeEditState());
   });
 
@@ -38,7 +43,10 @@ void main() {
     final tNode = nodes.first.rebuild((p0) => p0..type = 9);
     blocTest<NodeEditBloc, NodeEditState>(
       'valid name emits new valid state',
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) => bloc.add(NodeEditInitialize(tNode)),
       expect: () => <NodeEditState>[
         NodeEditState(
@@ -54,7 +62,10 @@ void main() {
     final tNode = nodes.first;
     blocTest<NodeEditBloc, NodeEditState>(
       'valid name emits new valid state',
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
@@ -81,7 +92,10 @@ void main() {
 
     blocTest<NodeEditBloc, NodeEditState>(
       'valid longitude emits new valid state',
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeLongitudeChanged(tLongitude));
@@ -110,7 +124,10 @@ void main() {
     final tNode = nodes.first;
     blocTest<NodeEditBloc, NodeEditState>(
       'valid description emits new valid state',
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeDescriptionChanged('new description'));
@@ -167,7 +184,10 @@ void main() {
           (_) async => Right(nodes.first),
         );
       },
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) async {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
@@ -211,7 +231,10 @@ void main() {
           (_) async => Right(nodes.first),
         );
       },
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) async {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
@@ -245,7 +268,10 @@ void main() {
           (_) async => Left(UnauthorizedFailure()),
         );
       },
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) async {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
@@ -303,7 +329,10 @@ void main() {
           (_) async => Right(nodes.first),
         );
       },
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) async {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
@@ -333,7 +362,10 @@ void main() {
           (_) async => Left(UnauthorizedFailure()),
         );
       },
-      build: () => NodeEditBloc(mockEditNode),
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
       act: (bloc) async {
         bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
@@ -349,6 +381,93 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockEditNode(expected)).called(1);
+      },
+    );
+  });
+
+  group('geolocation requested', () {
+    const tLatitude = 22.0;
+    const tLongitude = -100.0;
+    final tNode = nodes.first;
+    final tPosition = Position(
+      longitude: tLongitude,
+      latitude: tLatitude,
+      timestamp: DateTime.now(),
+      accuracy: 1.0,
+      altitude: 300,
+      heading: 2.0,
+      speed: 2.0,
+      speedAccuracy: 2.0,
+    );
+    final state = NodeEditState(
+      type: 1,
+      name: NodeName.pure(tNode.name),
+      description: NodeDescription.pure(tNode.description ?? ''),
+    );
+    final state1 = state.copyWith(glStatus: GeolocationRequestStatus.requested);
+    final state2 = state1.copyWith(
+      glStatus: GeolocationRequestStatus.success,
+      latitude: NodeLatitude.dirty(tLatitude.toString()),
+      longitude: NodeLongitude.dirty(tLongitude.toString()),
+    );
+    final state3 = state2.copyWith(glStatus: GeolocationRequestStatus.done);
+
+    blocTest<NodeEditBloc, NodeEditState>(
+      'with success result',
+      setUp: () {
+        when(() => mockLocator.determinePosition())
+            .thenAnswer((_) async => tPosition);
+      },
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
+      act: (bloc) async {
+        bloc.add(NodeEditInitialize(tNode));
+        bloc.add(NodeGeolocationRequested());
+      },
+      wait: Duration(milliseconds: 500),
+      expect: () => <NodeEditState>[
+        state,
+        state1,
+        state2,
+        state3,
+      ],
+      verify: (_) {
+        verify(() => mockLocator.determinePosition()).called(1);
+      },
+    );
+
+    final state2Failure = state1.copyWith(
+      glStatus: GeolocationRequestStatus.failure,
+    );
+    final state3Failure = state2Failure.copyWith(
+      glStatus: GeolocationRequestStatus.initial,
+    );
+
+    blocTest<NodeEditBloc, NodeEditState>(
+      'with failure result',
+      setUp: () {
+        when(() => mockLocator.determinePosition())
+            .thenAnswer((_) => Future.error('location error'));
+      },
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+      ),
+      act: (bloc) async {
+        bloc.add(NodeEditInitialize(tNode));
+        bloc.add(NodeGeolocationRequested());
+      },
+      wait: Duration(milliseconds: 500),
+      expect: () => <NodeEditState>[
+        state,
+        state1,
+        state2Failure,
+        state3Failure,
+      ],
+      verify: (_) {
+        verify(() => mockLocator.determinePosition()).called(1);
       },
     );
   });

@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
-
+import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
 import 'package:wikiclimb_flutter_frontend/core/widgets/decoration/photo_sliver_app_bar.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_list.dart';
@@ -28,6 +28,8 @@ class MockAuthenticationBloc
     implements AuthenticationBloc {}
 
 class MockEditNode extends Mock implements EditNode {}
+
+class MockLocator extends Mock implements Locator {}
 
 class MockImageListBloc extends MockBloc<ImageListEvent, ImageListState>
     implements ImageListBloc {}
@@ -55,6 +57,7 @@ extension on WidgetTester {
 void main() {
   late final AuthenticationBloc mockAuthBloc;
   late final ImageListBloc mockImageListBloc;
+  late final Locator mockLocator;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -63,7 +66,13 @@ void main() {
 
   setUpAll(() async {
     final sl = GetIt.instance;
-    sl.registerLazySingleton<NodeEditBloc>(() => NodeEditBloc(MockEditNode()));
+    mockLocator = MockLocator();
+    sl.registerLazySingleton<NodeEditBloc>(
+      () => NodeEditBloc(
+        editNode: MockEditNode(),
+        locator: mockLocator,
+      ),
+    );
     registerFallbackValue(FakeAuthenticationState());
     mockImageListBloc = MockImageListBloc();
     when(() => mockImageListBloc.state).thenAnswer(

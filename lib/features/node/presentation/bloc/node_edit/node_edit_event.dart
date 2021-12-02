@@ -52,4 +52,6 @@ class NodeLongitudeChanged extends NodeEditEvent {
   List<Object> get props => [longitude];
 }
 
+class NodeGeolocationRequested extends NodeEditEvent {}
+
 class NodeSubmissionRequested extends NodeEditEvent {}

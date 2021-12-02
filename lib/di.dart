@@ -2,6 +2,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
 
 import 'core/authentication/authentication_provider.dart';
 import 'core/di.dart';
@@ -30,4 +31,5 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton<Locator>(() => LocatorImpl());
 }

@@ -3,7 +3,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
-
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 
 void main() {
@@ -13,10 +12,12 @@ void main() {
 
   group('copy with', () {
     final tNodeEditState = NodeEditState();
+    const tGlStatus = GeolocationRequestStatus.requested;
     final tLatitude = NodeLatitude.dirty('82.31');
     final tLongitude = NodeLongitude.dirty('-134.002');
     late NodeEditState tEdited;
     late NodeEditState tEdited2;
+    late NodeEditState tEdited3;
     setUp(() {
       tEdited = tNodeEditState.copyWith(
         status: FormzStatus.submissionFailure,
@@ -28,6 +29,7 @@ void main() {
         latitude: tLatitude,
         longitude: tLongitude,
       );
+      tEdited3 = tNodeEditState.copyWith(glStatus: tGlStatus);
     });
 
     test('updates the values', () {
@@ -35,6 +37,10 @@ void main() {
       expect(tEdited.status, FormzStatus.submissionFailure);
       expect(tEdited2.latitude, tLatitude);
       expect(tEdited2.longitude, tLongitude);
+    });
+
+    test('updates geolocation request status', () {
+      expect(tEdited3.glStatus, tGlStatus);
     });
   });
 }

@@ -13,28 +13,16 @@ import '../../bloc/node_edit/node_edit_bloc.dart';
 class NodeDetailsForm extends StatelessWidget {
   const NodeDetailsForm({Key? key}) : super(key: key);
 
-  final fieldGap = 12.0;
+  static const fieldGap = 12.0;
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<NodeEditBloc, NodeEditState>(
       listener: (context, state) {
         if (state.status.isSubmissionFailure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(
-                content: Text('Submission failure'),
-              ),
-            );
+          _displayMessage(context, 'Submission failure');
         } else if (state.status.isSubmissionSuccess) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(
-                content: Text('Submission success'),
-              ),
-            );
+          _displayMessage(context, 'Submission success');
           final node = state.node;
           if (node != null) {
             if (node.type == 1) {
@@ -42,6 +30,14 @@ class NodeDetailsForm extends StatelessWidget {
                 builder: (context) => AreaDetailsScreen(area: node),
               ));
             }
+          }
+        } else {
+          // Formz status pure, valid, invalid, submission in progress...
+          // The user is still filling the form
+          if (state.glStatus == GeolocationRequestStatus.success) {
+            _displayMessage(context, 'Located');
+          } else if (state.glStatus == GeolocationRequestStatus.failure) {
+            _displayMessage(context, 'Geolocation failure');
           }
         }
       },
@@ -51,7 +47,7 @@ class NodeDetailsForm extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: const [
               _NodeNameInput(),
               SizedBox(height: fieldGap),
               _NodeDescriptionInput(),
@@ -60,13 +56,24 @@ class NodeDetailsForm extends StatelessWidget {
               SizedBox(height: fieldGap),
               _NodeLongitudeInput(),
               SizedBox(height: fieldGap),
-              const _SubmitButton()
+              _RequestGeolocationButton(),
+              _SubmitButton()
             ],
           ),
         ),
       ),
     );
   }
+}
+
+void _displayMessage(BuildContext context, String message) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
 }
 
 class _NodeEditAppBarTitle extends StatelessWidget {
@@ -113,6 +120,8 @@ class _SubmitButton extends StatelessWidget {
 }
 
 class _NodeNameInput extends StatelessWidget {
+  const _NodeNameInput({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NodeEditBloc, NodeEditState>(
@@ -137,6 +146,8 @@ class _NodeNameInput extends StatelessWidget {
 }
 
 class _NodeDescriptionInput extends StatelessWidget {
+  const _NodeDescriptionInput({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NodeEditBloc, NodeEditState>(
@@ -165,11 +176,20 @@ class _NodeDescriptionInput extends StatelessWidget {
 }
 
 class _NodeLongitudeInput extends StatelessWidget {
+  const _NodeLongitudeInput({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NodeEditBloc, NodeEditState>(
-      buildWhen: (previous, current) => previous.longitude != current.longitude,
+      buildWhen: (previous, current) => previous.glStatus != current.glStatus,
       builder: (context, state) {
+        if (state.glStatus == GeolocationRequestStatus.done) {
+          return Container(
+            key: const Key(
+              'nodeDetailsForm_nodeLongitudeInput_noTextFieldContainer',
+            ),
+          );
+        }
         return TextField(
           minLines: 2,
           maxLines: 10,
@@ -194,11 +214,20 @@ class _NodeLongitudeInput extends StatelessWidget {
 }
 
 class _NodeLatitudeInput extends StatelessWidget {
+  const _NodeLatitudeInput({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NodeEditBloc, NodeEditState>(
-      buildWhen: (previous, current) => previous.latitude != current.latitude,
+      buildWhen: (previous, current) => previous.glStatus != current.glStatus,
       builder: (context, state) {
+        if (state.glStatus == GeolocationRequestStatus.done) {
+          return Container(
+            key: const Key(
+              'nodeDetailsForm_nodeLatitudeInput_noTextFieldContainer',
+            ),
+          );
+        }
         return TextField(
           minLines: 2,
           maxLines: 10,
@@ -216,6 +245,47 @@ class _NodeLatitudeInput extends StatelessWidget {
                 ? 'Invalid value. Try between -90.0 and 90.0'
                 : null,
           ),
+        );
+      },
+    );
+  }
+}
+
+class _RequestGeolocationButton extends StatelessWidget {
+  const _RequestGeolocationButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NodeEditBloc, NodeEditState>(
+      buildWhen: (previous, current) => previous.glStatus != current.glStatus,
+      builder: (context, state) {
+        if (state.glStatus == GeolocationRequestStatus.done ||
+            state.glStatus == GeolocationRequestStatus.success) {
+          return Container(
+            key: const Key(
+              'nodeDetailsForm_requestGeolocation_noElevatedButtonContainer',
+            ),
+          );
+        }
+        if (state.glStatus == GeolocationRequestStatus.requested) {
+          return const ElevatedButton(
+            key: Key('nodeEditForm_requestGeolocation_elevatedButton'),
+            child: Center(
+              child: SizedBox(
+                height: 16,
+                width: 16,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            onPressed: null,
+          );
+        }
+        return ElevatedButton(
+          key: const Key('nodeEditForm_requestGeolocation_elevatedButton'),
+          child: const Text('Use current location'),
+          onPressed: () {
+            context.read<NodeEditBloc>().add(NodeGeolocationRequested());
+          },
         );
       },
     );

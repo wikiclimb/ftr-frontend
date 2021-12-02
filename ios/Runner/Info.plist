@@ -47,5 +47,9 @@
 	<string>Publish images</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Video support is planned</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>WikiClimb wants to use your location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>WikiClimb wants to use your location when in the background.</string>
 </dict>
 </plist>

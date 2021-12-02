@@ -291,4 +291,154 @@ main() {
       verify(() => mockNodeEditBloc.add(NodeSubmissionRequested())).called(1);
     });
   });
+
+  group('geolocation', () {
+    group('feedback', () {
+      testWidgets('obtain location success triggers snackbar', (tester) async {
+        whenListen(
+          mockNodeEditBloc,
+          Stream.fromIterable([
+            NodeEditState(glStatus: GeolocationRequestStatus.requested),
+            NodeEditState(glStatus: GeolocationRequestStatus.success),
+            NodeEditState(glStatus: GeolocationRequestStatus.done),
+          ]),
+        );
+        when(() => mockNodeEditBloc.state).thenReturn(
+          NodeEditState(glStatus: GeolocationRequestStatus.success),
+        );
+        await tester.pumpForm(
+          nodeEditBloc: mockNodeEditBloc,
+          authenticationBloc: mockAuthBloc,
+        );
+        await tester.pump();
+        expect(find.byType(SnackBar), findsOneWidget);
+        expectLater(find.text('Located'), findsOneWidget);
+      });
+
+      testWidgets('obtain location failure triggers snackbar', (tester) async {
+        whenListen(
+          mockNodeEditBloc,
+          Stream.fromIterable([
+            NodeEditState(glStatus: GeolocationRequestStatus.requested),
+            NodeEditState(glStatus: GeolocationRequestStatus.failure),
+            NodeEditState(glStatus: GeolocationRequestStatus.initial),
+          ]),
+        );
+        when(() => mockNodeEditBloc.state).thenReturn(
+          NodeEditState(glStatus: GeolocationRequestStatus.failure),
+        );
+        await tester.pumpForm(
+          nodeEditBloc: mockNodeEditBloc,
+          authenticationBloc: mockAuthBloc,
+        );
+        await tester.pump();
+        expect(find.byType(SnackBar), findsOneWidget);
+        expectLater(find.text('Geolocation failure'), findsOneWidget);
+      });
+    });
+
+    group('widgets', () {
+      testWidgets('while request is being processed button displays loading',
+          (tester) async {
+        whenListen(
+          mockNodeEditBloc,
+          Stream.fromIterable([
+            NodeEditState(glStatus: GeolocationRequestStatus.requested),
+          ]),
+        );
+        when(() => mockNodeEditBloc.state).thenReturn(
+          NodeEditState(glStatus: GeolocationRequestStatus.requested),
+        );
+        await tester.pumpForm(
+          nodeEditBloc: mockNodeEditBloc,
+          authenticationBloc: mockAuthBloc,
+        );
+        final finder = find.descendant(
+          of: find.byKey(
+            Key('nodeEditForm_requestGeolocation_elevatedButton'),
+          ),
+          matching: find.byType(CircularProgressIndicator),
+        );
+        expect(finder, findsOneWidget);
+      });
+
+      testWidgets('location success hides location widgets', (tester) async {
+        whenListen(
+          mockNodeEditBloc,
+          Stream.fromIterable([
+            NodeEditState(glStatus: GeolocationRequestStatus.done),
+          ]),
+        );
+        when(() => mockNodeEditBloc.state).thenReturn(
+          NodeEditState(glStatus: GeolocationRequestStatus.done),
+        );
+        await tester.pumpForm(
+          nodeEditBloc: mockNodeEditBloc,
+          authenticationBloc: mockAuthBloc,
+        );
+        expect(
+          find.byKey(
+            Key('nodeDetailsForm_nodeLongitudeInput_noTextFieldContainer'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(
+            Key('nodeDetailsForm_nodeLatitudeInput_noTextFieldContainer'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(
+            Key('nodeDetailsForm_requestGeolocation_noElevatedButtonContainer'),
+          ),
+          findsOneWidget,
+        );
+      });
+    });
+
+    group('request geolocation', () {
+      testWidgets('does not trigger event if other request is being processed',
+          (tester) async {
+        whenListen(
+          mockNodeEditBloc,
+          Stream.fromIterable([
+            NodeEditState(glStatus: GeolocationRequestStatus.requested),
+          ]),
+        );
+        when(() => mockNodeEditBloc.state).thenReturn(
+          NodeEditState(glStatus: GeolocationRequestStatus.requested),
+        );
+        await tester.pumpForm(
+          nodeEditBloc: mockNodeEditBloc,
+          authenticationBloc: mockAuthBloc,
+        );
+        await tester.tap(find.byKey(
+          Key('nodeEditForm_requestGeolocation_elevatedButton'),
+        ));
+        verifyNever(() => mockNodeEditBloc.add(NodeGeolocationRequested()));
+      });
+
+      testWidgets('if form is valid it triggers the event', (tester) async {
+        whenListen(
+          mockNodeEditBloc,
+          Stream.fromIterable([
+            NodeEditState(glStatus: GeolocationRequestStatus.initial),
+          ]),
+        );
+        when(() => mockNodeEditBloc.state).thenReturn(
+          NodeEditState(glStatus: GeolocationRequestStatus.initial),
+        );
+        await tester.pumpForm(
+          nodeEditBloc: mockNodeEditBloc,
+          authenticationBloc: mockAuthBloc,
+        );
+        await tester.tap(find.byKey(
+          Key('nodeEditForm_requestGeolocation_elevatedButton'),
+        ));
+        verify(() => mockNodeEditBloc.add(NodeGeolocationRequested()))
+            .called(1);
+      });
+    });
+  });
 }
