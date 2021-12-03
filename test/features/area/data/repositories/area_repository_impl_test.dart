@@ -100,11 +100,11 @@ void main() {
       when(() => mockNodeRepository.fetchPage(params: any(named: 'params')))
           .thenAnswer((_) async => Right(tNodePage));
       repository.fetchPage(
-        params: {'q': 'test', 'page': 3},
+        params: {'q': 'test', 'page': '3'},
         page: 3,
       );
       verify(() => mockNodeRepository.fetchPage(
-            params: {'type': '1', 'q': 'test', 'page': 3},
+            params: {'type': '1', 'q': 'test', 'page': '3'},
           )).called(1);
       verifyNoMoreInteractions(mockNodeRepository);
     },

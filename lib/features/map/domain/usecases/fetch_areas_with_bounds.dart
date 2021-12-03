@@ -19,21 +19,21 @@ class FetchAreasWithBounds extends FetchAllAreas {
   void fetch({
     required MapPosition position,
     required BuiltSet<Node> nodes,
-    Map<String, dynamic>? params,
+    Map<String, String>? params,
   }) {
     final bounds = position.bounds;
     if (bounds == null) {
       // Ignore calls where bounds are null.
       return;
     }
-    final Map<String, dynamic> _params = {
-      'north': bounds.north,
-      'east': bounds.east,
-      'south': bounds.south,
-      'west': bounds.west,
-      'exclude': nodes.map((n) => n.id),
-      'bounded': true,
-      'per-page': maxNodesFetched,
+    final Map<String, String> _params = {
+      'north': bounds.north.toString(),
+      'east': bounds.east.toString(),
+      'south': bounds.south.toString(),
+      'west': bounds.west.toString(),
+      'exclude': nodes.map((n) => n.id).join(','),
+      'bounded': 'true',
+      'per-page': maxNodesFetched.toString(),
     };
     if (params != null) {
       _params.addAll(params);

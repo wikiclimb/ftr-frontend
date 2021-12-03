@@ -11,7 +11,7 @@ abstract class AreaRepository {
 
   /// Push one page of data to the subscription.
   Future<Either<Failure, Page<Node>>> fetchPage(
-      {Map<String, dynamic>? params, int? page});
+      {Map<String, String>? params, int? page});
 
   /// Fetch data for one area.
   Future<Either<Failure, Node>> one(int id);

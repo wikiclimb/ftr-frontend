@@ -68,8 +68,8 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
     ));
   }
 
-  Map<String, dynamic> _getParams() {
-    Map<String, dynamic> params = {};
+  Map<String, String> _getParams() {
+    Map<String, String> params = {};
     if (state.nextPage > 0) {
       params.addAll({'page': state.nextPage.toString()});
     }

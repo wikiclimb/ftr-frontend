@@ -7,7 +7,7 @@ import '../../../node/domain/entities/node.dart';
 import '../repository/area_repository.dart';
 
 /// Fetch all areas without any criteria.
-class FetchAllAreas extends PagedSubscription<Node, Map<String, dynamic>> {
+class FetchAllAreas extends PagedSubscription<Node, Map<String, String>> {
   FetchAllAreas({required AreaRepository repository})
       : _repository = repository;
 
@@ -19,7 +19,7 @@ class FetchAllAreas extends PagedSubscription<Node, Map<String, dynamic>> {
   }
 
   @override
-  void fetchPage({Map<String, dynamic>? params}) {
+  void fetchPage({Map<String, String>? params}) {
     _repository.fetchPage(params: params);
   }
 

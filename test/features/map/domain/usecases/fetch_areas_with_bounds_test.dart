@@ -28,14 +28,14 @@ void main() {
   const tSouth = 20.73;
   const tWest = -11.54;
   final List<Node> tNodes = nodes;
-  final tParams = {
-    'north': tNorth,
-    'east': tEast,
-    'south': tSouth,
-    'west': tWest,
-    'exclude': nodes.map((n) => n.id),
-    'bounded': true,
-    'per-page': 1000,
+  final Map<String, String> tParams = {
+    'north': tNorth.toString(),
+    'east': tEast.toString(),
+    'south': tSouth.toString(),
+    'west': tWest.toString(),
+    'exclude': nodes.map((n) => n.id).join(','),
+    'bounded': 'true',
+    'per-page': '1000',
   };
 
   setUpAll(() {
@@ -66,9 +66,9 @@ void main() {
     usecase.fetch(
       position: tPosition,
       nodes: BuiltSet(tNodes),
-      params: {'page': 3},
+      params: {'page': '3'},
     );
-    final expectedParams = {...tParams, 'page': 3};
+    final Map<String, String> expectedParams = {...tParams, 'page': '3'};
     verify(() => mockAreaRepository.fetchPage(params: expectedParams))
         .called(1);
   });

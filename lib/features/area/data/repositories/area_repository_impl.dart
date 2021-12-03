@@ -24,8 +24,8 @@ class AreaRepositoryImpl extends AreaRepository {
 
   @override
   Future<Either<Failure, Page<Node>>> fetchPage(
-      {Map<String, dynamic>? params, int? page}) {
-    Map<String, dynamic> newParams = {'type': '1'};
+      {Map<String, String>? params, int? page}) {
+    Map<String, String> newParams = {'type': '1'};
     newParams.addAll(params ?? {});
     return nodeRepository.fetchPage(params: newParams);
   }

@@ -17,7 +17,7 @@ abstract class NodeRemoteDataSource {
   ///
   /// Throws a [ServerException] for server response codes.
   /// Throws a [NetworkException] for network errors.
-  Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params);
+  Future<Page<NodeModel>> fetchAll(Map<String, String>? params);
 
   /// Calls the node POST endpoint with the given parameters.
   ///
@@ -66,7 +66,7 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
   }
 
   @override
-  Future<Page<NodeModel>> fetchAll(Map<String, dynamic>? params) async {
+  Future<Page<NodeModel>> fetchAll(Map<String, String>? params) async {
     final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
     final response = await handleRequest(client: client, uri: uri);
     try {

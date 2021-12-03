@@ -47,7 +47,7 @@ class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {
 
   @override
   Future<Either<Failure, Page<Node>>> fetchPage(
-      {Map<String, dynamic>? params}) async {
+      {Map<String, String>? params}) async {
     try {
       final nodeModelPage = await remoteDataSource.fetchAll(params ?? {});
       final nodePage = Page<Node>(

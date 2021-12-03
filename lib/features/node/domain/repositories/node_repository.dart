@@ -13,7 +13,7 @@ abstract class NodeRepository {
   ///
   /// The method also returns the given page in case the consumer does not want
   /// to subscribe to the [Stream].
-  Future<Either<Failure, Page<Node>>> fetchPage({Map<String, dynamic>? params});
+  Future<Either<Failure, Page<Node>>> fetchPage({Map<String, String>? params});
 
   /// Fetch data for one [Node].
   Future<Either<Failure, Node>> one(int id);
