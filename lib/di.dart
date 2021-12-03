@@ -2,14 +2,15 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
 
 import 'core/authentication/authentication_provider.dart';
 import 'core/di.dart';
+import 'core/utils/locator.dart';
 import 'features/area/di.dart';
 import 'features/authentication/di.dart';
 import 'features/image/di.dart';
 import 'features/login/di.dart';
+import 'features/map/di.dart';
 import 'features/node/di.dart';
 import 'features/registration/di.dart';
 
@@ -24,6 +25,7 @@ Future<void> init() async {
   initAuthenticationFeature(sl);
   initImageFeature(sl);
   initLoginFeature(sl);
+  initMapFeature(sl);
   initNodeFeature(sl);
   initRegistrationFeature(sl);
   initCore(sl);

@@ -12,6 +12,7 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/
 import 'package:wikiclimb_flutter_frontend/features/home/presentation/screens/home_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/screens/login_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/widgets/login_drawer_tile.dart';
+import 'package:wikiclimb_flutter_frontend/features/map/presentation/screens/map_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/registration/presentation/screens/registration_screen.dart';
 
 extension on WidgetTester {
@@ -27,7 +28,8 @@ extension on WidgetTester {
             ),
             routes: {
               AreaListScreen.id: (context) => MockAreaListScreen(),
-              RegistrationScreen.id: (context) => MockRegistrationScreen()
+              RegistrationScreen.id: (context) => MockRegistrationScreen(),
+              MapScreen.id: (context) => MockMapScreen(),
             },
           ),
         ),
@@ -141,6 +143,37 @@ void main() {
       },
     );
   });
+
+  group('map tile', () {
+    testWidgets(
+      'is visible and navigates to map screen on tap',
+      (WidgetTester tester) async {
+        when(() => authBloc.state)
+            .thenAnswer((_) => AuthenticationUnauthenticated());
+        await tester.pumpIt(authBloc, LoginScreen.id);
+        expect(
+          find.byKey(Key('mainDrawer_mapDrawerTile')),
+          findsOneWidget,
+        );
+        final finder = find.text('Map');
+        expect(finder, findsOneWidget);
+        expect(find.byIcon(Icons.map), findsOneWidget);
+        await tester.tap(finder);
+        await tester.pumpAndSettle();
+        expect(find.byType(MockMapScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'is not visible when in map route',
+      (WidgetTester tester) async {
+        when(() => authBloc.state)
+            .thenAnswer((_) => AuthenticationUnauthenticated());
+        await tester.pumpIt(authBloc, MapScreen.id);
+        expect(find.byKey(Key('mainDrawer_mapDrawerTile')), findsNothing);
+      },
+    );
+  });
 }
 
 class MockAreaListScreen extends StatelessWidget {
@@ -161,6 +194,17 @@ class MockRegistrationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text('Mock Registration Screen'),
+    );
+  }
+}
+
+class MockMapScreen extends StatelessWidget {
+  const MockMapScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Mock Map Screen'),
     );
   }
 }

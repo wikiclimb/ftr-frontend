@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/map/presentation/screens/map_screen.dart';
 
 import '../../../features/area/presentation/screens/area_list_screen.dart';
 import '../../../features/authentication/presentation/bloc/authentication_bloc.dart';
@@ -23,6 +24,8 @@ class MainDrawer extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
+            if (currentRoute != MapScreen.id)
+              const MapTile(key: Key('mainDrawer_mapDrawerTile')),
             if (currentRoute != AreaListScreen.id) const AreasTile(),
             if (currentRoute != LoginScreen.id) const LoginDrawerTile(),
             if (context.read<AuthenticationBloc>().state
@@ -48,6 +51,23 @@ class AreasTile extends StatelessWidget {
       onTap: () {
         Navigator.pop(context);
         Navigator.pushNamed(context, AreaListScreen.id);
+      },
+    );
+  }
+}
+
+class MapTile extends StatelessWidget {
+  const MapTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      key: const Key('mainDrawer_mapListTile'),
+      leading: const Icon(Icons.map),
+      title: const Text('Map'),
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, MapScreen.id);
       },
     );
   }
