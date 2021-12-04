@@ -3,23 +3,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 
-import '../../../../../fixtures/node/nodes.dart';
-
 void main() {
-  test('supports value comparisons', () {
-    final tNode = nodes.first;
-    expect(NodeEditInitialize(tNode).props, [tNode]);
-    expect(NodeEditInitialize(tNode), NodeEditInitialize(tNode));
-    expect(
-      NodeEditInitialize(tNode),
-      isNot(
-        equals(
-          NodeEditInitialize(tNode.rebuild((p0) => p0..name = 'new-name')),
-        ),
-      ),
-    );
-  });
-
   group('node name changed', () {
     test('supports value comparisons', () {
       const name = 'test name';
@@ -64,6 +48,14 @@ void main() {
   group('node submission requested', () {
     test('supports value comparisons', () {
       expect(NodeSubmissionRequested(), NodeSubmissionRequested());
+    });
+  });
+
+  group('node cover update requested', () {
+    const tName = 'file.jpg';
+    test('supports value comparisons', () {
+      expect(NodeCoverUpdateRequested(tName), NodeCoverUpdateRequested(tName));
+      expect(NodeCoverUpdateRequested(tName).props, [tName]);
     });
   });
 }

@@ -5,13 +5,15 @@ import 'package:formz/formz.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 
+import '../../../../../fixtures/node/nodes.dart';
+
 void main() {
   test('initial equality', () {
-    expect(NodeEditState(), NodeEditState());
+    expect(NodeEditState(node: nodes.first), NodeEditState(node: nodes.first));
   });
 
   group('copy with', () {
-    final tNodeEditState = NodeEditState();
+    final tNodeEditState = NodeEditState(node: nodes.first);
     const tGlStatus = GeolocationRequestStatus.requested;
     final tLatitude = NodeLatitude.dirty('82.31');
     final tLongitude = NodeLongitude.dirty('-134.002');

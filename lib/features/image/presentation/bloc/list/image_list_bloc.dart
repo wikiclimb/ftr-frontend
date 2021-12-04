@@ -4,11 +4,12 @@ import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
-import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/domain/entities/image.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/domain/usecases/fetch_all_images.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
+
+import '../../../../../core/collections/page.dart';
+import '../../../../../core/error/failure.dart';
+import '../../../../node/domain/entities/node.dart';
+import '../../../domain/entities/image.dart';
+import '../../../domain/usecases/fetch_all_images.dart';
 
 part 'image_list_event.dart';
 part 'image_list_state.dart';

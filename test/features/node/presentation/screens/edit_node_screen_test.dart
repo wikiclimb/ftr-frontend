@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/edit_node_screen.dart';
@@ -28,10 +29,11 @@ class MockLocator extends Mock implements Locator {}
 void main() {
   setUpAll(() async {
     final sl = GetIt.instance;
-    sl.registerLazySingleton<NodeEditBloc>(
-      () => NodeEditBloc(
+    sl.registerFactoryParam<NodeEditBloc, Node, void>(
+      (node, _) => NodeEditBloc(
         editNode: MockEditNode(),
         locator: MockLocator(),
+        node: node,
       ),
     );
   });

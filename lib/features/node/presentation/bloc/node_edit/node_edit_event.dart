@@ -7,15 +7,6 @@ abstract class NodeEditEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class NodeEditInitialize extends NodeEditEvent {
-  const NodeEditInitialize(this.node);
-
-  final Node node;
-
-  @override
-  List<Object> get props => [node];
-}
-
 class NodeNameChanged extends NodeEditEvent {
   const NodeNameChanged(this.name);
 
@@ -55,3 +46,12 @@ class NodeLongitudeChanged extends NodeEditEvent {
 class NodeGeolocationRequested extends NodeEditEvent {}
 
 class NodeSubmissionRequested extends NodeEditEvent {}
+
+class NodeCoverUpdateRequested extends NodeEditEvent {
+  const NodeCoverUpdateRequested(this.fileName);
+
+  final String fileName;
+
+  @override
+  List<Object> get props => [fileName];
+}

@@ -1,5 +1,6 @@
 // coverage:ignore-file
 import 'package:get_it/get_it.dart';
+import 'domain/entities/node.dart';
 
 import 'data/datasources/node_remote_data_source.dart';
 import 'data/repositories/node_repository_impl.dart';
@@ -10,8 +11,8 @@ import 'presentation/bloc/node_edit/node_edit_bloc.dart';
 
 void initNodeFeature(GetIt sl) {
   // Bloc
-  sl.registerFactory<NodeEditBloc>(
-    () => NodeEditBloc(editNode: sl(), locator: sl()),
+  sl.registerFactoryParam<NodeEditBloc, Node, void>(
+    (node, _) => NodeEditBloc(editNode: sl(), locator: sl(), node: node),
   );
   sl.registerFactory<AddNodeImagesBloc>(
     () => AddNodeImagesBloc(sl()),

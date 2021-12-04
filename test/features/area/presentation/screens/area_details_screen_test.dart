@@ -16,16 +16,21 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entiti
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/edit_node_screen.dart';
 
 import '../../../../fixtures/area/area_nodes.dart';
+import '../../../../fixtures/node/nodes.dart';
 
 class MockAuthenticationBloc
     extends MockBloc<AuthenticationEvent, AuthenticationState>
     implements AuthenticationBloc {}
+
+class MockNodeEditBloc extends MockBloc<NodeEditEvent, NodeEditState>
+    implements NodeEditBloc {}
 
 class MockEditNode extends Mock implements EditNode {}
 
@@ -40,11 +45,15 @@ extension on WidgetTester {
   Future<void> pumpDetailsScreen({
     required Node area,
     required AuthenticationBloc mockAuthBloc,
+    required NodeEditBloc mockNodeEditBloc,
   }) {
     return pumpWidget(
       MaterialApp(
-        home: BlocProvider.value(
-          value: mockAuthBloc,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthenticationBloc>(create: (context) => mockAuthBloc),
+            BlocProvider<NodeEditBloc>(create: (context) => mockNodeEditBloc),
+          ],
           child: Scaffold(
             body: AreaDetailsScreen(area: area),
           ),
@@ -58,6 +67,7 @@ void main() {
   late final AuthenticationBloc mockAuthBloc;
   late final ImageListBloc mockImageListBloc;
   late final Locator mockLocator;
+  late final NodeEditBloc mockNodeEditBloc;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -67,10 +77,11 @@ void main() {
   setUpAll(() async {
     final sl = GetIt.instance;
     mockLocator = MockLocator();
-    sl.registerLazySingleton<NodeEditBloc>(
-      () => NodeEditBloc(
+    sl.registerFactoryParam<NodeEditBloc, Node, void>(
+      (node, _) => NodeEditBloc(
         editNode: MockEditNode(),
         locator: mockLocator,
+        node: node,
       ),
     );
     registerFallbackValue(FakeAuthenticationState());
@@ -87,6 +98,9 @@ void main() {
     mockAuthBloc = MockAuthenticationBloc();
     when(() => mockAuthBloc.state)
         .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
+    mockNodeEditBloc = MockNodeEditBloc();
+    when(() => mockNodeEditBloc.state)
+        .thenAnswer((_) => _getInitialState(nodes.first));
   });
 
   testWidgets('screen renders', (tester) async {
@@ -94,6 +108,7 @@ void main() {
       () => tester.pumpDetailsScreen(
         area: areaNodes.first,
         mockAuthBloc: mockAuthBloc,
+        mockNodeEditBloc: mockNodeEditBloc,
       ),
     );
     expect(find.byType(AreaDetailsScreen), findsOneWidget);
@@ -104,6 +119,7 @@ void main() {
       () => tester.pumpDetailsScreen(
         area: areaNodes.elementAt(5),
         mockAuthBloc: mockAuthBloc,
+        mockNodeEditBloc: mockNodeEditBloc,
       ),
     );
     expect(find.byType(PhotoSliverAppBar), findsOneWidget);
@@ -118,6 +134,7 @@ void main() {
         () => tester.pumpDetailsScreen(
           area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
         ),
       );
       expect(find.byKey(Key('areaDetailsScreen_editArea_fab')), findsOneWidget);
@@ -130,6 +147,7 @@ void main() {
         () => tester.pumpDetailsScreen(
           area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
         ),
       );
       expect(find.byKey(Key('areaDetailsScreen_editArea_fab')), findsNothing);
@@ -142,6 +160,7 @@ void main() {
         () => tester.pumpDetailsScreen(
           area: areaNodes.first,
           mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
         ),
       );
       final fabFinder = find.byKey(Key('areaDetailsScreen_editArea_fab'));
@@ -156,9 +175,110 @@ void main() {
         () => tester.pumpDetailsScreen(
           area: areaNodes.first,
           mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
         ),
       );
       expect(find.byType(NodeSliverImageList), findsOneWidget);
     });
   });
+
+  group('cover update notifications', () {
+    final state = _getInitialState(nodes.first);
+
+    testWidgets('show snackbar when loading', (tester) async {
+      whenListen(
+        mockNodeEditBloc,
+        Stream.fromIterable([
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.initial),
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.loading),
+        ]),
+      );
+      when(() => mockNodeEditBloc.state).thenReturn(
+        state.copyWith(
+          coverUpdateRequestStatus: CoverUpdateRequestStatus.loading,
+        ),
+      );
+      await mockNetworkImagesFor(
+        () => tester.pumpDetailsScreen(
+          area: areaNodes.elementAt(5),
+          mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Updating cover image'), findsOneWidget);
+    });
+
+    testWidgets('show snackbar when error', (tester) async {
+      whenListen(
+        mockNodeEditBloc,
+        Stream.fromIterable([
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.initial),
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.loading),
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.error),
+        ]),
+      );
+      when(() => mockNodeEditBloc.state).thenReturn(
+        state.copyWith(
+          coverUpdateRequestStatus: CoverUpdateRequestStatus.error,
+        ),
+      );
+      await mockNetworkImagesFor(
+        () => tester.pumpDetailsScreen(
+          area: areaNodes.elementAt(5),
+          mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Error updating cover image'), findsOneWidget);
+    });
+
+    testWidgets('show snackbar when success', (tester) async {
+      whenListen(
+        mockNodeEditBloc,
+        Stream.fromIterable([
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.initial),
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.loading),
+          state.copyWith(
+              coverUpdateRequestStatus: CoverUpdateRequestStatus.success),
+        ]),
+      );
+      when(() => mockNodeEditBloc.state).thenReturn(
+        state.copyWith(
+          coverUpdateRequestStatus: CoverUpdateRequestStatus.success,
+        ),
+      );
+      await mockNetworkImagesFor(
+        () => tester.pumpDetailsScreen(
+          area: areaNodes.elementAt(5),
+          mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Cover image updated'), findsOneWidget);
+    });
+  });
+}
+
+NodeEditState _getInitialState(Node node) {
+  return NodeEditState(
+    node: node,
+    type: node.type,
+    name: NodeName.pure(node.name),
+    description: NodeDescription.pure(node.description ?? ''),
+    latitude: NodeLatitude.pure(node.lat?.toString() ?? ''),
+    longitude: NodeLongitude.pure(node.lng?.toString() ?? ''),
+  );
 }

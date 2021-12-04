@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
-import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/node_sliver_image_list.dart';
 
 import '../../../../core/widgets/decoration/photo_sliver_app_bar.dart';
 import '../../../../di.dart';
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
+import '../../../image/presentation/bloc/list/image_list_bloc.dart';
+import '../../../image/presentation/widgets/node_sliver_image_list.dart';
 import '../../../node/domain/entities/node.dart';
+import '../../../node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import '../../../node/presentation/screens/edit_node_screen.dart';
 import '../widgets/area_details_list.dart';
 
@@ -52,17 +53,46 @@ class AreaDetailsScreen extends StatelessWidget {
       }),
       body: CustomScrollView(
         slivers: <Widget>[
-          PhotoSliverAppBar(
-            title: area.name,
-            imageUrl: area.coverUrl,
-          ),
+          BlocConsumer<NodeEditBloc, NodeEditState>(
+              buildWhen: (previous, current) =>
+                  previous.coverUpdateRequestStatus !=
+                  current.coverUpdateRequestStatus,
+              builder: (context, state) {
+                return PhotoSliverAppBar(
+                  title: state.node.name,
+                  imageUrl: state.node.coverUrl,
+                );
+              },
+              listener: (context, state) {
+                switch (state.coverUpdateRequestStatus) {
+                  case CoverUpdateRequestStatus.loading:
+                    _showMessage(context, 'Updating cover image');
+                    break;
+                  case CoverUpdateRequestStatus.error:
+                    _showMessage(context, 'Error updating cover image');
+                    break;
+                  case CoverUpdateRequestStatus.success:
+                    _showMessage(context, 'Cover image updated');
+                    break;
+                  case CoverUpdateRequestStatus.initial:
+                    break;
+                }
+              }),
           AreaDetailsList(area: area),
           BlocProvider(
-            create: (context) => sl<ImageListBloc>(),
+            create: (context) => imageListBloc,
             child: NodeSliverImageList(area),
           ),
         ],
       ),
     );
   }
+}
+
+void _showMessage(BuildContext ctx, String message) {
+  ScaffoldMessenger.of(ctx)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(content: Text(message)),
+    );
 }

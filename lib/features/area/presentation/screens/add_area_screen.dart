@@ -18,8 +18,7 @@ class AddAreaScreen extends StatelessWidget {
       ..name = ''
       ..type = 1
       ..parentId = parent?.id);
-    final bloc = GetIt.instance<NodeEditBloc>();
-    bloc.add(NodeEditInitialize(node));
+    final bloc = GetIt.instance<NodeEditBloc>(param1: node);
     return BlocProvider(
       create: (context) => bloc,
       child: const NodeDetailsForm(

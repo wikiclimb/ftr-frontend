@@ -24,12 +24,10 @@ class NodeDetailsForm extends StatelessWidget {
         } else if (state.status.isSubmissionSuccess) {
           _displayMessage(context, 'Submission success');
           final node = state.node;
-          if (node != null) {
-            if (node.type == 1) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => AreaDetailsScreen(area: node),
-              ));
-            }
+          if (node.type == 1) {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => AreaDetailsScreen(area: node),
+            ));
           }
         } else {
           // Formz status pure, valid, invalid, submission in progress...

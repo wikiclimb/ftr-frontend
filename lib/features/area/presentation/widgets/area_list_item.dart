@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../di.dart';
 import '../../../node/domain/entities/node.dart';
+import '../../../node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import '../../../node/presentation/widgets/list_item/node_list_item_cover.dart';
 import '../screens/area_details_screen.dart';
 
@@ -22,7 +25,10 @@ class AreaListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AreaDetailsScreen(area: area),
+            builder: (context) => BlocProvider(
+              create: (context) => sl<NodeEditBloc>(param1: area),
+              child: AreaDetailsScreen(area: area),
+            ),
           ),
         );
       },

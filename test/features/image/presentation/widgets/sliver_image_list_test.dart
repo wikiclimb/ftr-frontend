@@ -12,6 +12,7 @@ import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entiti
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/screens/add_node_image_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/sliver_image_list.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/sliver_image_list_item.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/add_node_images/add_node_images_bloc.dart';
 
 import '../../../../fixtures/image/images.dart';
@@ -47,11 +48,22 @@ extension on WidgetTester {
 
 void main() {
   late AuthenticationBloc mockAuthenticationBloc;
+  const tAuthData = AuthenticationData(
+    token: 'token',
+    id: 123,
+    username: 'test-username',
+  );
+  late final AddNodeImagesBloc mockBloc;
+  late final GetIt sl;
 
   setUpAll(() {
     mockAuthenticationBloc = MockAuthenticationBloc();
     when(() => mockAuthenticationBloc.state)
         .thenAnswer((_) => AuthenticationUnauthenticated());
+    mockBloc = MockAddNodeImagesBloc();
+    when(() => mockBloc.state).thenAnswer((_) => AddNodeImagesState());
+    sl = GetIt.instance;
+    sl.registerFactory<AddNodeImagesBloc>(() => mockBloc);
   });
   group('initialization', () {
     testWidgets('widget renders', (tester) async {
@@ -69,21 +81,6 @@ void main() {
   });
 
   group('navigation', () {
-    const tAuthData = AuthenticationData(
-      token: 'token',
-      id: 123,
-      username: 'test-username',
-    );
-    late final AddNodeImagesBloc mockBloc;
-    late final GetIt sl;
-
-    setUpAll(() {
-      mockBloc = MockAddNodeImagesBloc();
-      when(() => mockBloc.state).thenAnswer((_) => AddNodeImagesState());
-      sl = GetIt.instance;
-      sl.registerFactory<AddNodeImagesBloc>(() => mockBloc);
-    });
-
     testWidgets('to add node image screen', (tester) async {
       when(() => mockAuthenticationBloc.state)
           .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
@@ -95,6 +92,20 @@ void main() {
       await tester.tap(finder);
       await tester.pumpAndSettle();
       expect(find.byType(AddNodeImageScreen), findsOneWidget);
+    });
+  });
+
+  group('request cover image update', () {
+    testWidgets('shows dialog', (tester) async {
+      when(() => mockAuthenticationBloc.state)
+          .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
+      await tester.pumpIt(mockAuthenticationBloc);
+      final finder = find.byType(InkWell);
+      expect(finder, findsWidgets);
+      await tester.longPress(finder.last);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text('Update cover'), findsOneWidget);
     });
   });
 }

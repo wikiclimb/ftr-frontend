@@ -11,6 +11,8 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_no
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_form.dart';
 
+import '../../../../fixtures/node/nodes.dart';
+
 class MockEditNode extends Mock implements EditNode {}
 
 class MockLocator extends Mock implements Locator {}
@@ -28,6 +30,7 @@ void main() {
       () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: nodes.first,
       ),
     );
   });

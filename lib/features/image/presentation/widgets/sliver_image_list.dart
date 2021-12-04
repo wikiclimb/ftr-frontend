@@ -2,11 +2,11 @@ import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/environment/environment_config.dart';
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../node/domain/entities/node.dart';
 import '../../domain/entities/image.dart' as wkc;
 import '../screens/add_node_image_screen.dart';
+import 'sliver_image_list_item.dart';
 
 /// This widget renders a list of images.
 ///
@@ -75,26 +75,5 @@ class SliverImageListAddImagesButton extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class SliverImageListItem extends StatelessWidget {
-  const SliverImageListItem({
-    Key? key,
-    required this.image,
-  }) : super(key: key);
-
-  final wkc.Image image;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-        child: FadeInImage.assetNetwork(
-      placeholder: EnvironmentConfig.sliverAppBarBackgroundPlaceholder,
-      image: EnvironmentConfig.baseImgUrl + image.fileName,
-      imageErrorBuilder: (context, error, stackTrace) => Center(
-        child: Image.asset(EnvironmentConfig.sliverAppBarBackgroundPlaceholder),
-      ),
-    ));
   }
 }

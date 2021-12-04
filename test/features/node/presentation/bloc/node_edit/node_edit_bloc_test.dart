@@ -31,31 +31,15 @@ void main() {
     mockEditNode = MockEditNode();
   });
 
-  test('initial state', () {
-    final bloc = NodeEditBloc(
-      editNode: mockEditNode,
-      locator: mockLocator,
-    );
-    expect(bloc.state, NodeEditState());
-  });
-
   group('initialize node', () {
-    final tNode = nodes.first.rebuild((p0) => p0..type = 9);
-    blocTest<NodeEditBloc, NodeEditState>(
-      'valid name emits new valid state',
-      build: () => NodeEditBloc(
+    test('initial state', () {
+      final bloc = NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
-      ),
-      act: (bloc) => bloc.add(NodeEditInitialize(tNode)),
-      expect: () => <NodeEditState>[
-        NodeEditState(
-          type: 9,
-          name: NodeName.pure(tNode.name),
-          description: NodeDescription.pure(tNode.description ?? ''),
-        ),
-      ],
-    );
+        node: nodes.first,
+      );
+      expect(bloc.state, _getInitialState(nodes.first));
+    });
   });
 
   group('name changed', () {
@@ -65,22 +49,15 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
       },
       expect: () => <NodeEditState>[
-        NodeEditState(
-          type: 1,
-          name: NodeName.pure(tNode.name),
-          description: NodeDescription.pure(tNode.description ?? ''),
-        ),
-        NodeEditState(
-          status: FormzStatus.valid,
-          type: 1,
+        _getInitialState(tNode).copyWith(
           name: NodeName.dirty('new name'),
-          description: NodeDescription.pure(tNode.description ?? ''),
+          status: FormzStatus.valid,
         ),
       ],
     );
@@ -95,20 +72,14 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeLongitudeChanged(tLongitude));
       },
       expect: () => <NodeEditState>[
         NodeEditState(
-          type: 1,
-          name: NodeName.pure(tNode.name),
-          longitude: NodeLongitude.pure(tNode.lng?.toString() ?? ''),
-          latitude: NodeLatitude.pure(tNode.lat?.toString() ?? ''),
-          description: NodeDescription.pure(tNode.description ?? ''),
-        ),
-        NodeEditState(
+          node: tNode,
           status: FormzStatus.valid,
           name: NodeName.pure(tNode.name),
           type: 1,
@@ -127,20 +98,16 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeDescriptionChanged('new description'));
       },
       expect: () => <NodeEditState>[
         NodeEditState(
-          type: 1,
-          name: NodeName.pure(tNode.name),
-          description: NodeDescription.pure(tNode.description ?? ''),
-        ),
-        NodeEditState(
           status: FormzStatus.valid,
           type: 1,
+          node: tNode,
           name: NodeName.pure(tNode.name),
           description: NodeDescription.dirty('new description'),
         ),
@@ -157,11 +124,7 @@ void main() {
       ..description = 'new description'
       ..type = 1);
 
-    final state = NodeEditState(
-      type: 1,
-      name: NodeName.pure(tNode.name),
-      description: NodeDescription.pure(tNode.description ?? ''),
-    );
+    final state = _getInitialState(tNode);
     final state1 = state.copyWith(
       status: FormzStatus.invalid,
       name: NodeName.dirty('new name'),
@@ -187,15 +150,14 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
         bloc.add(NodeDescriptionChanged('new description'));
         bloc.add(NodeSubmissionRequested());
       },
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2,
         state3,
@@ -234,9 +196,9 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
         bloc.add(NodeDescriptionChanged('new description'));
         bloc.add(NodeLatitudeChanged(tLat));
@@ -244,7 +206,6 @@ void main() {
         bloc.add(NodeSubmissionRequested());
       },
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2,
         state3latLng,
@@ -271,15 +232,14 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
         bloc.add(NodeDescriptionChanged('new description'));
         bloc.add(NodeSubmissionRequested());
       },
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2,
         state3,
@@ -304,6 +264,7 @@ void main() {
 
     final state = NodeEditState(
       type: 1,
+      node: tNode,
       name: NodeName.pure(tNode.name),
       description: NodeDescription.pure(tNode.description ?? ''),
     );
@@ -332,15 +293,14 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
         bloc.add(NodeDescriptionChanged('new description'));
         bloc.add(NodeSubmissionRequested());
       },
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2,
         state3,
@@ -365,15 +325,14 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeNameChanged('new name'));
         bloc.add(NodeDescriptionChanged('new description'));
         bloc.add(NodeSubmissionRequested());
       },
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2,
         state3,
@@ -401,6 +360,7 @@ void main() {
     );
     final state = NodeEditState(
       type: 1,
+      node: tNode,
       name: NodeName.pure(tNode.name),
       description: NodeDescription.pure(tNode.description ?? ''),
     );
@@ -421,14 +381,13 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeGeolocationRequested());
       },
       wait: Duration(milliseconds: 500),
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2,
         state3,
@@ -454,14 +413,13 @@ void main() {
       build: () => NodeEditBloc(
         editNode: mockEditNode,
         locator: mockLocator,
+        node: tNode,
       ),
       act: (bloc) async {
-        bloc.add(NodeEditInitialize(tNode));
         bloc.add(NodeGeolocationRequested());
       },
       wait: Duration(milliseconds: 500),
       expect: () => <NodeEditState>[
-        state,
         state1,
         state2Failure,
         state3Failure,
@@ -471,4 +429,80 @@ void main() {
       },
     );
   });
+
+  group('cover update requested', () {
+    final tNode = nodes.first;
+    final tUpdatedNode = tNode.rebuild((p0) => p0..coverUrl = 'fileName');
+    final tState = _getInitialState(tNode);
+    final tState1 = tState.copyWith(
+      coverUpdateRequestStatus: CoverUpdateRequestStatus.loading,
+    );
+    final tState2 = tState.copyWith(
+      coverUpdateRequestStatus: CoverUpdateRequestStatus.success,
+      node: tUpdatedNode,
+    );
+
+    blocTest<NodeEditBloc, NodeEditState>(
+      'with success result',
+      setUp: () {
+        when(() => mockEditNode(any())).thenAnswer(
+          (_) async => Right(tUpdatedNode),
+        );
+      },
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+        node: tNode,
+      ),
+      act: (bloc) async {
+        bloc.add(NodeCoverUpdateRequested('fileName'));
+      },
+      expect: () => <NodeEditState>[
+        tState1,
+        tState2,
+      ],
+      verify: (_) {
+        verify(() => mockEditNode(tUpdatedNode)).called(1);
+      },
+    );
+
+    final tState2Failure = tState1.copyWith(
+      coverUpdateRequestStatus: CoverUpdateRequestStatus.error,
+    );
+
+    blocTest<NodeEditBloc, NodeEditState>(
+      'with failure result',
+      setUp: () {
+        when(() => mockEditNode(any()))
+            .thenAnswer((_) async => Left(UnauthorizedFailure()));
+      },
+      build: () => NodeEditBloc(
+        editNode: mockEditNode,
+        locator: mockLocator,
+        node: tNode,
+      ),
+      act: (bloc) async {
+        bloc.add(NodeCoverUpdateRequested('fileName'));
+      },
+      expect: () => <NodeEditState>[
+        tState1,
+        tState2Failure,
+      ],
+      verify: (_) {
+        verify(() => mockEditNode(tUpdatedNode)).called(1);
+      },
+    );
+  });
+}
+
+/// This helper initializes a [NodeEditState] the same way that the bloc does.
+NodeEditState _getInitialState(Node node) {
+  return NodeEditState(
+    node: node,
+    type: node.type,
+    name: NodeName.pure(node.name),
+    description: NodeDescription.pure(node.description ?? ''),
+    latitude: NodeLatitude.pure(node.lat?.toString() ?? ''),
+    longitude: NodeLongitude.pure(node.lng?.toString() ?? ''),
+  );
 }

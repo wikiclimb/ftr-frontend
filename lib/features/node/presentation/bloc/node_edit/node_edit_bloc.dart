@@ -16,80 +16,63 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
   NodeEditBloc({
     required this.editNode,
     required this.locator,
-  }) : super(const NodeEditState()) {
+    required Node node,
+  }) : super(NodeEditState(
+          node: node,
+          type: node.type,
+          name: NodeName.pure(node.name),
+          description: NodeDescription.pure(node.description ?? ''),
+          latitude: NodeLatitude.pure(node.lat?.toString() ?? ''),
+          longitude: NodeLongitude.pure(node.lng?.toString() ?? ''),
+        )) {
     on<NodeDescriptionChanged>(_onNodeDescriptionChanged);
-    on<NodeEditInitialize>(_onNodeEditInitialize);
     on<NodeLatitudeChanged>(_onNodeLatitudeChanged);
     on<NodeLongitudeChanged>(_onNodeLongitudeChanged);
     on<NodeNameChanged>(_onNodeNameChanged);
     on<NodeSubmissionRequested>(_onNodeSubmissionRequested);
     on<NodeGeolocationRequested>(_onNodeGeolocationRequested);
+    on<NodeCoverUpdateRequested>(_onNodeCoverUpdateRequested);
   }
 
   final EditNode editNode;
   final Locator locator;
 
-  late Node _node;
-
-  void _onNodeEditInitialize(
-    NodeEditInitialize event,
-    emit,
-  ) {
-    // Assign the node to the bloc.
-    _node = event.node;
-    // Pre-fill the form with the values found on the [Node].
-    final name = NodeName.pure(_node.name);
-    final description = NodeDescription.pure(_node.description ?? '');
-    final latitude = NodeLatitude.pure(_node.lat?.toString() ?? '');
-    final longitude = NodeLongitude.pure(_node.lng?.toString() ?? '');
-
-    emit(
-      state.copyWith(
-        type: _node.type,
-        name: name,
-        description: description,
-        latitude: latitude,
-        longitude: longitude,
-      ),
-    );
-  }
-
   void _onNodeNameChanged(NodeNameChanged event, Emitter emit) {
-    _node = _node.rebuild((n) => n..name = event.name);
     final name = NodeName.dirty(event.name);
     emit(state.copyWith(
       name: name,
+      node: state.node.rebuild((n) => n..name = event.name),
       status: _validate(name: name),
     ));
   }
 
   void _onNodeLatitudeChanged(NodeLatitudeChanged event, Emitter emit) {
     final latitude = NodeLatitude.dirty(event.latitude);
-    if (latitude.valid) {
-      _node = _node.rebuild((n) => n..lat = double.tryParse(event.latitude));
-    }
     emit(state.copyWith(
       latitude: latitude,
+      node: latitude.valid
+          ? state.node.rebuild((n) => n..lat = double.tryParse(event.latitude))
+          : null,
       status: _validate(latitude: latitude),
     ));
   }
 
   void _onNodeLongitudeChanged(NodeLongitudeChanged event, Emitter emit) {
     final longitude = NodeLongitude.dirty(event.longitude);
-    if (longitude.valid) {
-      _node = _node.rebuild((n) => n..lng = double.tryParse(event.longitude));
-    }
     emit(state.copyWith(
       longitude: longitude,
+      node: longitude.valid
+          ? state.node.rebuild((n) => n..lng = double.tryParse(event.longitude))
+          : null,
       status: _validate(longitude: longitude),
     ));
   }
 
   void _onNodeDescriptionChanged(NodeDescriptionChanged event, Emitter emit) {
-    _node = _node.rebuild((n) => n..description = event.description);
     final description = NodeDescription.dirty(event.description);
     emit(state.copyWith(
       description: description,
+      node: state.node.rebuild((n) => n..description = event.description),
       status: _validate(description: description),
     ));
   }
@@ -101,7 +84,7 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     emit(state.copyWith(
       status: FormzStatus.submissionInProgress,
     ));
-    final result = await editNode(_node);
+    final result = await editNode(state.node);
     result.fold((failure) {
       emit(state.copyWith(
         status: FormzStatus.submissionFailure,
@@ -114,20 +97,42 @@ class NodeEditBloc extends Bloc<NodeEditEvent, NodeEditState> {
     });
   }
 
+  void _onNodeCoverUpdateRequested(
+      NodeCoverUpdateRequested event, Emitter emit) async {
+    emit(
+      state.copyWith(
+          coverUpdateRequestStatus: CoverUpdateRequestStatus.loading),
+    );
+    // Try to update the node with the updated cover url
+    final result = await editNode(
+      state.node.rebuild((n) => n..coverUrl = event.fileName),
+    );
+    result.fold((failure) {
+      emit(state.copyWith(
+        coverUpdateRequestStatus: CoverUpdateRequestStatus.error,
+      ));
+    }, (resultNode) {
+      emit(state.copyWith(
+        coverUpdateRequestStatus: CoverUpdateRequestStatus.success,
+        node: resultNode,
+      ));
+    });
+  }
+
   void _onNodeGeolocationRequested(
       NodeGeolocationRequested event, Emitter emit) async {
     emit(state.copyWith(glStatus: GeolocationRequestStatus.requested));
     try {
       final position = await locator.determinePosition();
-      _node = _node.rebuild((n) => n
-        ..lng = position.longitude
-        ..lat = position.latitude);
       final longitude = NodeLongitude.dirty(position.longitude.toString());
       final latitude = NodeLatitude.dirty(position.latitude.toString());
       emit(state.copyWith(
         glStatus: GeolocationRequestStatus.success,
         longitude: longitude,
         latitude: latitude,
+        node: state.node.rebuild((n) => n
+          ..lng = position.longitude
+          ..lat = position.latitude),
         status: _validate(),
       ));
       // Restore the state

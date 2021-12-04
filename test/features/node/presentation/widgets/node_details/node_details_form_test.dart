@@ -13,6 +13,8 @@ import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/ar
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_form.dart';
 
@@ -58,6 +60,7 @@ class FakeRoute extends Fake implements Route<dynamic> {}
 
 main() {
   late final MockAuthenticationBloc mockAuthBloc;
+  final tNode = nodes.first;
   const tAuthData = AuthenticationData(
     token: 'token',
     id: 123,
@@ -86,7 +89,8 @@ main() {
 
   setUp(() {
     mockNodeEditBloc = MockNodeEditBloc();
-    when(() => mockNodeEditBloc.state).thenAnswer((_) => NodeEditState());
+    when(() => mockNodeEditBloc.state)
+        .thenAnswer((_) => _getInitialState(tNode));
   });
 
   testWidgets('creates the widget', (WidgetTester tester) async {
@@ -98,16 +102,17 @@ main() {
   });
 
   group('form submission', () {
+    final state = _getInitialState(tNode);
     testWidgets('displays loading indicator', (tester) async {
       whenListen(
         mockNodeEditBloc,
         Stream.fromIterable([
-          const NodeEditState(status: FormzStatus.submissionInProgress),
-          const NodeEditState(status: FormzStatus.submissionSuccess),
+          state.copyWith(status: FormzStatus.submissionInProgress),
+          state.copyWith(status: FormzStatus.submissionSuccess),
         ]),
       );
       when(() => mockNodeEditBloc.state).thenReturn(
-        const NodeEditState(status: FormzStatus.submissionInProgress),
+        state.copyWith(status: FormzStatus.submissionInProgress),
       );
       await tester.pumpForm(
         nodeEditBloc: mockNodeEditBloc,
@@ -122,12 +127,12 @@ main() {
       whenListen(
         mockNodeEditBloc,
         Stream.fromIterable([
-          const NodeEditState(status: FormzStatus.submissionInProgress),
-          const NodeEditState(status: FormzStatus.submissionFailure),
+          state.copyWith(status: FormzStatus.submissionInProgress),
+          state.copyWith(status: FormzStatus.submissionFailure),
         ]),
       );
       when(() => mockNodeEditBloc.state).thenReturn(
-        const NodeEditState(status: FormzStatus.submissionFailure),
+        state.copyWith(status: FormzStatus.submissionFailure),
       );
       await tester.pumpForm(
         nodeEditBloc: mockNodeEditBloc,
@@ -143,12 +148,12 @@ main() {
       whenListen(
         mockNodeEditBloc,
         Stream.fromIterable([
-          const NodeEditState(status: FormzStatus.submissionInProgress),
-          const NodeEditState(status: FormzStatus.submissionSuccess),
+          state.copyWith(status: FormzStatus.submissionInProgress),
+          state.copyWith(status: FormzStatus.submissionSuccess),
         ]),
       );
       when(() => mockNodeEditBloc.state).thenReturn(
-        const NodeEditState(status: FormzStatus.submissionSuccess),
+        state.copyWith(status: FormzStatus.submissionSuccess),
       );
       await tester.pumpForm(
         nodeEditBloc: mockNodeEditBloc,
@@ -164,8 +169,8 @@ main() {
       whenListen(
         mockNodeEditBloc,
         Stream.fromIterable([
-          const NodeEditState(status: FormzStatus.submissionInProgress),
-          NodeEditState(
+          state.copyWith(status: FormzStatus.submissionInProgress),
+          state.copyWith(
             status: FormzStatus.submissionSuccess,
             node: nodes.first,
           ),
@@ -266,6 +271,7 @@ main() {
   });
 
   group('submission', () {
+    final state = _getInitialState(nodes.first);
     testWidgets('does not trigger event if form is invalid', (tester) async {
       await tester.pumpForm(
         nodeEditBloc: mockNodeEditBloc,
@@ -279,7 +285,7 @@ main() {
 
     testWidgets('if form is valid it triggers the event', (tester) async {
       when(() => mockNodeEditBloc.state).thenAnswer(
-        (_) => NodeEditState(status: FormzStatus.valid),
+        (_) => state.copyWith(status: FormzStatus.valid),
       );
       await tester.pumpForm(
         nodeEditBloc: mockNodeEditBloc,
@@ -293,18 +299,19 @@ main() {
   });
 
   group('geolocation', () {
+    final state = _getInitialState(tNode);
     group('feedback', () {
       testWidgets('obtain location success triggers snackbar', (tester) async {
         whenListen(
           mockNodeEditBloc,
           Stream.fromIterable([
-            NodeEditState(glStatus: GeolocationRequestStatus.requested),
-            NodeEditState(glStatus: GeolocationRequestStatus.success),
-            NodeEditState(glStatus: GeolocationRequestStatus.done),
+            state.copyWith(glStatus: GeolocationRequestStatus.requested),
+            state.copyWith(glStatus: GeolocationRequestStatus.success),
+            state.copyWith(glStatus: GeolocationRequestStatus.done),
           ]),
         );
         when(() => mockNodeEditBloc.state).thenReturn(
-          NodeEditState(glStatus: GeolocationRequestStatus.success),
+          state.copyWith(glStatus: GeolocationRequestStatus.success),
         );
         await tester.pumpForm(
           nodeEditBloc: mockNodeEditBloc,
@@ -319,13 +326,13 @@ main() {
         whenListen(
           mockNodeEditBloc,
           Stream.fromIterable([
-            NodeEditState(glStatus: GeolocationRequestStatus.requested),
-            NodeEditState(glStatus: GeolocationRequestStatus.failure),
-            NodeEditState(glStatus: GeolocationRequestStatus.initial),
+            state.copyWith(glStatus: GeolocationRequestStatus.requested),
+            state.copyWith(glStatus: GeolocationRequestStatus.failure),
+            state.copyWith(glStatus: GeolocationRequestStatus.initial),
           ]),
         );
         when(() => mockNodeEditBloc.state).thenReturn(
-          NodeEditState(glStatus: GeolocationRequestStatus.failure),
+          state.copyWith(glStatus: GeolocationRequestStatus.failure),
         );
         await tester.pumpForm(
           nodeEditBloc: mockNodeEditBloc,
@@ -343,11 +350,11 @@ main() {
         whenListen(
           mockNodeEditBloc,
           Stream.fromIterable([
-            NodeEditState(glStatus: GeolocationRequestStatus.requested),
+            state.copyWith(glStatus: GeolocationRequestStatus.requested),
           ]),
         );
         when(() => mockNodeEditBloc.state).thenReturn(
-          NodeEditState(glStatus: GeolocationRequestStatus.requested),
+          state.copyWith(glStatus: GeolocationRequestStatus.requested),
         );
         await tester.pumpForm(
           nodeEditBloc: mockNodeEditBloc,
@@ -366,11 +373,11 @@ main() {
         whenListen(
           mockNodeEditBloc,
           Stream.fromIterable([
-            NodeEditState(glStatus: GeolocationRequestStatus.done),
+            state.copyWith(glStatus: GeolocationRequestStatus.done),
           ]),
         );
         when(() => mockNodeEditBloc.state).thenReturn(
-          NodeEditState(glStatus: GeolocationRequestStatus.done),
+          state.copyWith(glStatus: GeolocationRequestStatus.done),
         );
         await tester.pumpForm(
           nodeEditBloc: mockNodeEditBloc,
@@ -403,11 +410,11 @@ main() {
         whenListen(
           mockNodeEditBloc,
           Stream.fromIterable([
-            NodeEditState(glStatus: GeolocationRequestStatus.requested),
+            state.copyWith(glStatus: GeolocationRequestStatus.requested),
           ]),
         );
         when(() => mockNodeEditBloc.state).thenReturn(
-          NodeEditState(glStatus: GeolocationRequestStatus.requested),
+          state.copyWith(glStatus: GeolocationRequestStatus.requested),
         );
         await tester.pumpForm(
           nodeEditBloc: mockNodeEditBloc,
@@ -423,11 +430,11 @@ main() {
         whenListen(
           mockNodeEditBloc,
           Stream.fromIterable([
-            NodeEditState(glStatus: GeolocationRequestStatus.initial),
+            state.copyWith(glStatus: GeolocationRequestStatus.initial),
           ]),
         );
         when(() => mockNodeEditBloc.state).thenReturn(
-          NodeEditState(glStatus: GeolocationRequestStatus.initial),
+          state.copyWith(glStatus: GeolocationRequestStatus.initial),
         );
         await tester.pumpForm(
           nodeEditBloc: mockNodeEditBloc,
@@ -441,4 +448,16 @@ main() {
       });
     });
   });
+}
+
+/// This helper initializes a [NodeEditState] the same way that the bloc does.
+NodeEditState _getInitialState(Node node) {
+  return NodeEditState(
+    node: node,
+    type: node.type,
+    name: NodeName.pure(node.name),
+    description: NodeDescription.pure(node.description ?? ''),
+    latitude: NodeLatitude.pure(node.lat?.toString() ?? ''),
+    longitude: NodeLongitude.pure(node.lng?.toString() ?? ''),
+  );
 }
