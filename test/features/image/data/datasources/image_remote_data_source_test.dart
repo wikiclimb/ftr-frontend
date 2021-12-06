@@ -36,6 +36,9 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(FakeUri());
+  });
+
+  setUp(() {
     mockClient = MockClient();
     mockAuthenticationProvider = MockAuthenticationProvider();
     dataSource = ImageRemoteDataSourceImpl(
@@ -154,6 +157,13 @@ void main() {
     setUpAll(() {
       mockMultipartRequest = MockMultipartRequest();
       mockStreamedResponse = MockStreamedResponse();
+      // Mock the MultipartRequest
+      sl = GetIt.instance;
+      sl.registerFactoryParam<http.MultipartRequest, void, void>(
+          (_, __) => mockMultipartRequest);
+    });
+
+    setUp(() {
       when(() => mockMultipartRequest.fields).thenAnswer((_) => fields);
       when(() => mockMultipartRequest.headers).thenAnswer((_) => headers);
       when(() => mockMultipartRequest.files).thenAnswer((_) => files);
@@ -165,10 +175,6 @@ void main() {
           .thenAnswer((_) => http.ByteStream(Stream.fromFuture(bytes)));
       when(() => mockMultipartRequest.send())
           .thenAnswer((_) async => mockStreamedResponse);
-      // Mock the MultipartRequest
-      sl = GetIt.instance;
-      sl.registerFactoryParam<http.MultipartRequest, void, void>(
-          (_, __) => mockMultipartRequest);
     });
 
     test('success', () async {

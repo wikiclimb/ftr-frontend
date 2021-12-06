@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
+import 'package:wikiclimb_flutter_frontend/features/image/domain/entities/image.dart'
+    as wkc;
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/widgets/sliver_image_list_item.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
@@ -18,14 +20,19 @@ class MockNodeEditBloc extends MockBloc<NodeEditEvent, NodeEditState>
     implements NodeEditBloc {}
 
 extension on WidgetTester {
-  Future<void> pumpIt(NodeEditBloc mockBloc) {
-    return mockNetworkImagesFor(
-      () => pumpWidget(
-        MaterialApp(
-          home: BlocProvider(
-            create: (context) => mockBloc,
-            child: Scaffold(
-              body: SliverImageListItem(image: images.first),
+  Future<void> pumpIt(NodeEditBloc mockBloc, wkc.Image image) {
+    return pumpWidget(
+      MaterialApp(
+        home: BlocProvider(
+          create: (context) => mockBloc,
+          child: Scaffold(
+            body: SizedBox(
+              height: 200,
+              width: 200,
+              child: SliverImageListItem(
+                image: image,
+                key: UniqueKey(),
+              ),
             ),
           ),
         ),
@@ -36,27 +43,38 @@ extension on WidgetTester {
 
 void main() {
   late NodeEditBloc mockBloc;
-  final tNode = nodes.first;
+  late final Node tNode;
+  late final wkc.Image tImage;
+  late final NodeEditState tState;
 
   setUpAll(() {
-    mockBloc = MockNodeEditBloc();
-    when(() => mockBloc.state).thenAnswer((_) => _getInitialState(tNode));
+    tNode = nodes.first;
+    tImage = images.first;
+    tState = _getInitialState(tNode);
   });
+
+  setUp(() {
+    mockBloc = MockNodeEditBloc();
+    when(() => mockBloc.state).thenAnswer((_) => tState);
+  });
+
   group('initialization', () {
     testWidgets('widget renders', (tester) async {
-      await tester.pumpIt(mockBloc);
+      await tester.pumpIt(mockBloc, tImage);
       expect(find.byType(SliverImageListItem), findsOneWidget);
     });
 
     testWidgets('should render one child', (tester) async {
-      await tester.pumpIt(mockBloc);
+      await tester.pumpIt(mockBloc, tImage);
       expect(find.byType(Card), findsOneWidget);
     });
   });
 
   group('user long press', () {
+    // Without the SizedBox the first test executed fails
+
     testWidgets('should show alert dialog', (tester) async {
-      await tester.pumpIt(mockBloc);
+      await mockNetworkImagesFor(() => tester.pumpIt(mockBloc, tImage));
       final finder = find.descendant(
         of: find.byType(Card),
         matching: find.byType(InkWell),
@@ -68,7 +86,7 @@ void main() {
     });
 
     testWidgets('should push bloc event on OK press', (tester) async {
-      await tester.pumpIt(mockBloc);
+      await tester.pumpIt(mockBloc, tImage);
       final finder = find.descendant(
         of: find.byType(Card),
         matching: find.byType(InkWell),
@@ -80,19 +98,21 @@ void main() {
       final okFinder = find.text('OK');
       expect(okFinder, findsOneWidget);
       await tester.tap(okFinder);
-      verify(() =>
-              mockBloc.add(NodeCoverUpdateRequested(images.first.fileName)))
+      verify(() => mockBloc.add(NodeCoverUpdateRequested(tImage.fileName)))
           .called(1);
     });
 
     testWidgets('should hide alert dialog if user cancels', (tester) async {
-      await tester.pumpIt(mockBloc);
+      await tester.pumpIt(mockBloc, tImage);
       final finder = find.descendant(
         of: find.byType(Card),
         matching: find.byType(InkWell),
       );
       expect(finder, findsOneWidget);
+      await tester.pump(Duration(seconds: 3));
       await tester.longPress(finder);
+      await tester.pump(Duration(seconds: 3));
+      await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
       expect(find.text('Update cover'), findsOneWidget);
       final cancelFinder = find.text('Cancel');
@@ -101,7 +121,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsNothing);
       verifyNever(
-        () => mockBloc.add(NodeCoverUpdateRequested(images.first.fileName)),
+        () => mockBloc.add(NodeCoverUpdateRequested(tImage.fileName)),
       );
     });
   });

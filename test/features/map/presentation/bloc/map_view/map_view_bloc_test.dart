@@ -23,8 +23,8 @@ class MockLatLngBounds extends Mock implements LatLngBounds {}
 
 void main() {
   late FetchAreasWithBounds mockUsecase;
-  late final MapPosition tPosition;
-  late final LatLngBounds tBounds;
+  late MapPosition tPosition;
+  late LatLngBounds tBounds;
   const tNorth = 42.2;
   const tEast = 10.35;
   const tSouth = 20.73;
@@ -33,6 +33,9 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(MockMapPosition());
+  });
+
+  setUp(() {
     mockUsecase = MockUsecase();
     when(() => mockUsecase.subscribe).thenAnswer((_) => Stream.empty());
     tBounds = MockLatLngBounds();

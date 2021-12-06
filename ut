@@ -14,7 +14,7 @@ flutter format --set-exit-if-changed  lib test
 flutter analyze
 
 # Test and generate a coverage report on the default location.
-flutter test --coverage
+flutter test --coverage --test-randomize-ordering-seed random
 
 # Remove information about generated files on the report. We can asume that
 # have been tested by the library authors. We are not interested in the 

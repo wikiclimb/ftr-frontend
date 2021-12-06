@@ -65,6 +65,7 @@ void main() {
     sl = GetIt.instance;
     sl.registerFactory<AddNodeImagesBloc>(() => mockBloc);
   });
+
   group('initialization', () {
     testWidgets('widget renders', (tester) async {
       await tester.pumpIt(mockAuthenticationBloc);
@@ -92,20 +93,6 @@ void main() {
       await tester.tap(finder);
       await tester.pumpAndSettle();
       expect(find.byType(AddNodeImageScreen), findsOneWidget);
-    });
-  });
-
-  group('request cover image update', () {
-    testWidgets('shows dialog', (tester) async {
-      when(() => mockAuthenticationBloc.state)
-          .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
-      await tester.pumpIt(mockAuthenticationBloc);
-      final finder = find.byType(InkWell);
-      expect(finder, findsWidgets);
-      await tester.longPress(finder.last);
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-      expect(find.byType(AlertDialog), findsOneWidget);
-      expect(find.text('Update cover'), findsOneWidget);
     });
   });
 }
