@@ -130,6 +130,8 @@ void main() {
 
   group('edit fab', () {
     testWidgets('displays for authenticated users', (tester) async {
+      when(() => mockAuthBloc.state)
+          .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
           area: areaNodes.elementAt(5),

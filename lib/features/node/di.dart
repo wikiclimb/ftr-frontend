@@ -1,9 +1,9 @@
 // coverage:ignore-file
 import 'package:get_it/get_it.dart';
-import 'domain/entities/node.dart';
 
 import 'data/datasources/node_remote_data_source.dart';
 import 'data/repositories/node_repository_impl.dart';
+import 'domain/entities/node.dart';
 import 'domain/repositories/node_repository.dart';
 import 'domain/usecases/edit_node.dart';
 import 'presentation/bloc/add_node_images/add_node_images_bloc.dart';
