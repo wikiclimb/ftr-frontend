@@ -27,7 +27,7 @@ class AreaListItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => BlocProvider(
               create: (context) => sl<NodeEditBloc>(param1: area),
-              child: AreaDetailsScreen(area: area),
+              child: const AreaDetailsScreen(),
             ),
           ),
         );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
-import '../../../../area/presentation/screens/area_details_screen.dart';
 import '../../bloc/node_edit/node_edit_bloc.dart';
 
 /// Render a form that lets users update [Node] details.
@@ -23,12 +22,7 @@ class NodeDetailsForm extends StatelessWidget {
           _displayMessage(context, 'Submission failure');
         } else if (state.status.isSubmissionSuccess) {
           _displayMessage(context, 'Submission success');
-          final node = state.node;
-          if (node.type == 1) {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => AreaDetailsScreen(area: node),
-            ));
-          }
+          Navigator.of(context).pop();
         } else {
           // Formz status pure, valid, invalid, submission in progress...
           // The user is still filling the form

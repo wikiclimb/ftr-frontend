@@ -22,7 +22,6 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_no
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/edit_node_screen.dart';
 
-import '../../../../fixtures/area/area_nodes.dart';
 import '../../../../fixtures/node/nodes.dart';
 
 class MockAuthenticationBloc
@@ -43,7 +42,6 @@ class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
 extension on WidgetTester {
   Future<void> pumpDetailsScreen({
-    required Node area,
     required AuthenticationBloc mockAuthBloc,
     required NodeEditBloc mockNodeEditBloc,
   }) {
@@ -55,7 +53,7 @@ extension on WidgetTester {
             BlocProvider<NodeEditBloc>(create: (context) => mockNodeEditBloc),
           ],
           child: Scaffold(
-            body: AreaDetailsScreen(area: area),
+            body: AreaDetailsScreen(),
           ),
         ),
       ),
@@ -106,7 +104,6 @@ void main() {
   testWidgets('screen renders', (tester) async {
     await mockNetworkImagesFor(
       () => tester.pumpDetailsScreen(
-        area: areaNodes.first,
         mockAuthBloc: mockAuthBloc,
         mockNodeEditBloc: mockNodeEditBloc,
       ),
@@ -117,15 +114,14 @@ void main() {
   testWidgets('app bar renders using parameter data', (tester) async {
     await mockNetworkImagesFor(
       () => tester.pumpDetailsScreen(
-        area: areaNodes.elementAt(5),
         mockAuthBloc: mockAuthBloc,
         mockNodeEditBloc: mockNodeEditBloc,
       ),
     );
     expect(find.byType(PhotoSliverAppBar), findsOneWidget);
     expect(find.byType(AreaDetailsList), findsOneWidget);
-    expect(find.byIcon(Icons.star), findsNWidgets(3));
-    expect(find.byIcon(Icons.star_half), findsNothing);
+    expect(find.byIcon(Icons.star), findsNWidgets(4));
+    expect(find.byIcon(Icons.star_half), findsOneWidget);
   });
 
   group('edit fab', () {
@@ -134,7 +130,6 @@ void main() {
           .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
@@ -147,7 +142,6 @@ void main() {
           .thenAnswer((_) => AuthenticationUnauthenticated());
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
@@ -160,7 +154,6 @@ void main() {
           .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.first,
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
@@ -175,7 +168,6 @@ void main() {
     testWidgets('renders node images', (tester) async {
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.first,
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
@@ -204,7 +196,6 @@ void main() {
       );
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
@@ -233,7 +224,6 @@ void main() {
       );
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
@@ -262,7 +252,6 @@ void main() {
       );
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
-          area: areaNodes.elementAt(5),
           mockAuthBloc: mockAuthBloc,
           mockNodeEditBloc: mockNodeEditBloc,
         ),
