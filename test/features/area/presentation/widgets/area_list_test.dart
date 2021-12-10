@@ -242,25 +242,12 @@ void main() {
       );
     });
 
-    testWidgets('displays loading indicator inside last tile', (tester) async {
+    testWidgets('displays loading indicator', (tester) async {
       await mockNetworkImagesFor(
         () => tester.pumpAreasList(bloc),
       );
-      final itemFinder = find.byType(AreaListLastItem);
-      final listFinder = find.byType(Scrollable).first;
-      verifyNever(() => bloc.add(NextPageRequested()));
-      await tester.scrollUntilVisible(
-        itemFinder,
-        500.0,
-        scrollable: listFinder,
-      );
-      expect(find.byType(AreaListLastItem), findsOneWidget);
-      verify(() => bloc.add(NextPageRequested())).called(1);
       expect(
-        find.descendant(
-          of: itemFinder,
-          matching: find.byType(CircularProgressIndicator),
-        ),
+        find.byType(CircularProgressIndicator),
         findsOneWidget,
       );
     });

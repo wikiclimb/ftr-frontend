@@ -19,3 +19,12 @@ class PageAdded extends AreasEvent {
 class NextPageRequested extends AreasEvent {}
 
 class FailureResponse extends AreasEvent {}
+
+class SearchQueryUpdated extends AreasEvent {
+  const SearchQueryUpdated({required this.query});
+
+  final String query;
+
+  @override
+  List<Object> get props => [query];
+}

@@ -54,6 +54,7 @@ class _AreaListState extends State<AreaList> {
     return BlocBuilder<AreasBloc, AreasState>(builder: (context, state) {
       switch (state.status) {
         case AreasStatus.initial:
+        case AreasStatus.loading:
           return const Center(child: CircularProgressIndicator());
         default:
           // Handle loading and loaded status here.

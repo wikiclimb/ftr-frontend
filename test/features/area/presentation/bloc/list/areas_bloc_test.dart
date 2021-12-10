@@ -40,7 +40,9 @@ void main() {
       'data requests are forwarded with no parameters on first fetch',
       build: () => AreasBloc(usecase: mockUsecase),
       act: (bloc) => bloc.add(NextPageRequested()),
-      verify: (_) => {verify(() => mockUsecase.fetchPage()).called(1)},
+      verify: (_) {
+        verify(() => mockUsecase.fetchPage()).called(1);
+      },
     );
   });
 
@@ -76,6 +78,39 @@ void main() {
           nextPage: 1,
         )
       ],
+    );
+  });
+
+  group('search', () {
+    const tQuery = 'hello';
+    final Page<Node> tPage = areaPages.first;
+    final tState = AreasState(
+      status: AreasStatus.loading,
+      areas: BuiltSet(),
+      hasError: false,
+      nextPage: 1,
+      query: tQuery,
+    );
+    final tState1 = tState.copyWith(
+      status: AreasStatus.loaded,
+      areas: tPage.items.toBuiltSet(),
+      hasError: false,
+      nextPage: 2,
+    );
+
+    blocTest<AreasBloc, AreasState>(
+      'successful data received',
+      setUp: () => when(() => mockUsecase.subscribe).thenAnswer(
+        (_) => Stream.value(Right(tPage)),
+      ),
+      seed: () => tState,
+      build: () => AreasBloc(usecase: mockUsecase),
+      act: (bloc) => bloc.add(SearchQueryUpdated(query: tQuery)),
+      wait: Duration(milliseconds: 600),
+      expect: () => <AreasState>[tState1],
+      verify: (_) => verify(
+              () => mockUsecase.fetchPage(params: {'page': '1', 'q': tQuery}))
+          .called(1),
     );
   });
 }

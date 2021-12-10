@@ -3,10 +3,17 @@ import 'package:built_collection/built_collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/bloc/list/areas_bloc.dart';
 
-import '../../../../../fixtures/area/area_pages.dart';
+import '../../../../../fixtures/node/nodes.dart';
 
 void main() {
-  group('AreaState', () {
+  final tState = AreasState(
+    status: AreasStatus.initial,
+    areas: BuiltSet(),
+    hasError: false,
+    nextPage: 1,
+  );
+
+  group('initial', () {
     test('initial state supports value comparison', () {
       expect(
           AreasState(
@@ -24,17 +31,43 @@ void main() {
       expect(
         AreasState(
           status: AreasStatus.loaded,
-          areas: BuiltSet([areaPages.first]),
+          areas: BuiltSet(nodes),
           hasError: false,
           nextPage: 3,
         ),
         AreasState(
           status: AreasStatus.loaded,
-          areas: BuiltSet([areaPages.first]),
+          areas: BuiltSet(nodes),
           hasError: false,
           nextPage: 3,
         ),
       );
     });
+  });
+
+  test('copy with', () {
+    expect(
+      tState.copyWith(hasError: true),
+      AreasState(
+        status: AreasStatus.initial,
+        areas: BuiltSet(),
+        hasError: true,
+        nextPage: 1,
+      ),
+    );
+    expect(
+      tState.copyWith(
+        status: AreasStatus.loaded,
+        areas: BuiltSet(nodes),
+        hasError: false,
+        nextPage: 2,
+      ),
+      AreasState(
+        status: AreasStatus.loaded,
+        areas: BuiltSet(nodes),
+        hasError: false,
+        nextPage: 2,
+      ),
+    );
   });
 }

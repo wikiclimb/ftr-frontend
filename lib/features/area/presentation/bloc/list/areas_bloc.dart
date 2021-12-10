@@ -27,6 +27,7 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
     on<PageAdded>(_onPageAdded);
     on<NextPageRequested>(_onNextPageRequested);
     on<FailureResponse>(_onFailure);
+    on<SearchQueryUpdated>(_onSearchQueryUpdated);
     _subscription = _usecase.subscribe.listen((either) {
       either.fold(
         (failure) => add(FailureResponse()),
@@ -51,7 +52,7 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
   }
 
   void _onPageAdded(PageAdded event, Emitter emit) {
-    emit(AreasState(
+    emit(state.copyWith(
       status: AreasStatus.loaded,
       areas: (state.areas.toBuilder()..addAll(event.page.items)).build(),
       hasError: false,
@@ -68,12 +69,25 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
     ));
   }
 
+  void _onSearchQueryUpdated(SearchQueryUpdated event, Emitter emit) {
+    emit(state.copyWith(
+      status: AreasStatus.loading,
+      areas: BuiltSet(),
+      hasError: false,
+      nextPage: 1,
+      query: event.query,
+    ));
+    _usecase.fetchPage(params: _getParams());
+  }
+
   Map<String, String> _getParams() {
     Map<String, String> params = {};
     if (state.nextPage > 0) {
       params.addAll({'page': state.nextPage.toString()});
     }
-    // Add query parameters.
+    if (state.query.isNotEmpty) {
+      params.addAll({'q': state.query});
+    }
     return params;
   }
 }

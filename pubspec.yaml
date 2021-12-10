@@ -31,6 +31,7 @@ dependencies:
   flutter_map_marker_cluster: ^0.4.4
   stream_transform: ^2.0.0
   bloc_concurrency: ^0.2.0
+  material_floating_search_bar: ^0.3.6
 
 dev_dependencies:
   bloc_test: ^9.0.1

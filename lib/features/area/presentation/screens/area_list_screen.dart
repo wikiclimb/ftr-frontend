@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/add_area_screen.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_list.dart';
-import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 
+import '../widgets/area_search_bar.dart';
 import '../../../../di.dart';
+import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../bloc/list/areas_bloc.dart';
+import '../widgets/area_list.dart';
+import 'add_area_screen.dart';
 
 /// Display a list of areas in the system.
 ///
-/// This class manages providing:
-/// - An entry point for the area list route.
-/// - An [AreasBloc] in the context for children to use.
+/// This class is in charge of providing an entry point for the area list route
+/// and providing its children with an [AreasBloc] through the context.
 class AreaListScreen extends StatelessWidget {
   const AreaListScreen({Key? key}) : super(key: key);
 
@@ -20,13 +20,16 @@ class AreaListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Areas'),
-      ),
-      body: SafeArea(
-        child: BlocProvider(
-          create: (context) => sl<AreasBloc>(),
-          child: const AreaList(),
+      // This is handled by the search bar itself.
+      resizeToAvoidBottomInset: false,
+      body: BlocProvider(
+        create: (context) => sl<AreasBloc>(),
+        child: Stack(
+          fit: StackFit.expand,
+          children: const [
+            AreaList(),
+            AreaSearchBar(),
+          ],
         ),
       ),
       floatingActionButton:
