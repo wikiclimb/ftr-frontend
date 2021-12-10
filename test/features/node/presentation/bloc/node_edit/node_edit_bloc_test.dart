@@ -9,8 +9,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/node_description.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/node_name.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
