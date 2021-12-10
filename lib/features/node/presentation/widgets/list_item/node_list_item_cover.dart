@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../../../core/environment/environment_config.dart';
 import '../../../domain/entities/node.dart';
 
-/// Renders a cover image with text.
+/// This widget creates a cover for a card with [Node] details.
+///
+/// The cover has a background image and a title taken from the [Node] details.
 class NodeListItemCover extends StatelessWidget {
   const NodeListItemCover(
     this.node, {
     Key? key,
+    this.aspectRatio = 16 / 9,
   }) : super(key: key);
 
   final Node node;
+  final double aspectRatio;
   final placeholder = 'graphics/wikiclimb-logo-800-450.png';
 
   @override
@@ -18,15 +22,18 @@ class NodeListItemCover extends StatelessWidget {
     return Container(
       color: Colors.grey,
       child: AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: aspectRatio,
         child: Stack(
           fit: StackFit.expand,
           children: [
             if (node.coverUrl != null)
               FittedBox(
                 fit: BoxFit.cover,
+                clipBehavior: Clip.antiAlias,
                 child: FadeInImage.assetNetwork(
                   placeholder: placeholder,
+                  // Scaling the placeholder fixes up jarred image rendering.
+                  placeholderScale: 3,
                   image: '${EnvironmentConfig.baseImgUrl}${node.coverUrl!}',
                   imageErrorBuilder: (context, error, stackTrace) =>
                       Center(child: Image.asset(placeholder)),

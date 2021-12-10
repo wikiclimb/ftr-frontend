@@ -37,43 +37,44 @@ class AreaListItem extends StatelessWidget {
           children: [
             NodeListItemCover(area),
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-              ),
-              child: SizedBox(
-                height: 24,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: area.breadcrumbs?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return Text(
-                        area.breadcrumbs?[index] ?? '',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.blueAccent,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 2.0,
-                        ),
-                        child: Text('»',
-                            style: TextStyle(
-                              color: Colors.redAccent,
-                            )),
-                      );
-                    },
+            if (area.breadcrumbs != null && area.breadcrumbs!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                ),
+                child: SizedBox(
+                  height: 24,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: area.breadcrumbs?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return Text(
+                          area.breadcrumbs?[index] ?? '',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.blueAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 2.0,
+                          ),
+                          child: Text('»',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                              )),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 8,
