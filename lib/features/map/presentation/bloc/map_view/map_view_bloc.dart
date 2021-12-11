@@ -9,8 +9,8 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
 
+import '../../../../../core/collections/page.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../node/domain/entities/node.dart';
 import '../../../domain/usecases/fetch_areas_with_bounds.dart';
@@ -48,8 +48,14 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
     });
   }
 
-  late final StreamSubscription<Either<Failure, Page<Node>>> _subscription;
   final FetchAreasWithBounds _fetchAreasWithBounds;
+  late final StreamSubscription<Either<Failure, Page<Node>>> _subscription;
+
+  @override
+  Future<void> close() {
+    _subscription.cancel();
+    return super.close();
+  }
 
   void _onMapPositionChanged(MapPositionChanged event, Emitter emit) {
     emit(state.copyWith(
@@ -59,12 +65,6 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
       position: event.position,
       nodes: state.nodes,
     );
-  }
-
-  @override
-  Future<void> close() {
-    _subscription.cancel();
-    return super.close();
   }
 
   void _onPageAdded(PageAdded event, Emitter emit) {

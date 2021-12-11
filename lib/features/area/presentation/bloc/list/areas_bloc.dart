@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 import '../../../../../core/collections/page.dart';
 import '../../../../../core/error/failure.dart';
@@ -12,6 +14,14 @@ import '../../../domain/usecases/fetch_all.dart';
 
 part 'areas_event.dart';
 part 'areas_state.dart';
+
+const throttleDuration = Duration(milliseconds: 300);
+
+EventTransformer<AreasEvent> throttleDroppable<AreasEvent>(Duration duration) {
+  return (events, mapper) {
+    return droppable<AreasEvent>().call(events.debounce(duration), mapper);
+  };
+}
 
 /// Bloc for area listings.
 class AreasBloc extends Bloc<AreasEvent, AreasState> {
@@ -25,7 +35,10 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
           nextPage: 1,
         )) {
     on<PageAdded>(_onPageAdded);
-    on<NextPageRequested>(_onNextPageRequested);
+    on<NextPageRequested>(
+      _onNextPageRequested,
+      transformer: throttleDroppable(throttleDuration),
+    );
     on<FailureResponse>(_onFailure);
     on<SearchQueryUpdated>(_onSearchQueryUpdated);
     _subscription = _usecase.subscribe.listen((either) {
