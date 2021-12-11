@@ -1,5 +1,7 @@
 // coverage:ignore-file
 import 'package:get_it/get_it.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/drift_node_dao.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_local_data_source.dart';
 
 import 'data/datasources/node_remote_data_source.dart';
 import 'data/repositories/node_repository_impl.dart';
@@ -23,7 +25,7 @@ void initNodeFeature(GetIt sl) {
   // This repository has multiple subscribers, ensure that
   // each one gets its own independent [Stream].
   sl.registerFactory<NodeRepository>(
-    () => NodeRepositoryImpl(remoteDataSource: sl()),
+    () => NodeRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
   // Data sources
   sl.registerLazySingleton<NodeRemoteDataSource>(
@@ -32,4 +34,10 @@ void initNodeFeature(GetIt sl) {
       authenticationProvider: sl(),
     ),
   );
+  sl.registerLazySingleton<NodeLocalDataSource>(
+    () => NodeLocalDataSourceImpl(
+      driftNodesDao: sl(),
+    ),
+  );
+  sl.registerLazySingleton<DriftNodesDao>(() => DriftNodesDao(sl()));
 }

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_local_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/repositories/node_repository_impl.dart';
@@ -16,13 +17,20 @@ import '../../../../fixtures/node/nodes.dart';
 
 class MockRemoteDataSource extends Mock implements NodeRemoteDataSource {}
 
+class MockLocalDataSource extends Mock implements NodeLocalDataSource {}
+
 void main() {
   late NodeRemoteDataSource mockRemoteDataSource;
+  late NodeLocalDataSource mockLocalDataSource;
   late NodeRepository repository;
 
   setUp(() {
     mockRemoteDataSource = MockRemoteDataSource();
-    repository = NodeRepositoryImpl(remoteDataSource: mockRemoteDataSource);
+    mockLocalDataSource = MockLocalDataSource();
+    repository = NodeRepositoryImpl(
+      remoteDataSource: mockRemoteDataSource,
+      localDataSource: mockLocalDataSource,
+    );
   });
 
   group('create', () {

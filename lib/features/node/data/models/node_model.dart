@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:wikiclimb_flutter_frontend/core/database/database.dart';
 
 import '../../../../core/utils/serializers.dart';
 import '../../domain/entities/node.dart';
@@ -64,6 +65,26 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
 
   String toJson() {
     return json.encode(serializers.serializeWith(NodeModel.serializer, this));
+  }
+
+  DriftNode toDriftNode() {
+    return DriftNode(
+        id: id,
+        nodeTypeId: type,
+        parentId: parentId,
+        name: name,
+        description: description,
+        breadcrumbs: jsonEncode(breadcrumbs),
+        coverUrl: coverUrl,
+        rating: rating,
+        ratingsCount: ratingsCount,
+        pointId: pointId,
+        lat: lat,
+        lng: lng,
+        createdAt: createdAt,
+        createdBy: createdBy,
+        updatedAt: updatedAt,
+        updatedBy: updatedBy);
   }
 
   /// Return the [Node] corresponding to this [NodeModel].
