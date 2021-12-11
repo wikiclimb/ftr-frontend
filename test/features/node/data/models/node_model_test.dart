@@ -6,6 +6,7 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.da
 
 import '../../../../fixtures/area/area_node_models.dart';
 import '../../../../fixtures/fixture_reader.dart';
+import '../../../../fixtures/node/drift_nodes.dart';
 import '../../../../fixtures/node/node_models.dart';
 import '../../../../fixtures/node/nodes.dart';
 
@@ -81,6 +82,26 @@ void main() {
         nodeModel,
         reason: 'factory from [Node] should work',
       );
+    });
+  });
+
+  group('drift node conversion', () {
+    test('to drift node', () {
+      final tDriftNode = driftNodes.first;
+      final tNodeModel = nodeModels.first;
+      expect(tNodeModel.toDriftNode(), tDriftNode);
+    });
+
+    test('from drift node', () {
+      final tDriftNode = driftNodes.first;
+      final tNodeModel = nodeModels.first;
+      expect(NodeModel.fromDriftNode(tDriftNode), tNodeModel);
+    });
+
+    test('to drift node and back', () {
+      final tDriftNode = driftNodes.first;
+      final tNodeModel = NodeModel.fromDriftNode(tDriftNode);
+      expect(tNodeModel.toDriftNode(), tDriftNode);
     });
   });
 

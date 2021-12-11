@@ -74,7 +74,7 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
         parentId: parentId,
         name: name,
         description: description,
-        breadcrumbs: jsonEncode(breadcrumbs),
+        breadcrumbs: jsonEncode(breadcrumbs?.toList() ?? []),
         coverUrl: coverUrl,
         rating: rating,
         ratingsCount: ratingsCount,
@@ -85,6 +85,28 @@ abstract class NodeModel implements Built<NodeModel, NodeModelBuilder> {
         createdBy: createdBy,
         updatedAt: updatedAt,
         updatedBy: updatedBy);
+  }
+
+  static NodeModel fromDriftNode(DriftNode driftNode) {
+    return NodeModel((n) => n
+      ..id = driftNode.id
+      ..type = driftNode.nodeTypeId
+      ..parentId = driftNode.parentId
+      ..name = driftNode.name
+      ..description = driftNode.description
+      ..breadcrumbs = driftNode.breadcrumbs != null
+          ? ListBuilder(jsonDecode(driftNode.breadcrumbs!))
+          : null
+      ..coverUrl = driftNode.coverUrl
+      ..rating = driftNode.rating
+      ..ratingsCount = driftNode.ratingsCount
+      ..pointId = driftNode.pointId
+      ..lat = driftNode.lat
+      ..lng = driftNode.lng
+      ..createdBy = driftNode.createdBy
+      ..createdAt = driftNode.createdAt
+      ..updatedBy = driftNode.updatedBy
+      ..updatedAt = driftNode.updatedAt);
   }
 
   /// Return the [Node] corresponding to this [NodeModel].
