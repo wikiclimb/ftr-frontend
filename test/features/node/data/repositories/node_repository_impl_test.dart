@@ -5,14 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/data/converters/node_page_converter.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_local_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/repositories/node_repository_impl.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/repositories/node_repository.dart';
 
+import '../../../../fixtures/node/drift_node_pages.dart';
 import '../../../../fixtures/node/node_model_pages.dart';
-import '../../../../fixtures/node/node_pages.dart';
 import '../../../../fixtures/node/nodes.dart';
 
 class MockRemoteDataSource extends Mock implements NodeRemoteDataSource {}
@@ -80,49 +81,83 @@ void main() {
   });
 
   group('fetchPage', () {
+    final tDriftNodesPage = driftNodePages.first;
+    final tNodeModelsPage = nodeModelPages.first;
+
     test('repository stream pipes values when requested', () async {
-      final tNodeModelPage = nodeModelPages.first;
-      final tNodePage = nodePages.first;
       when(() => mockRemoteDataSource.fetchAll({}))
-          .thenAnswer((_) async => tNodeModelPage);
+          .thenAnswer((_) async => tNodeModelsPage);
+      when(() => mockLocalDataSource.fetchAll({}))
+          .thenAnswer((_) async => tDriftNodesPage);
+      when(() => mockLocalDataSource.saveAll(
+              NodePageConverter.driftNodeFromNodeModel(tNodeModelsPage).items))
+          .thenAnswer((_) async => 4);
       expectLater(
         repository.subscribe,
-        emitsInOrder([Right(tNodePage)]),
+        emitsInOrder([
+          // First it should emit the local data
+          Right(NodePageConverter.nodeFromDriftNode(tDriftNodesPage)),
+          // Then it should emit remote data
+          Right(NodePageConverter.nodeFromNodeModel(tNodeModelsPage)),
+        ]),
       );
-      repository.fetchPage();
+      await repository.fetchPage();
       verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+      verify(() => mockLocalDataSource.fetchAll({})).called(1);
+      // It should save the remote data to local
+      verify(() => mockLocalDataSource.saveAll(
+              NodePageConverter.driftNodeFromNodeModel(tNodeModelsPage).items))
+          .called(1);
     });
 
     test('Unauthorized failure', () async {
       when(() => mockRemoteDataSource.fetchAll(any()))
           .thenAnswer((_) async => throw UnauthorizedException());
+      when(() => mockLocalDataSource.fetchAll({}))
+          .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
-        emitsInOrder([Left(UnauthorizedFailure())]),
+        emitsInOrder([
+          // First it should emit the local data
+          Right(NodePageConverter.nodeFromDriftNode(tDriftNodesPage)),
+          Left(UnauthorizedFailure()),
+        ]),
       );
-      repository.fetchPage(params: {});
+      await repository.fetchPage(params: {});
       verify(() => mockRemoteDataSource.fetchAll(any())).called(1);
     });
 
     test('Forbidden failure', () async {
       when(() => mockRemoteDataSource.fetchAll({}))
           .thenAnswer((_) async => throw ForbiddenException());
+      when(() => mockLocalDataSource.fetchAll({}))
+          .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
-        emitsInOrder([Left(ForbiddenFailure())]),
+        emitsInOrder([
+          // First it should emit the local data
+          Right(NodePageConverter.nodeFromDriftNode(tDriftNodesPage)),
+          Left(ForbiddenFailure()),
+        ]),
       );
-      repository.fetchPage();
+      await repository.fetchPage();
       verify(() => mockRemoteDataSource.fetchAll({})).called(1);
     });
 
     test('Server failure', () async {
       when(() => mockRemoteDataSource.fetchAll({}))
           .thenAnswer((_) async => throw ServerException());
+      when(() => mockLocalDataSource.fetchAll({}))
+          .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
-        emitsInOrder([Left(ServerFailure())]),
+        emitsInOrder([
+          // First it should emit the local data
+          Right(NodePageConverter.nodeFromDriftNode(tDriftNodesPage)),
+          Left(ServerFailure()),
+        ]),
       );
-      repository.fetchPage();
+      await repository.fetchPage();
       verify(() => mockRemoteDataSource.fetchAll({})).called(1);
     });
 
@@ -130,9 +165,15 @@ void main() {
       when(() => mockRemoteDataSource.fetchAll(any())).thenAnswer(
         (_) async => throw NetworkException(),
       );
+      when(() => mockLocalDataSource.fetchAll({}))
+          .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
-        emits(Left(NetworkFailure())),
+        emitsInOrder([
+          // First it should emit the local data
+          Right(NodePageConverter.nodeFromDriftNode(tDriftNodesPage)),
+          Left(NetworkFailure()),
+        ]),
       );
       final result = await repository.fetchPage();
       expect(result, Left(NetworkFailure()));
@@ -142,11 +183,17 @@ void main() {
     test('Application failure', () async {
       when(() => mockRemoteDataSource.fetchAll({}))
           .thenAnswer((_) async => throw ApplicationException());
+      when(() => mockLocalDataSource.fetchAll({}))
+          .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
-        emitsInOrder([Left(ApplicationFailure())]),
+        emitsInOrder([
+          // First it should emit the local data
+          Right(NodePageConverter.nodeFromDriftNode(tDriftNodesPage)),
+          Left(ApplicationFailure()),
+        ]),
       );
-      repository.fetchPage();
+      await repository.fetchPage();
       verify(() => mockRemoteDataSource.fetchAll({})).called(1);
     });
   });

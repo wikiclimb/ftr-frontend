@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:wikiclimb_flutter_frontend/core/database/database.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/data/converters/node_page_converter.dart';
 
 import '../../../../core/collections/page.dart';
 import '../../../../core/error/error_handler.dart';
@@ -55,16 +57,14 @@ class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {
       {Map<String, String>? params}) async {
     try {
       // Return from database
-      // final dbNodes = await localDataSource.fetchAll();
-      final nodeModelPage = await remoteDataSource.fetchAll(params ?? {});
-      // _saveBatchToLocal(nodeModelPage);
-      final nodePage = Page<Node>(
-        (p) => p
-          ..isLastPage = nodeModelPage.isLastPage
-          ..nextPageNumber = nodeModelPage.nextPageNumber
-          ..pageNumber = nodeModelPage.pageNumber
-          ..items = ListBuilder(nodeModelPage.items.map((nm) => nm.toNode())),
-      );
+      final driftNodesPage = await localDataSource.fetchAll(params ?? {});
+      // Add the page to the controller but only return network responses
+      _controller
+          .add(Right(NodePageConverter.nodeFromDriftNode(driftNodesPage)));
+      final nodeModelsPage = await remoteDataSource.fetchAll(params ?? {});
+      localDataSource.saveAll(BuiltList<DriftNode>(
+          nodeModelsPage.items.map((nm) => nm.toDriftNode())));
+      final nodePage = NodePageConverter.nodeFromNodeModel(nodeModelsPage);
       _controller.add(Right(nodePage));
       return Right(nodePage);
     } on Exception catch (e) {
@@ -89,13 +89,4 @@ class NodeRepositoryImpl with ExceptionHandler implements NodeRepository {
       return Left(exceptionToFailure(e));
     }
   }
-
-  // void _saveBatchToLocal(Page<NodeModel> nodeModelPage) async {
-  //   final BuiltList<DriftNode> driftNodes = nodeModelPage.items.map((nm) {
-  //     final dn = nm.toDriftNode();
-  //     return dn;
-  //   }).toBuiltList();
-  //   final result = await localDataSource.saveAll(driftNodes);
-  //   print('Saved $result drift nodes to database');
-  // }
 }
