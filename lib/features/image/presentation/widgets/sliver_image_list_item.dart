@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,18 +17,21 @@ class SliverImageListItem extends StatelessWidget {
   }) : super(key: key);
 
   final wkc.Image image;
+  final placeholder = EnvironmentConfig.sliverAppBarBackgroundPlaceholder;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Stack(
         children: [
-          FadeInImage.assetNetwork(
-            placeholder: EnvironmentConfig.sliverAppBarBackgroundPlaceholder,
-            image: EnvironmentConfig.baseImgUrl + image.fileName,
-            imageErrorBuilder: (context, error, stackTrace) => Center(
-              child: Image.asset(
-                  EnvironmentConfig.sliverAppBarBackgroundPlaceholder),
+          CachedNetworkImage(
+            placeholder: (_, __) => Image.asset(
+              placeholder,
+              scale: 3,
+            ),
+            imageUrl: EnvironmentConfig.baseImgUrl + image.fileName,
+            errorWidget: (_, __, ___) => Center(
+              child: Image.asset(placeholder),
             ),
           ),
           Positioned.fill(

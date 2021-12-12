@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/environment/environment_config.dart';
@@ -13,8 +14,8 @@ class NodeListItemCover extends StatelessWidget {
     this.aspectRatio = 16 / 9,
   }) : super(key: key);
 
-  final Node node;
   final double aspectRatio;
+  final Node node;
   final placeholder = 'graphics/wikiclimb-logo-800-450.png';
 
   @override
@@ -30,12 +31,15 @@ class NodeListItemCover extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.cover,
                 clipBehavior: Clip.antiAlias,
-                child: FadeInImage.assetNetwork(
-                  placeholder: placeholder,
-                  // Scaling the placeholder fixes up jarred image rendering.
-                  placeholderScale: 3,
-                  image: '${EnvironmentConfig.baseImgUrl}${node.coverUrl!}',
-                  imageErrorBuilder: (context, error, stackTrace) =>
+                child: CachedNetworkImage(
+                  placeholder: (_, __) => Image.asset(
+                    placeholder,
+                    // Scaling the placeholder fixes up jarred image rendering.
+                    scale: 3,
+                  ),
+                  // placeholderScale: 3,
+                  imageUrl: '${EnvironmentConfig.baseImgUrl}${node.coverUrl!}',
+                  errorWidget: (_, __, ___) =>
                       Center(child: Image.asset(placeholder)),
                 ),
               )

@@ -1,4 +1,5 @@
 import 'package:built_collection/built_collection.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,6 +36,7 @@ class WkcImageSelector extends StatelessWidget {
   }) : super(key: key);
 
   final Node node;
+  final placeholder = EnvironmentConfig.sliverAppBarBackgroundPlaceholder;
 
   // Handle the result of the user selecting images or taking pictures with the
   // camera.
@@ -109,15 +111,14 @@ class WkcImageSelector extends StatelessWidget {
                               color: Colors.grey.shade100,
                               child: FittedBox(
                                 fit: BoxFit.cover,
-                                child: FadeInImage.assetNetwork(
-                                  placeholder: EnvironmentConfig
-                                      .sliverAppBarBackgroundPlaceholder,
-                                  image: EnvironmentConfig.baseImgUrl +
+                                child: CachedNetworkImage(
+                                  placeholder: (_, __) =>
+                                      Image.asset(placeholder),
+                                  imageUrl: EnvironmentConfig.baseImgUrl +
                                       state.images.elementAt(index).fileName,
-                                  imageErrorBuilder:
-                                      (context, error, stackTrace) => Center(
-                                          child: Image.asset(EnvironmentConfig
-                                              .sliverAppBarBackgroundPlaceholder)),
+                                  errorWidget: (_, __, ___) => Center(
+                                    child: Image.asset(placeholder),
+                                  ),
                                 ),
                               )),
                         );
