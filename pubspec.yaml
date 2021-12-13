@@ -37,6 +37,7 @@ dependencies:
   path_provider: ^2.0.8
   path: ^1.8.0
   cached_network_image: ^3.2.0
+  convex_bottom_bar: ^3.0.0
 
 dev_dependencies:
   bloc_test: ^9.0.1

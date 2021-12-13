@@ -2,6 +2,7 @@
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,7 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_no
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/edit_node_screen.dart';
 
+import '../../../../fixtures/image/images.dart';
 import '../../../../fixtures/node/nodes.dart';
 
 class MockAuthenticationBloc
@@ -87,7 +89,7 @@ void main() {
     when(() => mockImageListBloc.state).thenAnswer(
       (_) => ImageListState(
         status: ImageListStatus.initial,
-        images: BuiltSet(),
+        images: BuiltSet(images),
         hasError: false,
         nextPage: 1,
       ),
@@ -163,16 +165,6 @@ void main() {
       await tester.tap(fabFinder);
       await tester.pumpAndSettle();
       expect(find.byType(EditNodeScreen), findsOneWidget);
-    });
-
-    testWidgets('renders node images', (tester) async {
-      await mockNetworkImagesFor(
-        () => tester.pumpDetailsScreen(
-          mockAuthBloc: mockAuthBloc,
-          mockNodeEditBloc: mockNodeEditBloc,
-        ),
-      );
-      expect(find.byType(NodeSliverImageList), findsOneWidget);
     });
   });
 
@@ -259,6 +251,67 @@ void main() {
       await tester.pump();
       expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Cover image updated'), findsOneWidget);
+    });
+  });
+
+  group('image tab', () {
+    testWidgets('renders node images', (tester) async {
+      await mockNetworkImagesFor(
+        () => tester.pumpDetailsScreen(
+          mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
+        ),
+      );
+      await tester.runAsync(() async {
+        final bottomBarFinder = find.byType(ConvexAppBar);
+        expect(bottomBarFinder, findsOneWidget);
+        final tabFinder = find.descendant(
+          of: bottomBarFinder,
+          matching: find.byIcon(Icons.photo),
+        );
+        expect(tabFinder, findsOneWidget);
+        expect(find.text('Images'), findsOneWidget);
+        await tester.tap(tabFinder);
+        await tester.pump(Duration(seconds: 1));
+        expect(find.text('Images'), findsNothing);
+      });
+      await tester.pump(Duration(seconds: 1));
+      expect(
+        find.byKey(Key('areaDetailsScreen_imageListTab_safeArea')),
+        findsOneWidget,
+      );
+      expect(find.byType(NodeSliverImageList), findsOneWidget);
+    });
+  });
+
+  group('bottom navigation', () {
+    testWidgets('can navigate tabs', (tester) async {
+      await mockNetworkImagesFor(
+        () => tester.pumpDetailsScreen(
+          mockAuthBloc: mockAuthBloc,
+          mockNodeEditBloc: mockNodeEditBloc,
+        ),
+      );
+      // Tab navigation needs to be async
+      await tester.runAsync(() async {
+        final bottomBarFinder = find.byType(ConvexAppBar);
+        expect(bottomBarFinder, findsOneWidget);
+        final tabFinder = find.descendant(
+          of: bottomBarFinder,
+          matching: find.byIcon(Icons.list),
+        );
+        expect(tabFinder, findsOneWidget);
+        expect(find.text('Explore'), findsOneWidget);
+        await tester.tap(tabFinder);
+        await tester.pump(Duration(seconds: 1));
+        expect(find.text('Explore'), findsNothing);
+      });
+      // await tester.pump(Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(Key('areaDetailsScreen_subareasListTab_wrapper')),
+        findsOneWidget,
+      );
     });
   });
 }

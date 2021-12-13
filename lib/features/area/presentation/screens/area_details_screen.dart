@@ -1,3 +1,4 @@
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,63 +32,89 @@ class AreaDetailsScreen extends StatelessWidget {
     imageListBloc.add(InitializationRequested(
       node: context.read<NodeEditBloc>().state.node,
     ));
-    return Scaffold(
-      floatingActionButton:
-          BlocBuilder<AuthenticationBloc, AuthenticationState>(
-              builder: (context, state) {
-        if (state is AuthenticationAuthenticated) {
-          return FloatingActionButton(
-            key: const Key('areaDetailsScreen_editArea_fab'),
-            child: const Icon(Icons.edit),
-            onPressed: () {
-              // Details on how to pass a bloc to a child route:
-              // https://github.com/felangel/bloc/issues/502
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider<NodeEditBloc>.value(
-                    value: BlocProvider.of<NodeEditBloc>(context),
-                    child: const EditNodeScreen(),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        bottomNavigationBar: ConvexAppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          items: const [
+            TabItem(icon: Icons.info, title: 'Details'),
+            TabItem(icon: Icons.photo, title: 'Images'),
+            TabItem(icon: Icons.list, title: 'Explore'),
+          ],
+          // initialActiveIndex: 2, //optional, default as 0
+          // onTap: (int i) => print('click index=$i'),
+        ),
+        floatingActionButton:
+            BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                builder: (context, state) {
+          if (state is AuthenticationAuthenticated) {
+            return FloatingActionButton(
+              key: const Key('areaDetailsScreen_editArea_fab'),
+              child: const Icon(Icons.edit),
+              onPressed: () {
+                // Details on how to pass a bloc to a child route:
+                // https://github.com/felangel/bloc/issues/502
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider<NodeEditBloc>.value(
+                      value: BlocProvider.of<NodeEditBloc>(context),
+                      child: const EditNodeScreen(),
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        } else {
-          return Container();
-        }
-      }),
-      body: BlocConsumer<NodeEditBloc, NodeEditState>(
-        listener: (context, state) {
-          switch (state.coverUpdateRequestStatus) {
-            case CoverUpdateRequestStatus.loading:
-              _showMessage(context, 'Updating cover image');
-              break;
-            case CoverUpdateRequestStatus.error:
-              _showMessage(context, 'Error updating cover image');
-              break;
-            case CoverUpdateRequestStatus.success:
-              _showMessage(context, 'Cover image updated');
-              break;
-            case CoverUpdateRequestStatus.initial:
-              break;
+                );
+              },
+            );
+          } else {
+            return Container();
           }
-        },
-        builder: (context, state) {
-          return CustomScrollView(
-            slivers: <Widget>[
-              PhotoSliverAppBar(
-                title: state.node.name,
-                imageUrl: state.node.coverUrl,
+        }),
+        body: BlocConsumer<NodeEditBloc, NodeEditState>(
+          listener: (context, state) {
+            switch (state.coverUpdateRequestStatus) {
+              case CoverUpdateRequestStatus.loading:
+                _showMessage(context, 'Updating cover image');
+                break;
+              case CoverUpdateRequestStatus.error:
+                _showMessage(context, 'Error updating cover image');
+                break;
+              case CoverUpdateRequestStatus.success:
+                _showMessage(context, 'Cover image updated');
+                break;
+              case CoverUpdateRequestStatus.initial:
+                break;
+            }
+          },
+          builder: (context, state) {
+            return TabBarView(children: [
+              CustomScrollView(
+                slivers: <Widget>[
+                  PhotoSliverAppBar(
+                    title: state.node.name,
+                    imageUrl: state.node.coverUrl,
+                  ),
+                  AreaDetailsList(area: state.node),
+                ],
               ),
-              AreaDetailsList(area: state.node),
               BlocProvider(
                 create: (context) => imageListBloc,
-                child: NodeSliverImageList(state.node),
+                child: SafeArea(
+                  key: const Key('areaDetailsScreen_imageListTab_safeArea'),
+                  child: CustomScrollView(
+                    slivers: [
+                      NodeSliverImageList(state.node),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          );
-        },
+              const Center(
+                key: Key('areaDetailsScreen_subareasListTab_wrapper'),
+                child: Text('Todo: list of children'),
+              ),
+            ]);
+          },
+        ),
       ),
     );
   }
