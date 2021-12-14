@@ -28,7 +28,6 @@ class NodeLocalDataSourceImpl extends NodeLocalDataSource {
     if (perPageString != null) {
       perPage = int.parse(perPageString);
     }
-
     final pageString = params['page'];
     if (pageString != null) {
       pageNumber = int.parse(pageString);
@@ -39,8 +38,16 @@ class NodeLocalDataSourceImpl extends NodeLocalDataSource {
     final query = params['q'];
     List<DriftNode> result = query != null
         ? await driftNodesDao.fetchLimitedByQuery(
-            limit: perPage, query: query, offset: offset)
-        : await driftNodesDao.fetchLimited(perPage, offset: offset);
+            limit: perPage,
+            query: query,
+            offset: offset,
+            parentId: int.tryParse(params['parent-id'] ?? ''),
+          )
+        : await driftNodesDao.fetchLimited(
+            perPage,
+            offset: offset,
+            parentId: int.tryParse(params['parent-id'] ?? ''),
+          );
     return Page((p) => p
       ..isLastPage = false
       ..pageNumber = pageNumber

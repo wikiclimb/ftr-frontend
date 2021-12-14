@@ -34,7 +34,7 @@ void main() {
           hasError: false,
           nextPage: 1,
         ));
-    verify(() => mockUsecase.fetchPage()).called(1);
+    verify(() => mockUsecase.fetchPage(params: {'page': '1'})).called(1);
   });
 
   group('more data requested', () {
@@ -45,7 +45,7 @@ void main() {
       build: () => AreasBloc(usecase: mockUsecase),
       act: (bloc) => bloc.add(NextPageRequested()),
       verify: (_) {
-        verify(() => mockUsecase.fetchPage()).called(1);
+        verify(() => mockUsecase.fetchPage(params: {'page': '1'})).called(1);
       },
     );
 
@@ -73,7 +73,11 @@ void main() {
         )
       ],
       verify: (_) {
-        verify(() => mockUsecase.fetchPage(params: null)).called(1);
+        verify(
+          () => mockUsecase.fetchPage(
+            params: {'page': '1', 'parent-id': '123'},
+          ),
+        ).called(1);
         verify(
           () => mockUsecase.fetchPage(
             params: {

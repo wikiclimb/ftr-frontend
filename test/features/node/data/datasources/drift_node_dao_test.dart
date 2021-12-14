@@ -8,6 +8,13 @@ void main() {
   late DriftNodesDao dao;
   final driftNode = DriftNode(
       nodeTypeId: 1, name: 'name', createdAt: 1, createdBy: 'createdBy');
+  final childDriftNode = DriftNode(
+    nodeTypeId: 1,
+    parentId: 1,
+    name: 'www',
+    createdAt: 1,
+    createdBy: 'createdBy',
+  );
   const limit = 20;
 
   setUpAll(() {});
@@ -41,5 +48,16 @@ void main() {
       query: 'baboon',
     );
     expect(filteredResult.length, 1);
+    // Add a child Node
+    await dao.createOrUpdateNode(childDriftNode);
+    final childResult = await dao.fetchLimited(100, parentId: 1);
+    expect(childResult.length, 1);
+    final filteredChildResult =
+        await dao.fetchLimitedByQuery(limit: 100, query: 'www', parentId: 1);
+    expect(filteredChildResult.length, 1);
+    expect(
+      filteredChildResult.first,
+      childDriftNode.copyWith(id: childResult.first.id),
+    );
   });
 }

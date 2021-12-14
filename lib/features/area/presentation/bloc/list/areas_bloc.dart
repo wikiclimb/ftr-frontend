@@ -49,7 +49,7 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
       );
     });
     // Trigger the initial data load.
-    _usecase.fetchPage();
+    _usecase.fetchPage(params: _getParams());
   }
 
   late final StreamSubscription<Either<Failure, Page<Node>>> _subscription;

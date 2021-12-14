@@ -16,8 +16,13 @@ class DriftNodesDao extends DatabaseAccessor<WkcDatabase>
   /// This method takes a limit parameter and an optional offset allowing to
   /// fetch paginated results. Limit does not have a default value because it
   /// is the responsibility of the caller to know the number of items needed.
-  Future<List<DriftNode>> fetchLimited(int limit, {int? offset}) {
-    return (select(driftNodes)..limit(limit, offset: offset)).get();
+  Future<List<DriftNode>> fetchLimited(int limit,
+      {int? offset, int? parentId}) {
+    final query = select(driftNodes)..limit(limit, offset: offset);
+    if (parentId != null) {
+      query.where((n) => n.parentId.equals(parentId));
+    }
+    return query.get();
   }
 
   /// Fetch a limited amount of [DriftNode] rows filtered by a query string.
@@ -27,8 +32,12 @@ class DriftNodesDao extends DatabaseAccessor<WkcDatabase>
   /// fetch paginated results. Limit does not have a default value because it
   /// is the responsibility of the caller to know the number of items needed.
   Future<List<DriftNode>> fetchLimitedByQuery(
-      {required int limit, required String query, int? offset}) {
-    return (select(driftNodes)
+      {required int limit, required String query, int? offset, int? parentId}) {
+    final sql = select(driftNodes);
+    if (parentId != null) {
+      sql.where((n) => n.parentId.equals(parentId));
+    }
+    return (sql
           ..where((n) => n.name.like(query) | n.description.like(query))
           ..limit(limit, offset: offset))
         .get();
