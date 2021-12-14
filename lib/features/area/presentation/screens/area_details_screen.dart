@@ -7,6 +7,7 @@ import '../../../image/presentation/bloc/list/image_list_bloc.dart';
 import '../../../image/presentation/widgets/node_sliver_image_list.dart';
 import '../../../node/domain/entities/node.dart';
 import '../../../node/presentation/bloc/node_edit/node_edit_bloc.dart';
+import '../widgets/area_children_tab.dart';
 import '../widgets/area_details_tab.dart';
 
 /// Renders a widget that controls how a single area details are displayed.
@@ -68,10 +69,7 @@ class AreaDetailsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Center(
-                key: Key('areaDetailsScreen_subareasListTab_wrapper'),
-                child: Text('Todo: list of children'),
-              ),
+              AreaChildrenTab(parentNode: state.node),
             ]);
           },
         ),

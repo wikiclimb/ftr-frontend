@@ -10,7 +10,9 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/bloc/list/areas_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_children_tab.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_tab.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
@@ -23,6 +25,9 @@ import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_
 
 import '../../../../fixtures/image/images.dart';
 import '../../../../fixtures/node/nodes.dart';
+
+class MockAreasBloc extends MockBloc<AreasEvent, AreasState>
+    implements AreasBloc {}
 
 class MockAuthenticationBloc
     extends MockBloc<AuthenticationEvent, AuthenticationState>
@@ -37,6 +42,10 @@ class MockLocator extends Mock implements Locator {}
 
 class MockImageListBloc extends MockBloc<ImageListEvent, ImageListState>
     implements ImageListBloc {}
+
+class FakeAreasState extends Fake implements AreasState {}
+
+class FakeAreasEvent extends Fake implements AreasEvent {}
 
 class FakeAuthenticationState extends Fake implements AuthenticationState {}
 
@@ -62,6 +71,7 @@ extension on WidgetTester {
 }
 
 void main() {
+  late final AreasBloc mockAreasBloc;
   late final AuthenticationBloc mockAuthBloc;
   late final ImageListBloc mockImageListBloc;
   late final Locator mockLocator;
@@ -73,6 +83,8 @@ void main() {
   );
 
   setUpAll(() async {
+    registerFallbackValue(FakeAreasState());
+    registerFallbackValue(FakeAreasEvent());
     final sl = GetIt.instance;
     mockLocator = MockLocator();
     sl.registerFactoryParam<NodeEditBloc, Node, void>(
@@ -81,6 +93,10 @@ void main() {
         locator: mockLocator,
         node: node,
       ),
+    );
+    mockAreasBloc = MockAreasBloc();
+    sl.registerFactoryParam<AreasBloc, Node?, void>(
+      (parentNode, _) => mockAreasBloc,
     );
     registerFallbackValue(FakeAuthenticationState());
     mockImageListBloc = MockImageListBloc();
@@ -239,6 +255,14 @@ void main() {
 
   group('bottom navigation', () {
     testWidgets('can navigate tabs', (tester) async {
+      when(() => mockAreasBloc.state).thenAnswer(
+        (_) => AreasState(
+          status: AreasStatus.initial,
+          areas: BuiltSet(),
+          hasError: false,
+          nextPage: 1,
+        ),
+      );
       await mockNetworkImagesFor(
         () => tester.pumpDetailsScreen(
           mockAuthBloc: mockAuthBloc,
@@ -259,12 +283,9 @@ void main() {
         await tester.pump(Duration(seconds: 1));
         expect(find.text('Explore'), findsNothing);
       });
-      // await tester.pump(Duration(seconds: 1));
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(Key('areaDetailsScreen_subareasListTab_wrapper')),
-        findsOneWidget,
-      );
+      await tester.pump(Duration(seconds: 1));
+      // await tester.pumpAndSettle();
+      expect(find.byType(AreaChildrenTab), findsOneWidget);
     });
   });
 }

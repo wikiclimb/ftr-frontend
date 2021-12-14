@@ -25,8 +25,9 @@ EventTransformer<AreasEvent> throttleDroppable<AreasEvent>(Duration duration) {
 
 /// Bloc for area listings.
 class AreasBloc extends Bloc<AreasEvent, AreasState> {
-  AreasBloc({required FetchAllAreas usecase})
+  AreasBloc({required FetchAllAreas usecase, Node? parentNode})
       : _usecase = usecase,
+        _parentNode = parentNode,
         // Set the initial bloc state.
         super(AreasState(
           status: AreasStatus.initial,
@@ -53,6 +54,7 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
 
   late final StreamSubscription<Either<Failure, Page<Node>>> _subscription;
   final FetchAllAreas _usecase;
+  final Node? _parentNode;
 
   @override
   Future<void> close() {
@@ -100,6 +102,9 @@ class AreasBloc extends Bloc<AreasEvent, AreasState> {
     }
     if (state.query.isNotEmpty) {
       params.addAll({'q': state.query});
+    }
+    if (_parentNode != null && _parentNode!.id != null) {
+      params.addAll({'parent-id': _parentNode!.id!.toString()});
     }
     return params;
   }

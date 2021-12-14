@@ -12,6 +12,8 @@ import 'package:wikiclimb_flutter_frontend/features/area/presentation/bloc/list/
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 
 import '../../../../../fixtures/area/area_pages.dart';
+import '../../../../../fixtures/node/node_pages.dart';
+import '../../../../../fixtures/node/nodes.dart';
 
 class MockUsecase extends Mock implements FetchAllAreas {}
 
@@ -36,12 +38,50 @@ void main() {
   });
 
   group('more data requested', () {
+    final Page<Node> tPage = nodePages.first;
+
     blocTest<AreasBloc, AreasState>(
       'data requests are forwarded with no parameters on first fetch',
       build: () => AreasBloc(usecase: mockUsecase),
       act: (bloc) => bloc.add(NextPageRequested()),
       verify: (_) {
         verify(() => mockUsecase.fetchPage()).called(1);
+      },
+    );
+
+    blocTest<AreasBloc, AreasState>(
+      'data requests are forwarded with parent parameter',
+      setUp: () => when(() => mockUsecase.subscribe).thenAnswer(
+        (_) => Stream.value(Right(tPage)),
+      ),
+      seed: () => AreasState(
+        status: AreasStatus.initial,
+        areas: BuiltSet(),
+        hasError: false,
+        nextPage: 1,
+      ),
+      build: () => AreasBloc(usecase: mockUsecase, parentNode: nodes.first),
+      act: (bloc) => bloc.add(NextPageRequested()),
+      // Wait for the throttling
+      wait: Duration(seconds: 1),
+      expect: () => <AreasState>[
+        AreasState(
+          status: AreasStatus.loaded,
+          areas: BuiltSet([nodes.first]),
+          hasError: false,
+          nextPage: 2,
+        )
+      ],
+      verify: (_) {
+        verify(() => mockUsecase.fetchPage(params: null)).called(1);
+        verify(
+          () => mockUsecase.fetchPage(
+            params: {
+              'page': '2',
+              'parent-id': '123',
+            },
+          ),
+        ).called(1);
       },
     );
   });
