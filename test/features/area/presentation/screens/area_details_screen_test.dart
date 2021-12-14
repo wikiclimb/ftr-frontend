@@ -10,9 +10,8 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
-import 'package:wikiclimb_flutter_frontend/core/widgets/decoration/photo_sliver_app_bar.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_list.dart';
+import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_tab.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
@@ -21,7 +20,6 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/edit_node_screen.dart';
 
 import '../../../../fixtures/image/images.dart';
 import '../../../../fixtures/node/nodes.dart';
@@ -113,59 +111,14 @@ void main() {
     expect(find.byType(AreaDetailsScreen), findsOneWidget);
   });
 
-  testWidgets('app bar renders using parameter data', (tester) async {
+  testWidgets('tabs render', (tester) async {
     await mockNetworkImagesFor(
       () => tester.pumpDetailsScreen(
         mockAuthBloc: mockAuthBloc,
         mockNodeEditBloc: mockNodeEditBloc,
       ),
     );
-    expect(find.byType(PhotoSliverAppBar), findsOneWidget);
-    expect(find.byType(AreaDetailsList), findsOneWidget);
-    expect(find.byIcon(Icons.star), findsNWidgets(4));
-    expect(find.byIcon(Icons.star_half), findsOneWidget);
-  });
-
-  group('edit fab', () {
-    testWidgets('displays for authenticated users', (tester) async {
-      when(() => mockAuthBloc.state)
-          .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
-      await mockNetworkImagesFor(
-        () => tester.pumpDetailsScreen(
-          mockAuthBloc: mockAuthBloc,
-          mockNodeEditBloc: mockNodeEditBloc,
-        ),
-      );
-      expect(find.byKey(Key('areaDetailsScreen_editArea_fab')), findsOneWidget);
-    });
-
-    testWidgets('does not display for guest users', (tester) async {
-      when(() => mockAuthBloc.state)
-          .thenAnswer((_) => AuthenticationUnauthenticated());
-      await mockNetworkImagesFor(
-        () => tester.pumpDetailsScreen(
-          mockAuthBloc: mockAuthBloc,
-          mockNodeEditBloc: mockNodeEditBloc,
-        ),
-      );
-      expect(find.byKey(Key('areaDetailsScreen_editArea_fab')), findsNothing);
-    });
-
-    testWidgets('navigates to edit page on tap', (tester) async {
-      when(() => mockAuthBloc.state)
-          .thenAnswer((_) => AuthenticationAuthenticated(tAuthData));
-      await mockNetworkImagesFor(
-        () => tester.pumpDetailsScreen(
-          mockAuthBloc: mockAuthBloc,
-          mockNodeEditBloc: mockNodeEditBloc,
-        ),
-      );
-      final fabFinder = find.byKey(Key('areaDetailsScreen_editArea_fab'));
-      expect(fabFinder, findsOneWidget);
-      await tester.tap(fabFinder);
-      await tester.pumpAndSettle();
-      expect(find.byType(EditNodeScreen), findsOneWidget);
-    });
+    expect(find.byType(AreaDetailsTab), findsOneWidget);
   });
 
   group('cover update notifications', () {
