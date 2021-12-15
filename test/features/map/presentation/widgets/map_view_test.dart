@@ -4,6 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
@@ -75,5 +76,41 @@ void main() {
     await mockNetworkImagesFor(() => tester.pumpIt(mockMapViewBloc));
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.pin_drop), findsOneWidget);
+  });
+
+  testWidgets('marker renders popup on tap', (tester) async {
+    final state = MapViewState(
+      status: MapViewStatus.loaded,
+      nodes: BuiltSet([mapNodes.first]),
+    );
+    when(() => mockMapViewBloc.state).thenAnswer((_) => state);
+    await mockNetworkImagesFor(() => tester.pumpIt(mockMapViewBloc));
+    await tester.pumpAndSettle();
+    final markerFinder = find.byIcon(Icons.pin_drop);
+    expect(markerFinder, findsOneWidget);
+    await tester.tap(markerFinder);
+    await tester.pumpAndSettle();
+    expect(find.text('test-map-node-1'), findsOneWidget);
+  });
+
+  testWidgets('marker renders popup on tap and dismisses on tap elsewhere',
+      (tester) async {
+    final state = MapViewState(
+      status: MapViewStatus.loaded,
+      nodes: BuiltSet([mapNodes.first]),
+    );
+    when(() => mockMapViewBloc.state).thenAnswer((_) => state);
+    await mockNetworkImagesFor(() => tester.pumpIt(mockMapViewBloc));
+    await tester.pumpAndSettle();
+    final markerFinder = find.byIcon(Icons.pin_drop);
+    expect(markerFinder, findsOneWidget);
+    await tester.tap(markerFinder);
+    await tester.pumpAndSettle();
+    expect(find.text('test-map-node-1'), findsOneWidget);
+    // Move the marker out of the way
+    await tester.drag(find.byType(FlutterMap), const Offset(100.0, 50.0));
+    await tester.tap(find.byType(FlutterMap));
+    await tester.pumpAndSettle();
+    expect(find.text('test-map-node-1'), findsNothing);
   });
 }

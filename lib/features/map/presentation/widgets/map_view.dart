@@ -4,12 +4,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../domain/entities/node_marker.dart';
 import '../bloc/map_view/map_view_bloc.dart';
 
 class MapView extends StatelessWidget {
-  const MapView({
-    Key? key,
-  }) : super(key: key);
+  MapView({Key? key}) : super(key: key);
+
+  final PopupController _popupLayerController = PopupController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +18,17 @@ class MapView extends StatelessWidget {
       builder: (context, state) {
         return FlutterMap(
           options: MapOptions(
-            center: LatLng(38.5, -4.09),
-            zoom: 5.0,
-            plugins: [
-              MarkerClusterPlugin(),
-            ],
-            onPositionChanged: (position, tru) {
-              context
-                  .read<MapViewBloc>()
-                  .add(MapPositionChanged(position: position));
-            },
-          ),
+              center: LatLng(38.5, -4.09),
+              zoom: 5.0,
+              plugins: [
+                MarkerClusterPlugin(),
+              ],
+              onPositionChanged: (position, tru) {
+                context
+                    .read<MapViewBloc>()
+                    .add(MapPositionChanged(position: position));
+              },
+              onTap: (_, __) => _popupLayerController.hideAllPopups()),
           layers: [
             TileLayerOptions(
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -53,6 +54,18 @@ class MapView extends StatelessWidget {
                   onPressed: null,
                 );
               },
+              popupOptions: PopupOptions(
+                popupController: _popupLayerController,
+                popupBuilder: (context, marker) {
+                  final nodeMarker = marker as NodeMarker;
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Text(nodeMarker.node.name),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         );

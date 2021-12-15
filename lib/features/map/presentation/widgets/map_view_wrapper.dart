@@ -23,7 +23,7 @@ class MapViewWrapper extends StatelessWidget {
         backgroundColor: const Color(0x33000000),
         elevation: 0,
       ),
-      body: const MapView(),
+      body: MapView(),
     );
   }
 }

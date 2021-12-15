@@ -13,6 +13,7 @@ import 'package:stream_transform/stream_transform.dart';
 import '../../../../../core/collections/page.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../node/domain/entities/node.dart';
+import '../../../domain/entities/node_marker.dart';
 import '../../../domain/usecases/fetch_areas_with_bounds.dart';
 
 part 'map_view_event.dart';
