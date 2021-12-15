@@ -59,24 +59,34 @@ class _AreaListState extends State<AreaList> {
         default:
           // Handle loading and loaded status here.
           if (state.areas.isNotEmpty) {
-            return ListView.builder(
-              key: const Key('area-screen-area-list-list-builder'),
+            return CustomScrollView(
+              key: const Key('areaList_areasCustomScrollView'),
               controller: _scrollController,
-              // Add one item to show the last tile.
-              itemCount: state.areas.length + 1,
-              itemBuilder: (context, index) {
-                if (index == state.areas.length) {
-                  return AreaListLastItem(
-                    key: const Key('area-list-last-item'),
-                    state: state,
-                  );
-                } else {
-                  return AreaListItem(
-                    key: ValueKey(state.areas.elementAt(index).hashCode),
-                    area: state.areas.elementAt(index),
-                  );
-                }
-              },
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: MediaQuery.of(context).padding.top + 16,
+                  elevation: 16,
+                  automaticallyImplyLeading: false,
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      if (index == state.areas.length) {
+                        return AreaListLastItem(
+                          key: const Key('area-list-last-item'),
+                          state: state,
+                        );
+                      } else {
+                        return AreaListItem(
+                          key: ValueKey(state.areas.elementAt(index).hashCode),
+                          area: state.areas.elementAt(index),
+                        );
+                      }
+                    },
+                    childCount: state.areas.length + 1,
+                  ),
+                ),
+              ],
             );
           } else {
             return const Center(
