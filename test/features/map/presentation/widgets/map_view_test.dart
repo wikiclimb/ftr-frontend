@@ -29,7 +29,7 @@ extension on WidgetTester {
         MaterialApp(
           home: BlocProvider<MapViewBloc>(
             create: (context) => mockMapViewBloc,
-            child: MapView(),
+            child: Scaffold(body: MapView()),
           ),
         ),
       ),

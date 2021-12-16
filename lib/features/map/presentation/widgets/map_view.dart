@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../node/presentation/widgets/map/node_popup.dart';
 import '../../domain/entities/node_marker.dart';
 import '../bloc/map_view/map_view_bloc.dart';
 
@@ -58,12 +59,7 @@ class MapView extends StatelessWidget {
                 popupController: _popupLayerController,
                 popupBuilder: (context, marker) {
                   final nodeMarker = marker as NodeMarker;
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Text(nodeMarker.node.name),
-                    ),
-                  );
+                  return NodePopup(nodeMarker.node);
                 },
               ),
             ),
