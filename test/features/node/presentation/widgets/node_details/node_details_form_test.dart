@@ -38,9 +38,8 @@ extension on WidgetTester {
     return pumpWidget(
       MultiBlocProvider(
         providers: [
-          BlocProvider<NodeEditBloc>(create: (context) => nodeEditBloc),
-          BlocProvider<AuthenticationBloc>(
-              create: (context) => authenticationBloc),
+          BlocProvider<NodeEditBloc>(create: (_) => nodeEditBloc),
+          BlocProvider<AuthenticationBloc>(create: (_) => authenticationBloc),
         ],
         child: MaterialApp(
           home: Scaffold(
@@ -98,6 +97,62 @@ main() {
       authenticationBloc: mockAuthBloc,
     );
     expect(find.byType(NodeDetailsForm), findsOneWidget);
+  });
+
+  group('initial states', () {
+    testWidgets('new area', (tester) async {
+      when(() => mockNodeEditBloc.state)
+          .thenAnswer((_) => _getInitialState(Node((n) => n
+            ..name = 'test'
+            ..type = 1)));
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
+      expect(find.byType(NodeDetailsForm), findsOneWidget);
+      expect(find.text('Add Area'), findsOneWidget);
+    });
+
+    testWidgets('existing area', (tester) async {
+      when(() => mockNodeEditBloc.state)
+          .thenAnswer((_) => _getInitialState(Node((n) => n
+            ..id = 666
+            ..name = 'test'
+            ..type = 1)));
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
+      expect(find.byType(NodeDetailsForm), findsOneWidget);
+      expect(find.text('Edit Area'), findsOneWidget);
+    });
+
+    testWidgets('new route', (tester) async {
+      when(() => mockNodeEditBloc.state)
+          .thenAnswer((_) => _getInitialState(Node((n) => n
+            ..name = 'test'
+            ..type = 2)));
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
+      expect(find.byType(NodeDetailsForm), findsOneWidget);
+      expect(find.text('Add Route'), findsOneWidget);
+    });
+
+    testWidgets('existing route', (tester) async {
+      when(() => mockNodeEditBloc.state)
+          .thenAnswer((_) => _getInitialState(Node((n) => n
+            ..id = 666
+            ..name = 'test'
+            ..type = 2)));
+      await tester.pumpForm(
+        nodeEditBloc: mockNodeEditBloc,
+        authenticationBloc: mockAuthBloc,
+      );
+      expect(find.byType(NodeDetailsForm), findsOneWidget);
+      expect(find.text('Edit Route'), findsOneWidget);
+    });
   });
 
   group('form submission', () {

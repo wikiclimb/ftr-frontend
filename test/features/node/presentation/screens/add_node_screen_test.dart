@@ -5,11 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/add_area_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_form.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/add_node_screen.dart';
 
 class MockEditNode extends Mock implements EditNode {}
 
@@ -40,11 +39,11 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: AddAreaScreen(),
+              body: AddNodeScreen(type: 1),
             ),
           ),
         );
-        expect(find.byType(AddAreaScreen), findsOneWidget);
+        expect(find.byType(AddNodeScreen), findsOneWidget);
       },
     );
 
@@ -54,15 +53,18 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: AddAreaScreen(),
+              body: AddNodeScreen(type: 2),
             ),
           ),
         );
-        expect(find.byType(NodeDetailsForm), findsOneWidget);
+        expect(
+          find.byKey(Key('addNodeScreen_nodeDetailsForm')),
+          findsOneWidget,
+        );
         // Wait for initial state to the piped through bloc
         await tester.pumpAndSettle();
         expect(
-          find.text('Add Area'),
+          find.text('Add Route'),
           findsOneWidget,
           reason: 'add area screen should pass a new area node',
         );

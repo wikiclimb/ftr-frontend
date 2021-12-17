@@ -74,13 +74,11 @@ class _NodeEditAppBarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NodeEditBloc, NodeEditState>(builder: (context, state) {
-      final String title;
-      if (state.type == 1) {
-        title = 'Add Area';
-      } else {
-        title = 'Add Node';
-      }
-      return Text(title);
+      final String prefix = state.node.id == null ? 'Add' : 'Edit';
+      final String suffix = state.node.type == 1
+          ? 'Area'
+          : (state.node.type == 2 ? 'Route' : 'Node');
+      return Text('$prefix $suffix');
     });
   }
 }
