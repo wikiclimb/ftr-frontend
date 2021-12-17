@@ -1,20 +1,24 @@
 import 'package:built_collection/built_collection.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_map/flutter_map.dart';
 
+import '../../../../core/collections/page.dart';
+import '../../../../core/error/failure.dart';
+import '../../../../core/usecases/paged_subscription.dart';
 import '../../../area/domain/repository/area_repository.dart';
-import '../../../area/domain/usecases/fetch_all.dart';
 import '../../../node/domain/entities/node.dart';
 
 /// Paged subscription that fetches areas within some geographical bounds.
 ///
-/// This class is a thin wrapper around [FetchAllAreas] that extends its
-/// functionality by letting the user call the method passing directly
+/// Allows fetching by area by letting the user call the method passing directly
 /// a [MapPosition] and a [Set] of [Node]s already fetched previously.
-class FetchAreasWithBounds extends FetchAllAreas {
+class FetchAreasWithBounds
+    extends PagedSubscription<Node, Map<String, String>> {
   FetchAreasWithBounds({required AreaRepository repository})
-      : super(repository: repository);
+      : _repository = repository;
 
   final maxNodesFetched = 1000;
+  final AreaRepository _repository;
 
   void fetch({
     required MapPosition position,
@@ -38,6 +42,14 @@ class FetchAreasWithBounds extends FetchAllAreas {
     if (params != null) {
       _params.addAll(params);
     }
-    super.fetchPage(params: _params);
+    fetchPage(params: _params);
   }
+
+  @override
+  void fetchPage({Map<String, String>? params}) {
+    _repository.fetchPage(params: params);
+  }
+
+  @override
+  Stream<Either<Failure, Page<Node>>> get subscribe => _repository.subscribe;
 }
