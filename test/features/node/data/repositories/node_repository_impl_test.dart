@@ -10,6 +10,7 @@ import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_l
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/repositories/node_repository_impl.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/repositories/node_repository.dart';
 
 import '../../../../fixtures/node/drift_node_pages.dart';
@@ -24,6 +25,9 @@ void main() {
   late NodeRemoteDataSource mockRemoteDataSource;
   late NodeLocalDataSource mockLocalDataSource;
   late NodeRepository repository;
+  final tParams = NodeFetchParams((p) => p
+    ..page = 3
+    ..perPage = 10);
 
   setUp(() {
     mockRemoteDataSource = MockRemoteDataSource();
@@ -85,9 +89,9 @@ void main() {
     final tNodeModelsPage = nodeModelPages.first;
 
     test('repository stream pipes values when requested', () async {
-      when(() => mockRemoteDataSource.fetchAll({}))
+      when(() => mockRemoteDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tNodeModelsPage);
-      when(() => mockLocalDataSource.fetchAll({}))
+      when(() => mockLocalDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tDriftNodesPage);
       when(() => mockLocalDataSource.saveAll(
               NodePageConverter.driftNodeFromNodeModel(tNodeModelsPage).items))
@@ -101,9 +105,9 @@ void main() {
           Right(NodePageConverter.nodeFromNodeModel(tNodeModelsPage)),
         ]),
       );
-      await repository.fetchPage();
-      verify(() => mockRemoteDataSource.fetchAll({})).called(1);
-      verify(() => mockLocalDataSource.fetchAll({})).called(1);
+      await repository.fetchPage(tParams);
+      verify(() => mockRemoteDataSource.fetchAll(tParams)).called(1);
+      verify(() => mockLocalDataSource.fetchAll(tParams)).called(1);
       // It should save the remote data to local
       verify(() => mockLocalDataSource.saveAll(
               NodePageConverter.driftNodeFromNodeModel(tNodeModelsPage).items))
@@ -111,9 +115,9 @@ void main() {
     });
 
     test('Unauthorized failure', () async {
-      when(() => mockRemoteDataSource.fetchAll(any()))
+      when(() => mockRemoteDataSource.fetchAll(tParams))
           .thenAnswer((_) async => throw UnauthorizedException());
-      when(() => mockLocalDataSource.fetchAll({}))
+      when(() => mockLocalDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
@@ -123,14 +127,14 @@ void main() {
           Left(UnauthorizedFailure()),
         ]),
       );
-      await repository.fetchPage(params: {});
-      verify(() => mockRemoteDataSource.fetchAll(any())).called(1);
+      await repository.fetchPage(tParams);
+      verify(() => mockRemoteDataSource.fetchAll(tParams)).called(1);
     });
 
     test('Forbidden failure', () async {
-      when(() => mockRemoteDataSource.fetchAll({}))
+      when(() => mockRemoteDataSource.fetchAll(tParams))
           .thenAnswer((_) async => throw ForbiddenException());
-      when(() => mockLocalDataSource.fetchAll({}))
+      when(() => mockLocalDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
@@ -140,14 +144,14 @@ void main() {
           Left(ForbiddenFailure()),
         ]),
       );
-      await repository.fetchPage();
-      verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+      await repository.fetchPage(tParams);
+      verify(() => mockRemoteDataSource.fetchAll(tParams)).called(1);
     });
 
     test('Server failure', () async {
-      when(() => mockRemoteDataSource.fetchAll({}))
+      when(() => mockRemoteDataSource.fetchAll(tParams))
           .thenAnswer((_) async => throw ServerException());
-      when(() => mockLocalDataSource.fetchAll({}))
+      when(() => mockLocalDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
@@ -157,15 +161,15 @@ void main() {
           Left(ServerFailure()),
         ]),
       );
-      await repository.fetchPage();
-      verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+      await repository.fetchPage(tParams);
+      verify(() => mockRemoteDataSource.fetchAll(tParams)).called(1);
     });
 
     test('Network failure', () async {
-      when(() => mockRemoteDataSource.fetchAll(any())).thenAnswer(
+      when(() => mockRemoteDataSource.fetchAll(tParams)).thenAnswer(
         (_) async => throw NetworkException(),
       );
-      when(() => mockLocalDataSource.fetchAll({}))
+      when(() => mockLocalDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
@@ -175,15 +179,15 @@ void main() {
           Left(NetworkFailure()),
         ]),
       );
-      final result = await repository.fetchPage();
+      final result = await repository.fetchPage(tParams);
       expect(result, Left(NetworkFailure()));
-      verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+      verify(() => mockRemoteDataSource.fetchAll(tParams)).called(1);
     });
 
     test('Application failure', () async {
-      when(() => mockRemoteDataSource.fetchAll({}))
+      when(() => mockRemoteDataSource.fetchAll(tParams))
           .thenAnswer((_) async => throw ApplicationException());
-      when(() => mockLocalDataSource.fetchAll({}))
+      when(() => mockLocalDataSource.fetchAll(tParams))
           .thenAnswer((_) async => tDriftNodesPage);
       expectLater(
         repository.subscribe,
@@ -193,8 +197,8 @@ void main() {
           Left(ApplicationFailure()),
         ]),
       );
-      await repository.fetchPage();
-      verify(() => mockRemoteDataSource.fetchAll({})).called(1);
+      await repository.fetchPage(tParams);
+      verify(() => mockRemoteDataSource.fetchAll(tParams)).called(1);
     });
   });
 

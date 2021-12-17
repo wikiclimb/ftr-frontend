@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
 
 import '../../../../core/collections/page.dart';
 import '../../../../core/error/failure.dart';
@@ -27,7 +28,14 @@ class AreaRepositoryImpl extends AreaRepository {
       {Map<String, String>? params, int? page}) {
     Map<String, String> newParams = {'type': '1'};
     newParams.addAll(params ?? {});
-    return nodeRepository.fetchPage(params: newParams);
+    final nfp = NodeFetchParams((p) => p
+      ..type = 1
+      ..query = params?['q']
+      ..page = int.parse(params?['page'] ?? '1')
+      ..perPage = int.parse(params?['per-page'] ?? '20')
+      ..parentId = int.tryParse(params?['parent-id'] ?? ''));
+
+    return nodeRepository.fetchPage(nfp);
   }
 
   @override

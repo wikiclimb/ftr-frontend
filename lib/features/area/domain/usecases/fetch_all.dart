@@ -22,9 +22,4 @@ class FetchAllAreas extends PagedSubscription<Node, Map<String, String>> {
   void fetchPage({Map<String, String>? params}) {
     _repository.fetchPage(params: params);
   }
-
-  @override
-  void refresh() {
-    fetchPage();
-  }
 }

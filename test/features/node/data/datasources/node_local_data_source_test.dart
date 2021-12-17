@@ -5,6 +5,7 @@ import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
 import 'package:wikiclimb_flutter_frontend/core/database/database.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/drift_node_dao.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_local_data_source.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
 
 import '../../../../fixtures/node/drift_nodes.dart';
 
@@ -30,18 +31,24 @@ void main() {
 
   group('fetch', () {
     test('fetch all no params', () async {
+      final tParams = NodeFetchParams((p) => p
+        ..page = 1
+        ..perPage = 20);
       when(() => mockDao.fetchLimited(any(), offset: any(named: 'offset')))
           .thenAnswer((_) async => driftNodes);
-      final result = await dataSource.fetchAll({});
+      final result = await dataSource.fetchAll(tParams);
       expect(result, expectedPage);
       verify(() => mockDao.fetchLimited(any(), offset: any(named: 'offset')))
           .called(1);
     });
 
     test('fetch all with params', () async {
+      final tParams = NodeFetchParams((p) => p
+        ..page = 3
+        ..perPage = 10);
       when(() => mockDao.fetchLimited(any(), offset: any(named: 'offset')))
           .thenAnswer((_) async => driftNodes);
-      final result = await dataSource.fetchAll({'per-page': '10', 'page': '3'});
+      final result = await dataSource.fetchAll(tParams);
       final page = Page((p) => p
         ..items = BuiltList(driftNodes).toBuilder()
         ..isLastPage = false
@@ -52,16 +59,16 @@ void main() {
     });
 
     test('fetch all with params and query', () async {
+      final tParams = NodeFetchParams((p) => p
+        ..page = 3
+        ..perPage = 10
+        ..query = 'baboon');
       when(() => mockDao.fetchLimitedByQuery(
             limit: any(named: 'limit'),
             offset: any(named: 'offset'),
             query: any(named: 'query'),
           )).thenAnswer((_) async => driftNodes);
-      final result = await dataSource.fetchAll({
-        'per-page': '10',
-        'page': '3',
-        'q': 'baboon',
-      });
+      final result = await dataSource.fetchAll(tParams);
       final page = Page((p) => p
         ..items = BuiltList(driftNodes).toBuilder()
         ..isLastPage = false

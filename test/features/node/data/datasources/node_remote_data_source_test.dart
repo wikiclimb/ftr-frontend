@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-
 import 'package:wikiclimb_flutter_frontend/core/authentication/authentication_provider.dart';
+import 'package:wikiclimb_flutter_frontend/core/environment/environment_config.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/exception.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/datasources/node_remote_data_source.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/data/models/node_model.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 import '../../../../fixtures/headers/links.dart';
@@ -32,6 +33,9 @@ void main() {
     id: 123,
     username: 'username',
   );
+  final tParams = NodeFetchParams((p) => p
+    ..page = 3
+    ..perPage = 10);
 
   setUpAll(() {
     registerFallbackValue(FakeUri());
@@ -56,9 +60,13 @@ void main() {
         ),
       );
       final expected = nodeModelPages.elementAt(1);
-      final result = await dataSource.fetchAll({});
+      final result = await dataSource.fetchAll(tParams);
       expect(result, expected);
-      verify(() => mockClient.get(any())).called(1);
+      final tUri = Uri.https(EnvironmentConfig.apiUrl, 'nodes', {
+        'page': '3',
+        'per-page': '10',
+      });
+      verify(() => mockClient.get(tUri)).called(1);
     });
 
     test('fetch converts server errors to failures', () async {
@@ -66,7 +74,7 @@ void main() {
         (_) async => http.Response('Something went wrong', 404),
       );
       expect(
-        () async => await dataSource.fetchAll({}),
+        () async => await dataSource.fetchAll(tParams),
         throwsA(const TypeMatcher<ServerException>()),
       );
       verify(() => mockClient.get(any())).called(1);
@@ -78,7 +86,7 @@ void main() {
         (_) async => http.Response('Unauthorized', 401),
       );
       expect(
-        () async => await dataSource.fetchAll({}),
+        () async => await dataSource.fetchAll(tParams),
         throwsA(const TypeMatcher<UnauthorizedException>()),
       );
       verify(() => mockClient.get(any())).called(1);
@@ -90,7 +98,7 @@ void main() {
         (_) async => http.Response('Unauthorized', 403),
       );
       expect(
-        () async => await dataSource.fetchAll({}),
+        () async => await dataSource.fetchAll(tParams),
         throwsA(const TypeMatcher<ForbiddenException>()),
       );
       verify(() => mockClient.get(any())).called(1);
@@ -102,7 +110,7 @@ void main() {
         const SocketException('Socket exception'),
       );
       expect(
-        () async => await dataSource.fetchAll({}),
+        () async => await dataSource.fetchAll(tParams),
         throwsA(const TypeMatcher<NetworkException>()),
       );
       verify(() => mockClient.get(any())).called(1);
@@ -112,7 +120,7 @@ void main() {
     test('fetch converts other errors to application failures', () async {
       when(() => mockClient.get(any())).thenThrow(const FormatException());
       expect(
-        () async => await dataSource.fetchAll({}),
+        () async => await dataSource.fetchAll(tParams),
         throwsA(const TypeMatcher<ApplicationException>()),
       );
       verify(() => mockClient.get(any())).called(1);
@@ -127,7 +135,7 @@ void main() {
           headers: linkHeaders['hasNextPage']!,
         ),
       );
-      expect(() async => await dataSource.fetchAll({}),
+      expect(() async => await dataSource.fetchAll(tParams),
           throwsA(const TypeMatcher<ApplicationException>()),
           reason: 'second node is missing a name, serializing should throw an '
               'exception that should be rethrown as an ApplicationException');

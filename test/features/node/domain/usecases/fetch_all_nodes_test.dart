@@ -6,18 +6,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/collections/page.dart';
 import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
-
-import 'package:wikiclimb_flutter_frontend/features/area/domain/repository/area_repository.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/domain/usecases/fetch_all.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/repositories/node_repository.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/fetch_all_nodes.dart';
 
 import '../../../../fixtures/area/area_pages.dart';
 
-class MockAreaRepository extends Mock implements AreaRepository {}
+class MockNodeRepository extends Mock implements NodeRepository {}
 
 void main() {
-  late AreaRepository mockAreaRepository;
-  late FetchAllAreas fetchAllAreas;
+  late NodeRepository mockNodeRepository;
+  late FetchAllNodes fetchAllNodes;
   final tArea1 = Node((n) => n
     ..id = 1234
     ..type = 1
@@ -50,37 +50,37 @@ void main() {
     ..isLastPage = false);
 
   setUp(() {
-    mockAreaRepository = MockAreaRepository();
-    fetchAllAreas = FetchAllAreas(repository: mockAreaRepository);
+    mockNodeRepository = MockNodeRepository();
+    fetchAllNodes = FetchAllNodes(repository: mockNodeRepository);
   });
 
   test('should pipe area stream values', () async {
-    when(() => mockAreaRepository.subscribe)
+    when(() => mockNodeRepository.subscribe)
         .thenAnswer((_) => Stream.value(Right(page1)));
     expectLater(
-      fetchAllAreas.subscribe,
+      fetchAllNodes.subscribe,
       emitsInOrder([Right(page1)]),
     );
   });
 
   test('empty pages should be accepted', () async {
-    when(() => mockAreaRepository.subscribe)
+    when(() => mockNodeRepository.subscribe)
         .thenAnswer((_) => Stream.value(Right(emptyPage)));
     expectLater(
-      fetchAllAreas.subscribe,
+      fetchAllNodes.subscribe,
       emitsInOrder([Right(emptyPage)]),
     );
   });
 
   test('should return failure when repository fails', () async {
-    when(() => mockAreaRepository.subscribe).thenAnswer(
+    when(() => mockNodeRepository.subscribe).thenAnswer(
       (_) => Stream.fromIterable([
         Right(page1),
         Left(NetworkFailure()),
       ]),
     );
     expectLater(
-      fetchAllAreas.subscribe,
+      fetchAllNodes.subscribe,
       emitsInOrder([
         Right(page1),
         Left(NetworkFailure()),
@@ -92,10 +92,28 @@ void main() {
     'should forward fetchPage calls',
     () {
       final tAreaPage = areaPages.first;
-      when(() => mockAreaRepository.fetchPage())
+      final tParams = NodeFetchParams((p) => p
+        ..page = 3
+        ..parentId = 4
+        ..perPage = 20);
+      when(() => mockNodeRepository.fetchPage(tParams))
           .thenAnswer((_) async => Right(tAreaPage));
-      fetchAllAreas.fetchPage();
-      verify(() => mockAreaRepository.fetchPage()).called(1);
+      fetchAllNodes.fetchPage(params: tParams);
+      verify(() => mockNodeRepository.fetchPage(tParams)).called(1);
+    },
+  );
+
+  test(
+    'should forward fetchPage calls with default parameters',
+    () {
+      final tAreaPage = areaPages.first;
+      final tParams = NodeFetchParams((p) => p
+        ..page = 1
+        ..perPage = 20);
+      when(() => mockNodeRepository.fetchPage(tParams))
+          .thenAnswer((_) async => Right(tAreaPage));
+      fetchAllNodes.fetchPage();
+      verify(() => mockNodeRepository.fetchPage(tParams)).called(1);
     },
   );
 }

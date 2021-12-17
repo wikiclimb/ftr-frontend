@@ -15,5 +15,7 @@ void main() {
     final tClone = tPage.rebuild((p0) => p0..items = items);
     expect(tPage, isA<Page>());
     expect(tClone, tPage);
+    expect(tPage.pageNumber, 1);
+    expect(tPage.items, items.build());
   });
 }

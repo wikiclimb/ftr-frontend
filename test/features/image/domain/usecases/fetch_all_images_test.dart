@@ -67,17 +67,4 @@ void main() {
       verify(() => mockImageRepository.fetchPage()).called(1);
     },
   );
-
-  test(
-    'should forward refresh calls',
-    () {
-      final tPage = imagePages.first;
-      when(() => mockImageRepository.fetchPage(params: any(named: 'params')))
-          .thenAnswer((_) async => Right(tPage));
-      fetchAllImages.refresh();
-      verify(
-        () => mockImageRepository.fetchPage(params: any(named: 'params')),
-      ).called(1);
-    },
-  );
 }

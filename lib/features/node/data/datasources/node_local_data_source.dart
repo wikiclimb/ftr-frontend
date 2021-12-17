@@ -2,11 +2,12 @@ import 'package:built_collection/built_collection.dart';
 
 import '../../../../core/collections/page.dart';
 import '../../../../core/database/database.dart';
+import '../../domain/entities/node_fetch_params.dart';
 import 'drift_node_dao.dart';
 
 /// Local data source for [Node] data.
 abstract class NodeLocalDataSource {
-  Future<Page<DriftNode>> fetchAll(Map<String, String> params);
+  Future<Page<DriftNode>> fetchAll(NodeFetchParams params);
 
   Future<int> saveAll(BuiltList<DriftNode> nodes);
 }
@@ -18,40 +19,26 @@ class NodeLocalDataSourceImpl extends NodeLocalDataSource {
   final DriftNodesDao driftNodesDao;
 
   @override
-  Future<Page<DriftNode>> fetchAll(Map<String, String> params) async {
-    // TODO too much boilerplate and validity checks, refactor into a Params
-    // class with required fields and default values.
-    var perPage = 20;
-    var offset = 0;
-    var pageNumber = 1;
-    final perPageString = params['per-page'];
-    if (perPageString != null) {
-      perPage = int.parse(perPageString);
-    }
-    final pageString = params['page'];
-    if (pageString != null) {
-      pageNumber = int.parse(pageString);
-      if (pageNumber > 1) {
-        offset = perPage * pageNumber;
-      }
-    }
-    final query = params['q'];
+  Future<Page<DriftNode>> fetchAll(NodeFetchParams params) async {
+    final offset = params.page > 1 ? params.perPage * params.page : 0;
+    final query = params.query;
+    // TODO merge this two methdos into one with parameters.
     List<DriftNode> result = query != null
         ? await driftNodesDao.fetchLimitedByQuery(
-            limit: perPage,
+            limit: params.perPage,
             query: query,
             offset: offset,
-            parentId: int.tryParse(params['parent-id'] ?? ''),
+            parentId: params.parentId,
           )
         : await driftNodesDao.fetchLimited(
-            perPage,
+            params.perPage,
             offset: offset,
-            parentId: int.tryParse(params['parent-id'] ?? ''),
+            parentId: params.parentId,
           );
     return Page((p) => p
       ..isLastPage = false
-      ..pageNumber = pageNumber
-      ..nextPageNumber = pageNumber + 1
+      ..pageNumber = params.page
+      ..nextPageNumber = params.page + 1
       ..items = BuiltList<DriftNode>(result).toBuilder());
   }
 

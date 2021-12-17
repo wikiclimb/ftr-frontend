@@ -23,10 +23,4 @@ class FetchAllImages extends PagedSubscription<Image, Map<String, dynamic>> {
   void fetchPage({Map<String, dynamic>? params}) {
     _repository.fetchPage(params: params);
   }
-
-  // Request a refresh of the [Image] data.
-  @override
-  void refresh() {
-    fetchPage();
-  }
 }

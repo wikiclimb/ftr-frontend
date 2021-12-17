@@ -9,6 +9,7 @@ import 'package:wikiclimb_flutter_frontend/core/error/failure.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/data/repositories/area_repository_impl.dart';
 
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/repositories/node_repository.dart';
 
 import '../../../../fixtures/node/node_pages.dart';
@@ -32,6 +33,12 @@ void main() {
     ..pageNumber = 1
     ..nextPageNumber = -1
     ..isLastPage = true);
+
+  setUpAll(() {
+    registerFallbackValue(NodeFetchParams((p) => p
+      ..page = 1
+      ..perPage = 20));
+  });
 
   setUp(() {
     mockNodeRepository = MockNodeRepository();
@@ -80,13 +87,15 @@ void main() {
     'for area to the parameters',
     () {
       final tNodePage = nodePages.first;
-      when(() => mockNodeRepository.fetchPage(params: any(named: 'params')))
+      final tParams = NodeFetchParams((p) => p
+        ..page = 1
+        ..perPage = 20);
+      when(() => mockNodeRepository.fetchPage(any()))
           .thenAnswer((_) async => Right(tNodePage));
       repository.fetchPage();
+      final tUpdatedParams = tParams.rebuild((p) => p..type = 1);
       verify(
-        () => mockNodeRepository.fetchPage(
-          params: {'type': '1'},
-        ),
+        () => mockNodeRepository.fetchPage(tUpdatedParams),
       ).called(1);
       verifyNoMoreInteractions(mockNodeRepository);
     },
@@ -96,16 +105,19 @@ void main() {
     'should forward fetchPage call parameters and page '
     'adding type 1 for area to the parameters',
     () {
+      final tParams = NodeFetchParams((p) => p
+        ..page = 3
+        ..query = 'test'
+        ..perPage = 20);
       final tNodePage = nodePages.first;
-      when(() => mockNodeRepository.fetchPage(params: any(named: 'params')))
+      when(() => mockNodeRepository.fetchPage(any()))
           .thenAnswer((_) async => Right(tNodePage));
       repository.fetchPage(
         params: {'q': 'test', 'page': '3'},
         page: 3,
       );
-      verify(() => mockNodeRepository.fetchPage(
-            params: {'type': '1', 'q': 'test', 'page': '3'},
-          )).called(1);
+      final tUpdatedParams = tParams.rebuild((p) => p..type = 1);
+      verify(() => mockNodeRepository.fetchPage(tUpdatedParams)).called(1);
       verifyNoMoreInteractions(mockNodeRepository);
     },
   );

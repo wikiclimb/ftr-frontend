@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:http/http.dart' as http;
+import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fetch_params.dart';
 
 import '../../../../core/authentication/authentication_provider.dart';
 import '../../../../core/collections/page.dart';
@@ -17,7 +18,7 @@ abstract class NodeRemoteDataSource {
   ///
   /// Throws a [ServerException] for server response codes.
   /// Throws a [NetworkException] for network errors.
-  Future<Page<NodeModel>> fetchAll(Map<String, String>? params);
+  Future<Page<NodeModel>> fetchAll(NodeFetchParams params);
 
   /// Calls the node POST endpoint with the given parameters.
   ///
@@ -66,8 +67,8 @@ class NodeRemoteDataSourceImpl extends NodeRemoteDataSource
   }
 
   @override
-  Future<Page<NodeModel>> fetchAll(Map<String, String>? params) async {
-    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params);
+  Future<Page<NodeModel>> fetchAll(NodeFetchParams params) async {
+    final uri = Uri.https(EnvironmentConfig.apiUrl, endpoint, params.toMap());
     final response = await handleRequest(client: client, uri: uri);
     try {
       final jsonMap = jsonDecode(response.body);
