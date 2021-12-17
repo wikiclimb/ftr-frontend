@@ -10,7 +10,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
 import 'package:wikiclimb_flutter_frontend/core/widgets/decoration/photo_sliver_app_bar.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_list.dart';
 import 'package:wikiclimb_flutter_frontend/features/area/presentation/widgets/area_details_tab.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
@@ -20,6 +19,7 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.da
 import 'package:wikiclimb_flutter_frontend/features/node/domain/usecases/edit_node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/edit_node_screen.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_details/node_details_list.dart';
 
 import '../../../../fixtures/image/images.dart';
 import '../../../../fixtures/node/nodes.dart';
@@ -122,7 +122,7 @@ void main() {
       ),
     );
     expect(find.byType(PhotoSliverAppBar), findsOneWidget);
-    expect(find.byType(AreaDetailsList), findsOneWidget);
+    expect(find.byType(NodeDetailsList), findsOneWidget);
     expect(find.byIcon(Icons.star), findsNWidgets(4));
     expect(find.byIcon(Icons.star_half), findsOneWidget);
   });

@@ -6,7 +6,7 @@ import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../node/domain/entities/node.dart';
 import '../../../node/presentation/bloc/node_edit/node_edit_bloc.dart';
 import '../../../node/presentation/screens/edit_node_screen.dart';
-import 'area_details_list.dart';
+import '../../../node/presentation/widgets/node_details/node_details_list.dart';
 
 /// This widget shows details about a [Node] of type area.
 ///
@@ -27,7 +27,7 @@ class AreaDetailsTab extends StatelessWidget {
               title: node.name,
               imageUrl: node.coverUrl,
             ),
-            AreaDetailsList(area: node),
+            NodeDetailsList(node),
           ],
         ),
         BlocBuilder<AuthenticationBloc, AuthenticationState>(

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:wikiclimb_flutter_frontend/core/widgets/decoration/star_rating_widget.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/node_breadcrumbs.dart';
 
-/// Renders a list of widgets containing details about an [Node] of type area.
+import '../../../../../core/widgets/decoration/star_rating_widget.dart';
+import '../../../domain/entities/node.dart';
+import '../node_breadcrumbs.dart';
+
+/// Renders a list of widgets containing details for a [Node].
 ///
 /// This widget renders its children in a [SliverList] which makes it suitable
 /// to use as a sliver inside a [Scrollable] widget like a [CustomScrollView].
-class AreaDetailsList extends StatelessWidget {
-  const AreaDetailsList({
-    Key? key,
-    required this.area,
-  }) : super(key: key);
+class NodeDetailsList extends StatelessWidget {
+  const NodeDetailsList(this.node, {Key? key}) : super(key: key);
 
-  final Node area;
+  final Node node;
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +19,16 @@ class AreaDetailsList extends StatelessWidget {
       delegate: SliverChildListDelegate(
         [
           const SizedBox(height: 8),
-          if (area.breadcrumbs != null && area.breadcrumbs!.isNotEmpty)
+          if (node.breadcrumbs != null && node.breadcrumbs!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: NodeBreadcrumbs(area),
+              child: NodeBreadcrumbs(node),
             ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: StarRatingWidget(
-              rating: area.rating ?? 0,
-              ratingsCount: area.ratingsCount ?? 0,
+              rating: node.rating ?? 0,
+              ratingsCount: node.ratingsCount ?? 0,
             ),
           ),
           const SizedBox(height: 16),
@@ -40,21 +38,27 @@ class AreaDetailsList extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  area.name,
+                  node.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 8),
-                const Text('7a+'),
+                if (node.type == 2)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      '7a+',
+                      key: Key('nodeDetailsList_routeGrade_Text'),
+                    ),
+                  ),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          if (area.description != null)
+          if (node.description != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(area.description ?? ''),
+              child: Text(node.description ?? ''),
             ),
         ],
       ),
