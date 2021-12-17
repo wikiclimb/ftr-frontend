@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:wikiclimb_flutter_frontend/features/area/presentation/screens/area_details_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/image/presentation/bloc/list/image_list_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/inputs/inputs.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/bloc/node_edit/node_edit_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/node_details_screen.dart';
 import 'package:wikiclimb_flutter_frontend/features/node/presentation/widgets/map/node_popup.dart';
 
 import '../../../../../fixtures/node/nodes.dart';
@@ -88,7 +88,7 @@ void main() {
       expect(finder, findsOneWidget);
       await tester.tap(finder);
       await tester.pumpAndSettle();
-      expect(find.byType(AreaDetailsScreen), findsOneWidget);
+      expect(find.byType(NodeDetailsScreen), findsOneWidget);
     },
   );
 }

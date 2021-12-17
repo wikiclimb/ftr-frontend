@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../di.dart';
-import '../../../../area/presentation/screens/area_details_screen.dart';
 import '../../../domain/entities/node.dart';
 import '../../bloc/node_edit/node_edit_bloc.dart';
+import '../../screens/node_details_screen.dart';
 import '../list_item/node_list_item_cover.dart';
 
 /// Renders a map popup with information about a [Node].
@@ -29,7 +29,7 @@ class NodePopup extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => BlocProvider(
                 create: (context) => sl<NodeEditBloc>(param1: node),
-                child: const AreaDetailsScreen(),
+                child: const NodeDetailsScreen(),
               ),
             ),
           );
