@@ -22,7 +22,7 @@ class NodeListScreen extends StatelessWidget {
       // This is handled by the search bar itself.
       resizeToAvoidBottomInset: false,
       body: BlocProvider(
-        create: (context) => sl<NodeListBloc>(),
+        create: (context) => sl<NodeListBloc>(param1: null, param2: type),
         child: Stack(
           fit: StackFit.expand,
           children: const [

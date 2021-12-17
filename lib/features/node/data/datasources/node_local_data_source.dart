@@ -22,7 +22,7 @@ class NodeLocalDataSourceImpl extends NodeLocalDataSource {
   Future<Page<DriftNode>> fetchAll(NodeFetchParams params) async {
     final offset = params.page > 1 ? params.perPage * params.page : 0;
     final query = params.query;
-    // TODO merge this two methdos into one with parameters.
+    // TODO merge this two methods into one with parameters.
     List<DriftNode> result = query != null
         ? await driftNodesDao.fetchLimitedByQuery(
             limit: params.perPage,

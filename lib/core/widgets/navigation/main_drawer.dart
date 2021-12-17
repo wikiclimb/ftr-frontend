@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/map/presentation/screens/map_screen.dart';
+import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/node_list_screen.dart';
 
-import '../../../features/area/presentation/screens/area_list_screen.dart';
 import '../../../features/authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../features/login/presentation/screens/login_screen.dart';
 import '../../../features/login/presentation/widgets/login_drawer_tile.dart';
@@ -26,7 +26,8 @@ class MainDrawer extends StatelessWidget {
           children: <Widget>[
             if (currentRoute != MapScreen.id)
               const MapTile(key: Key('mainDrawer_mapDrawerTile')),
-            if (currentRoute != AreaListScreen.id) const AreasTile(),
+            const AreasTile(),
+            const RoutesTile(),
             if (currentRoute != LoginScreen.id) const LoginDrawerTile(),
             if (context.read<AuthenticationBloc>().state
                     is AuthenticationUnauthenticated &&
@@ -50,7 +51,34 @@ class AreasTile extends StatelessWidget {
       title: const Text('Areas'),
       onTap: () {
         Navigator.pop(context);
-        Navigator.pushNamed(context, AreaListScreen.id);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NodeListScreen(type: 1),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class RoutesTile extends StatelessWidget {
+  const RoutesTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      key: UniqueKey(),
+      leading: const Icon(Icons.upgrade),
+      title: const Text('Routes'),
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NodeListScreen(type: 2),
+          ),
+        );
       },
     );
   }

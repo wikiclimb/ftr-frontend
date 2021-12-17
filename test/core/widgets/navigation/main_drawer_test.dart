@@ -101,6 +101,22 @@ void main() {
     },
   );
 
+  testWidgets(
+    'displays route tile',
+    (WidgetTester tester) async {
+      whenListen(
+        authBloc,
+        Stream.fromIterable([
+          const AuthenticationAuthenticated(tAuthData),
+        ]),
+        initialState: AuthenticationInitial(),
+      );
+      await tester.pumpIt(authBloc, LoginScreen.id);
+      expect(find.text('Routes'), findsOneWidget);
+      await tester.tap(find.text('Routes'));
+    },
+  );
+
   group('registration tile', () {
     testWidgets(
       'displays when not authenticated',
