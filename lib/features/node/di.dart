@@ -49,5 +49,5 @@ void initNodeFeature(GetIt sl) {
       driftNodesDao: sl(),
     ),
   );
-  sl.registerLazySingleton<DriftNodesDao>(() => DriftNodesDao(sl()));
+  sl.registerLazySingleton<DriftNodeDao>(() => DriftNodeDaoImpl(sl()));
 }

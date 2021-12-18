@@ -6,7 +6,7 @@ import '../../features/node/data/models/drift_node.dart';
 part 'database.g.dart';
 
 /// Main application database.
-@DriftDatabase(tables: [DriftNodes], daos: [DriftNodesDao])
+@DriftDatabase(tables: [DriftNodes], daos: [DriftNodeDaoImpl])
 class WkcDatabase extends _$WkcDatabase {
   WkcDatabase(QueryExecutor e) : super(e);
 

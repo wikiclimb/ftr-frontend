@@ -1,49 +1,56 @@
 import 'package:drift/drift.dart';
 
 import '../../../../core/database/database.dart';
+import '../../domain/entities/node_fetch_params.dart';
 import '../models/drift_node.dart';
 
 part 'drift_node_dao.g.dart';
 
-/// Dao for [Node] data.
+/// Dao contracts for [Node] data.
+///
+/// This class exposes the methods that can be used to fetch and save [Node]
+/// data from the local Drift SQLite database.
+abstract class DriftNodeDao {
+  /// Fetch [DriftNode] rows according to the parameters given.
+  ///
+  /// Check the documentation for [NodeFetchParams] to see valid parameters that
+  /// this method recognizes. The two most important are [page] and [perPage],
+  /// because they determine the `limit` and `offset` parameters that the
+  /// corresponding SQL query will have.
+  Future<List<DriftNode>> fetch(NodeFetchParams params);
+
+  /// Given a [DriftNode] instance, create or update its corresponding row.
+  ///
+  /// Two [DriftNode] are considered equal if their ID property is the same.
+  /// This method needs SQLite version 3.24.0 or above.
+  Future<int> createOrUpdateNode(DriftNode driftNode);
+}
+
+/// Concrete implementations for the contracts in [DriftNodeDao].
 @DriftAccessor(tables: [DriftNodes])
-class DriftNodesDao extends DatabaseAccessor<WkcDatabase>
-    with _$DriftNodesDaoMixin {
-  DriftNodesDao(WkcDatabase db) : super(db);
+class DriftNodeDaoImpl extends DatabaseAccessor<WkcDatabase>
+    with _$DriftNodeDaoImplMixin
+    implements DriftNodeDao {
+  DriftNodeDaoImpl(WkcDatabase db) : super(db);
 
-  /// Fetch a limited amount of [DriftNode] rows.
-  ///
-  /// This method takes a limit parameter and an optional offset allowing to
-  /// fetch paginated results. Limit does not have a default value because it
-  /// is the responsibility of the caller to know the number of items needed.
-  Future<List<DriftNode>> fetchLimited(int limit,
-      {int? offset, int? parentId}) {
-    final query = select(driftNodes)..limit(limit, offset: offset);
-    if (parentId != null) {
-      query.where((n) => n.parentId.equals(parentId));
-    }
-    return query.get();
-  }
-
-  /// Fetch a limited amount of [DriftNode] rows filtered by a query string.
-  ///
-  /// This method takes a [String] that contains a value to filter the records
-  /// by, it also takes a limit parameter and an optional offset allowing to
-  /// fetch paginated results. Limit does not have a default value because it
-  /// is the responsibility of the caller to know the number of items needed.
-  Future<List<DriftNode>> fetchLimitedByQuery(
-      {required int limit, required String query, int? offset, int? parentId}) {
+  @override
+  Future<List<DriftNode>> fetch(NodeFetchParams params) {
+    final offset = params.page > 1 ? params.perPage * params.page : 0;
     final sql = select(driftNodes);
-    if (parentId != null) {
-      sql.where((n) => n.parentId.equals(parentId));
+    if (params.parentId != null) {
+      sql.where((n) => n.parentId.equals(params.parentId));
     }
-    return (sql
-          ..where((n) => n.name.like(query) | n.description.like(query))
-          ..limit(limit, offset: offset))
-        .get();
+    if (params.query != null) {
+      sql.where((n) =>
+          n.name.like(params.query!) | n.description.like(params.query!));
+    }
+    if (params.type != null) {
+      sql.where((n) => n.nodeTypeId.equals(params.type));
+    }
+    return (sql..limit(params.perPage, offset: offset)).get();
   }
 
-  // TODO complete this method and its tests.
+  @override
   Future<int> createOrUpdateNode(DriftNode driftNode) {
     return into(driftNodes).insertOnConflictUpdate(driftNode);
   }

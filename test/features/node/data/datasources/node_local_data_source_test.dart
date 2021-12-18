@@ -9,10 +9,10 @@ import 'package:wikiclimb_flutter_frontend/features/node/domain/entities/node_fe
 
 import '../../../../fixtures/node/drift_nodes.dart';
 
-class MockDriftNodesDao extends Mock implements DriftNodesDao {}
+class MockDriftNodesDao extends Mock implements DriftNodeDao {}
 
 void main() {
-  late DriftNodesDao mockDao;
+  late DriftNodeDao mockDao;
   late NodeLocalDataSource dataSource;
   final expectedPage = Page((p) => p
     ..items = BuiltList(driftNodes).toBuilder()
@@ -34,20 +34,17 @@ void main() {
       final tParams = NodeFetchParams((p) => p
         ..page = 1
         ..perPage = 20);
-      when(() => mockDao.fetchLimited(any(), offset: any(named: 'offset')))
-          .thenAnswer((_) async => driftNodes);
+      when(() => mockDao.fetch(tParams)).thenAnswer((_) async => driftNodes);
       final result = await dataSource.fetchAll(tParams);
       expect(result, expectedPage);
-      verify(() => mockDao.fetchLimited(any(), offset: any(named: 'offset')))
-          .called(1);
+      verify(() => mockDao.fetch(tParams)).called(1);
     });
 
     test('fetch all with params', () async {
       final tParams = NodeFetchParams((p) => p
         ..page = 3
         ..perPage = 10);
-      when(() => mockDao.fetchLimited(any(), offset: any(named: 'offset')))
-          .thenAnswer((_) async => driftNodes);
+      when(() => mockDao.fetch(tParams)).thenAnswer((_) async => driftNodes);
       final result = await dataSource.fetchAll(tParams);
       final page = Page((p) => p
         ..items = BuiltList(driftNodes).toBuilder()
@@ -55,7 +52,7 @@ void main() {
         ..nextPageNumber = 4
         ..pageNumber = 3);
       expect(result, page);
-      verify(() => mockDao.fetchLimited(10, offset: 30)).called(1);
+      verify(() => mockDao.fetch(tParams)).called(1);
     });
 
     test('fetch all with params and query', () async {
@@ -63,11 +60,7 @@ void main() {
         ..page = 3
         ..perPage = 10
         ..query = 'baboon');
-      when(() => mockDao.fetchLimitedByQuery(
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            query: any(named: 'query'),
-          )).thenAnswer((_) async => driftNodes);
+      when(() => mockDao.fetch(tParams)).thenAnswer((_) async => driftNodes);
       final result = await dataSource.fetchAll(tParams);
       final page = Page((p) => p
         ..items = BuiltList(driftNodes).toBuilder()
@@ -75,11 +68,7 @@ void main() {
         ..nextPageNumber = 4
         ..pageNumber = 3);
       expect(result, page);
-      verify(() => mockDao.fetchLimitedByQuery(
-            limit: 10,
-            offset: 30,
-            query: 'baboon',
-          )).called(1);
+      verify(() => mockDao.fetch(tParams)).called(1);
     });
   });
 

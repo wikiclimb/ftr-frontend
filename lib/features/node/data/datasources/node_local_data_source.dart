@@ -16,25 +16,11 @@ abstract class NodeLocalDataSource {
 class NodeLocalDataSourceImpl extends NodeLocalDataSource {
   NodeLocalDataSourceImpl({required this.driftNodesDao});
 
-  final DriftNodesDao driftNodesDao;
+  final DriftNodeDao driftNodesDao;
 
   @override
   Future<Page<DriftNode>> fetchAll(NodeFetchParams params) async {
-    final offset = params.page > 1 ? params.perPage * params.page : 0;
-    final query = params.query;
-    // TODO merge this two methods into one with parameters.
-    List<DriftNode> result = query != null
-        ? await driftNodesDao.fetchLimitedByQuery(
-            limit: params.perPage,
-            query: query,
-            offset: offset,
-            parentId: params.parentId,
-          )
-        : await driftNodesDao.fetchLimited(
-            params.perPage,
-            offset: offset,
-            parentId: params.parentId,
-          );
+    List<DriftNode> result = await driftNodesDao.fetch(params);
     return Page((p) => p
       ..isLastPage = false
       ..pageNumber = params.page
