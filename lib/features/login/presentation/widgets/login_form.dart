@@ -86,7 +86,7 @@ class _PasswordInput extends StatelessWidget {
           obscureText: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            labelText: 'Password',
+            hintText: 'Password',
             filled: true,
             fillColor: Colors.white,
             errorText: state.password.invalid ? 'invalid password' : null,
