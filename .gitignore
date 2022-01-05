@@ -29,6 +29,7 @@
 # Build runner generated code
 test/**/*_test.mocks.dart
 *.g.dart
+*.freezed.dart
 
 # Web related
 lib/generated_plugin_registrant.dart

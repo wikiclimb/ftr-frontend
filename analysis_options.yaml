@@ -13,6 +13,7 @@ analyzer:
   exclude:
     - "**/*.mocks.dart"
     - "**/*.g.dart"
+    - "**/*.freezed.dart"
 
 linter:
   rules:
