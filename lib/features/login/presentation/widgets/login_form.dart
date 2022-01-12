@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import '../../../home/presentation/screens/home_screen.dart';
+import '../../../password_recovery/presentation/screens/password_recovery_screen.dart';
 import '../bloc/login_bloc.dart';
 
 /// LoginForm renders a form that allows a registered user to login.
@@ -35,10 +36,12 @@ class LoginForm extends StatelessWidget {
           const Padding(padding: EdgeInsets.all(12)),
           _LoginButton(),
           const Padding(padding: EdgeInsets.all(12)),
-          const ElevatedButton(
-            // Should navigate to the forgot my password screen.
-            onPressed: null,
-            child: Text('I forgot my password'),
+          ElevatedButton(
+            key: const Key('loginForm_passwordReset_elevatedButton'),
+            onPressed: () {
+              Navigator.push(context, PasswordRecoveryScreen.route());
+            },
+            child: const Text('I forgot my password'),
           ),
         ],
       ),

@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/features/home/presentation/screens/home_screen.dart';
-
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/bloc/login_bloc.dart';
 import 'package:wikiclimb_flutter_frontend/features/login/presentation/widgets/login_form.dart';
+import 'package:wikiclimb_flutter_frontend/features/password_recovery/presentation/bloc/password_recovery/password_recovery_bloc.dart';
+import 'package:wikiclimb_flutter_frontend/features/password_recovery/presentation/widgets/password_recovery_form.dart';
 
 class FakeLoginEvent extends Fake implements LoginEvent {}
 
@@ -17,6 +19,10 @@ class FakeLoginState extends Fake implements LoginState {}
 
 class MockLoginBloc extends MockBloc<LoginEvent, LoginState>
     implements LoginBloc {}
+
+class MockPasswordRecoveryBloc
+    extends MockBloc<PasswordRecoveryEvent, PasswordRecoveryState>
+    implements PasswordRecoveryBloc {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
@@ -215,6 +221,40 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byType(MockHomeScreen), findsOneWidget);
+  });
+
+  group('navigation to password recovery', () {
+    final sl = GetIt.instance;
+    late PasswordRecoveryBloc mockPasswordRecoveryBloc;
+
+    setUp(() {
+      mockPasswordRecoveryBloc = MockPasswordRecoveryBloc();
+      when(() => mockPasswordRecoveryBloc.state)
+          .thenAnswer((_) => PasswordRecoveryState());
+      sl.registerSingletonAsync<PasswordRecoveryBloc>(
+        () async => mockPasswordRecoveryBloc,
+      );
+    });
+
+    testWidgets('navigates to PasswordRecoveryScreen on button click',
+        (tester) async {
+      when(() => loginBloc.state).thenReturn(const LoginState());
+      await tester.pumpWidget(
+        MaterialApp(
+          initialRoute: MockLoginScreen.id,
+          routes: {
+            MockLoginScreen.id: (context) =>
+                MockLoginScreen(loginBloc: loginBloc),
+            HomeScreen.id: (context) => MockHomeScreen(),
+          },
+        ),
+      );
+      final finder = find.byKey(Key('loginForm_passwordReset_elevatedButton'));
+      expect(finder, findsOneWidget);
+      await tester.tap(finder);
+      await tester.pumpAndSettle();
+      expect(find.byType(PasswordRecoveryForm), findsOneWidget);
+    });
   });
 }
 

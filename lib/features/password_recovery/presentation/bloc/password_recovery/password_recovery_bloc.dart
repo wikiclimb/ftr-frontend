@@ -38,11 +38,24 @@ class PasswordRecoveryBloc
         final result = await _requestPasswordRecoveryEmailUseCase(params);
         result.fold((failure) {
           emit(state.copyWith(status: FormzStatus.submissionFailure));
-        }, (r) {
-          emit(state.copyWith(status: FormzStatus.submissionSuccess));
+        }, (response) {
+          if (response.error == false) {
+            emit(state.copyWith(
+              status: FormzStatus.submissionSuccess,
+              message: response.message,
+            ));
+          } else {
+            emit(state.copyWith(
+              status: FormzStatus.submissionFailure,
+              message: response.message,
+            ));
+          }
         });
       } catch (_) {
-        emit(state.copyWith(status: FormzStatus.submissionFailure));
+        emit(state.copyWith(
+          status: FormzStatus.submissionFailure,
+          message: 'Request error, please try again later',
+        ));
       }
     }
   }

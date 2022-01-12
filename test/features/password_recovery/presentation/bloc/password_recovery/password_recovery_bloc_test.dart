@@ -23,6 +23,9 @@ void main() {
   final successResponse = Response((r) => r
     ..error = false
     ..message = 'OK');
+  final errorResponse = Response((r) => r
+    ..error = true
+    ..message = 'KO. The email was not found.');
 
   setUp(() {
     usecase = MockRequestPasswordRecoveryEmail();
@@ -43,7 +46,10 @@ void main() {
       email: Email.dirty(tEmail),
     );
     final state3 = state2.copyWith(status: FormzStatus.submissionInProgress);
-    final state4 = state3.copyWith(status: FormzStatus.submissionSuccess);
+    final state4 = state3.copyWith(
+      status: FormzStatus.submissionSuccess,
+      message: 'OK',
+    );
 
     blocTest<PasswordRecoveryBloc, PasswordRecoveryState>(
       'success result',
@@ -61,6 +67,38 @@ void main() {
           ..add(PasswordRecoveryEvent.submit());
       },
       expect: () => <PasswordRecoveryState>[state1, state2, state3, state4],
+      verify: (bloc) {
+        verify(() => usecase(params)).called(1);
+        verifyNoMoreInteractions(usecase);
+      },
+    );
+
+    final state4Error = state3.copyWith(
+      status: FormzStatus.submissionFailure,
+      message: errorResponse.message,
+    );
+
+    blocTest<PasswordRecoveryBloc, PasswordRecoveryState>(
+      'success result with error',
+      setUp: () {
+        when(() => usecase(params))
+            .thenAnswer((_) async => Right(errorResponse));
+      },
+      build: () => PasswordRecoveryBloc(
+        requestPasswordRecoveryEmailUseCase: usecase,
+      ),
+      act: (bloc) {
+        bloc
+          ..add(PasswordRecoveryEvent.emailUpdated('test'))
+          ..add(PasswordRecoveryEvent.emailUpdated(tEmail))
+          ..add(PasswordRecoveryEvent.submit());
+      },
+      expect: () => <PasswordRecoveryState>[
+        state1,
+        state2,
+        state3,
+        state4Error,
+      ],
       verify: (bloc) {
         verify(() => usecase(params)).called(1);
         verifyNoMoreInteractions(usecase);
@@ -106,8 +144,14 @@ void main() {
           ..add(PasswordRecoveryEvent.emailUpdated(tEmail))
           ..add(PasswordRecoveryEvent.submit());
       },
-      expect: () =>
-          <PasswordRecoveryState>[state1, state2, state3, state4Failed],
+      expect: () => <PasswordRecoveryState>[
+        state1,
+        state2,
+        state3,
+        state4Failed.copyWith(
+          message: 'Request error, please try again later',
+        )
+      ],
       verify: (bloc) {
         verify(() => usecase(params)).called(1);
         verifyNoMoreInteractions(usecase);

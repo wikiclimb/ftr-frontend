@@ -12,6 +12,7 @@ import 'features/image/di.dart';
 import 'features/login/di.dart';
 import 'features/map/di.dart';
 import 'features/node/di.dart';
+import 'features/password_recovery/di.dart';
 import 'features/registration/di.dart';
 
 final sl = GetIt.instance;
@@ -27,6 +28,7 @@ Future<void> init() async {
   initLoginFeature(sl);
   initMapFeature(sl);
   initNodeFeature(sl);
+  initPasswordRecoveryFeature(sl);
   initRegistrationFeature(sl);
   initCore(sl);
   // External dependencies
