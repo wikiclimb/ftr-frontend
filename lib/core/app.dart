@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../features/home/presentation/screens/home_screen.dart';
 import '../features/login/presentation/screens/login_screen.dart';
@@ -31,6 +33,18 @@ class App extends StatelessWidget {
         RegistrationScreen.id: (context) => const RegistrationScreen(),
         // coverage:ignore-end
       },
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      // localizationsDelegates: const [
+      //   AppLocalizations.delegate,
+      //   GlobalMaterialLocalizations.delegate,
+      // GlobalWidgetsLocalizations.delegate,
+      // GlobalCupertinoLocalizations.delegate,
+      // ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      // supportedLocales: const [
+      //   Locale('en', ''),
+      //   Locale('es', ''),
+      // ],
     );
   }
 }

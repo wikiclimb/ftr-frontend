@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../core/widgets/navigation/main_drawer.dart';
 import '../../../../di.dart';
@@ -46,10 +47,13 @@ class HomeScreen extends StatelessWidget {
                                   BlocBuilder<AuthenticationBloc,
                                       AuthenticationState>(
                                     builder: (context, state) {
-                                      final String message = state
-                                              is AuthenticationAuthenticated
-                                          ? 'Hello ${state.authenticationData.username}'
-                                          : 'Hello guest';
+                                      // final String message = state
+                                      //         is AuthenticationAuthenticated
+                                      //     ? 'Hello ${state.authenticationData.username}'
+                                      //     : 'Hello guest';
+                                      final message =
+                                          AppLocalizations.of(context)!
+                                              .helloWorld;
                                       return Text(message);
                                     },
                                   ),
