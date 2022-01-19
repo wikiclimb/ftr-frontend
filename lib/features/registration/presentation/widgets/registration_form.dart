@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:formz/formz.dart';
 
 import '../bloc/registration/registration_bloc.dart';
@@ -19,23 +20,32 @@ class RegistrationForm extends StatelessWidget {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              const SnackBar(content: Text('Authentication Failure')),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.authenticationFailure,
+                ),
+              ),
             );
         } else if (state.status.isSubmissionSuccess) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              const SnackBar(content: Text('Registered successfully')),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.registeredSuccessfully,
+                ),
+              ),
             );
         }
       },
       builder: (context, state) {
         if (state.status.isSubmissionSuccess) {
-          return const Center(
+          return Center(
             child: Text(
-              'Success, check your email for further instructions',
-              key: Key(
-                  'registrationScreen_successfulSubmissionConfirmation_text'),
+              AppLocalizations.of(context)!.successfulRegistration,
+              key: const Key(
+                'registrationScreen_successfulSubmissionConfirmation_text',
+              ),
             ),
           );
         } else if (state.status.isSubmissionInProgress) {
@@ -77,10 +87,12 @@ class _UsernameInput extends StatelessWidget {
               .add(RegistrationUsernameChanged(username)),
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Username',
+            hintText: AppLocalizations.of(context)!.username,
             filled: true,
             fillColor: Colors.white,
-            errorText: state.username.invalid ? 'invalid username' : null,
+            errorText: state.username.invalid
+                ? AppLocalizations.of(context)!.invalidUsername
+                : null,
             prefixIcon: Icon(
               Icons.person,
               color: Theme.of(context).primaryColorDark,
@@ -105,10 +117,12 @@ class _EmailInput extends StatelessWidget {
               .add(RegistrationEmailChanged(email)),
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Email',
+            hintText: AppLocalizations.of(context)!.email,
             filled: true,
             fillColor: Colors.white,
-            errorText: state.email.invalid ? 'Invalid email' : null,
+            errorText: state.email.invalid
+                ? AppLocalizations.of(context)!.invalidEmail
+                : null,
             prefixIcon: Icon(
               Icons.email,
               color: Theme.of(context).primaryColorDark,
@@ -134,11 +148,11 @@ class _PasswordInput extends StatelessWidget {
           obscureText: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Password',
+            hintText: AppLocalizations.of(context)!.password,
             filled: true,
             fillColor: Colors.white,
             errorText: state.password.invalid
-                ? 'Invalid password. Use at least one letter and one digit'
+                ? AppLocalizations.of(context)!.invalidPassword
                 : null,
             prefixIcon: Icon(
               Icons.lock,
@@ -166,11 +180,11 @@ class _PasswordRepeatInput extends StatelessWidget {
           obscureText: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Re-enter Password',
+            hintText: AppLocalizations.of(context)!.repeatPassword,
             filled: true,
             fillColor: Colors.white,
             errorText: state.confirmedPassword.invalid
-                ? 'Passwords do not match'
+                ? AppLocalizations.of(context)!.passwordsDoNotMatch
                 : null,
             prefixIcon: Icon(
               Icons.lock,
@@ -193,7 +207,7 @@ class _SubmitButton extends StatelessWidget {
             ? const Center(child: CircularProgressIndicator())
             : ElevatedButton(
                 key: const Key('registrationForm_continue_raisedButton'),
-                child: const Text('Sign up'),
+                child: Text(AppLocalizations.of(context)!.signUp),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
                   padding: const EdgeInsets.symmetric(

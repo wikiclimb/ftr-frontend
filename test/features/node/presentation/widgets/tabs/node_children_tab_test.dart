@@ -4,6 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -40,6 +41,8 @@ extension on WidgetTester {
   ) {
     return pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: MultiBlocProvider(
             providers: [
@@ -50,11 +53,7 @@ extension on WidgetTester {
                 create: (context) => authBloc,
               ),
             ],
-            child: MaterialApp(
-              home: Scaffold(
-                body: NodeChildrenTab(parentNode: parentNode),
-              ),
-            ),
+            child: NodeChildrenTab(parentNode: parentNode),
           ),
         ),
       ),

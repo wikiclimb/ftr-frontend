@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'map_view.dart';
 
@@ -18,7 +19,7 @@ class MapViewWrapper extends StatelessWidget {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         shadowColor: Colors.black,
-        title: const Text('WikiClimb'),
+        title: Text(AppLocalizations.of(context)!.wikiclimb),
         // backgroundColor: Colors.transparent,
         backgroundColor: const Color(0x33000000),
         elevation: 0,

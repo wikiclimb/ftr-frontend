@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../core/widgets/decoration/wkc_logo.dart';
 import '../../../../di.dart';
@@ -19,7 +20,7 @@ class PasswordRecoveryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.resetPassword)),
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../screens/login_screen.dart';
@@ -30,7 +31,7 @@ class LoginTile extends StatelessWidget {
     return ListTile(
       key: UniqueKey(),
       leading: const Icon(Icons.login),
-      title: const Text('Login'),
+      title: Text(AppLocalizations.of(context)!.logIn),
       onTap: () {
         Navigator.pop(context);
         Navigator.pushNamed(context, LoginScreen.id);
@@ -48,7 +49,7 @@ class LogoutTile extends StatelessWidget {
     return ListTile(
       key: UniqueKey(),
       leading: const Icon(Icons.logout),
-      title: const Text('Logout'),
+      title: Text(AppLocalizations.of(context)!.logOut),
       onTap: () {
         // Hide the drawer.
         Navigator.pop(context);

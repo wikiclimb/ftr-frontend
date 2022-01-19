@@ -3,6 +3,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -59,7 +60,7 @@ void main() {
         when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
         await pumpLoginDrawer(tester, authBloc);
         expect(find.byType(LoginTile), findsOneWidget);
-        expect(find.text('Login'), findsOneWidget);
+        expect(find.text('Log in'), findsOneWidget);
       },
     );
 
@@ -70,7 +71,7 @@ void main() {
             .thenAnswer((_) => const AuthenticationAuthenticated(tAuthData));
         await pumpLoginDrawer(tester, authBloc);
         expect(find.byType(LogoutTile), findsOneWidget);
-        expect(find.text('Logout'), findsOneWidget);
+        expect(find.text('Log out'), findsOneWidget);
       },
     );
 
@@ -104,6 +105,8 @@ void main() {
         );
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             navigatorObservers: [mockNavigatorObserver],
             initialRoute: HomeScreen.id,
             routes: {
@@ -113,8 +116,8 @@ void main() {
           ),
         );
         expect(find.byType(LogoutTile), findsOneWidget);
-        expect(find.text('Logout'), findsOneWidget);
-        await tester.tap(find.text('Logout'));
+        expect(find.text('Log out'), findsOneWidget);
+        await tester.tap(find.text('Log out'));
         await tester.pumpAndSettle();
         verify(() => authBloc.add(LogoutRequested())).called(1);
         verify(() => mockNavigatorObserver.didPop(any(), any()));
@@ -135,6 +138,8 @@ void main() {
         when(() => authBloc.state).thenAnswer((_) => AuthenticationInitial());
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             navigatorObservers: [mockNavigatorObserver],
             initialRoute: HomeScreen.id,
             routes: {
@@ -144,8 +149,8 @@ void main() {
           ),
         );
         expect(find.byType(LoginTile), findsOneWidget);
-        expect(find.text('Login'), findsOneWidget);
-        await tester.tap(find.text('Login'));
+        expect(find.text('Log in'), findsOneWidget);
+        await tester.tap(find.text('Log in'));
         await tester.pumpAndSettle();
         expect(find.text('Login Screen'), findsOneWidget);
       },
@@ -159,6 +164,8 @@ Future<void> pumpLoginDrawer(
 ) async {
   await tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<AuthenticationBloc>(
         create: (BuildContext context) => authBloc,
         child: const Scaffold(

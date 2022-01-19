@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../node/domain/entities/node.dart';
 import '../bloc/list/image_list_bloc.dart';
@@ -24,9 +25,9 @@ class NodeSliverImageList extends StatelessWidget {
         const keyStart = 'nodeSliverImageList_statusNotification_';
         if (state.status == ImageListStatus.loaded) {
           if (state.hasError) {
-            return const NodeSliverImageListStatusNotification(
-              key: Key('${keyStart}error'),
-              child: Text('Error fetching images.'),
+            return NodeSliverImageListStatusNotification(
+              key: const Key('${keyStart}error'),
+              child: Text(AppLocalizations.of(context)!.errorFetchingImages),
             );
           } else {
             return SliverImageList(

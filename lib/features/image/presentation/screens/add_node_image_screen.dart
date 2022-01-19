@@ -2,6 +2,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/environment/environment_config.dart';
@@ -19,7 +20,7 @@ class AddNodeImageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add images to ${node.name}'),
+        title: Text(AppLocalizations.of(context)!.addImagesToNode(node.name)),
       ),
       body: BlocProvider(
         create: (context) => sl<AddNodeImagesBloc>(),
@@ -51,8 +52,8 @@ class WkcImageSelector extends StatelessWidget {
           );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Action cancelled by user'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.actionCancelledByUser),
         ),
       );
     }
@@ -81,8 +82,8 @@ class WkcImageSelector extends StatelessWidget {
       listener: (context, state) {
         if (state.status == AddNodeImagesStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('An error happened'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.anErrorHappened),
             ),
           );
         }

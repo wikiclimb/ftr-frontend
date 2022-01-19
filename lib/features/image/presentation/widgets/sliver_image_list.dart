@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../node/domain/entities/node.dart';
@@ -67,7 +68,7 @@ class SliverImageListAddImagesButton extends StatelessWidget {
                   ),
                 );
               },
-              label: const Text('Add Photos'),
+              label: Text(AppLocalizations.of(context)!.addPhotos),
             );
           } else {
             return Container();

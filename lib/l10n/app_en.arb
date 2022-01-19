@@ -1,6 +1,248 @@
 {
+  "actionCancelledByUser": "Action cancelled by user",
+  "@actionCancelledByUser": {
+    "description": "Inform that a given action was cancelled by the user"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Add an item to a set"
+  },
+  "addADescription": "Add a description",
+  "@addADescription": {
+    "description": "Empty description field validation message"
+  },
+  "addImagesToNode": "Add images to {node}",
+  "@addImagesToNode": {
+    "description": "Button label for add images to node functionality",
+    "placeholders": {
+      "node": {
+        "type": "String",
+        "example": "Yosemite"
+      }
+    }
+  },
+  "addPhotos": "Add photos",
+  "@addPhotos": {
+    "description": "Button label to add photos to something in the application"
+  },
+  "anErrorHappened": "An error happened",
+  "@anErrorHappened": {
+    "description": "Inform the user that the process encountered an error"
+  },
+  "area": "Area",
+  "@area": {
+    "description": "Generally used to refer to an area in the application, it can have multiple sub-areas and/or routes"
+  },
+  "areasLink": "Areas",
+  "@areasLink": {
+    "description": "The string to be used for areas screen on the sidebar navigation"
+  },
+  "authenticationFailure": "Authentication Failure",
+  "@authenticationFailure": {
+    "description": "Inform the user that an authentication attempt resulted in a failure"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel string, typically used as the content for a button"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Label for a description form field"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit an item"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Label for an email form field"
+  },
+  "errorFetchingImages": "Error fetching images",
+  "@errorFetchingImages": {
+    "description": "Inform that an error ocurred while fetching images."
+  },
+  "geolocationFailure": "Geolocation failure",
+  "@geolocationFailure": {
+    "description": "Inform that an error ocurred while fetching geolocation data."
+  },
+  "hasAnError": "Has an error",
+  "@hasAnError": {
+    "description": "Notify the user that the current operation encountered an error"
+  },
+  "hello": "Hello {userName}",
+  "@hello": {
+    "description": "A message with a single parameter",
+    "placeholders": {
+      "userName": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
   "helloWorld": "Hello World!",
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"
+  },
+  "iForgotMyPassword": "I forgot my password",
+  "@iForgotMyPassword": {
+    "description": "Typically used as a button label to navigate to a password reset page."
+  },
+  "invalidEmail": "Invalid email",
+  "@invalidEmail": {
+    "description": "General validation error message for a email field."
+  },
+  "invalidLatitude": "Invalid value. Try between -90.0 and 90.0",
+  "@invalidLatitude": {
+    "description": "General validation error message for a latitude field."
+  },
+  "invalidLongitude": "Invalid value. Try between -180.0 and 180.0",
+  "@invalidLongitude": {
+    "description": "General validation error message for a longitude field."
+  },
+  "invalidPassword": "Invalid password. Use at least one letter and one digit",
+  "@invalidPassword": {
+    "description": "General validation error message for a password field."
+  },
+  "invalidUsername": "Invalid username",
+  "@invalidUsername": {
+    "description": "General validation error message for a username field."
+  },
+  "latitude": "Latitude",
+  "@latitude": {
+    "description": "Label for a latitude form field"
+  },
+  "located": "Located",
+  "@located": {
+    "description": "Inform that a request to obtain geolocation data was successful."
+  },
+  "logIn": "Log in",
+  "@logIn": {
+    "description": "Log in prompt, typically used on buttons and menu links"
+  },
+  "logOut": "Log out",
+  "@logOut": {
+    "description": "Log out prompt, typically used on buttons and menu links"
+  },
+  "longitude": "Longitude",
+  "@longitude": {
+    "description": "Label for a longitude form field"
+  },
+  "mapLink": "Map",
+  "@mapLink": {
+    "description": "The string to be used for map screen on the sidebar navigation"
+  },
+  "name": "Name",
+  "@name": {
+    "description": "Label for a name form field"
+  },
+  "node": "Node",
+  "@node": {
+    "description": "The basic unit of information in WikiClimb, ex. Area, Route, Pitch..."
+  },
+  "noItems": "No items",
+  "@noItems": {
+    "description": "Inform that there are no items on the current set"
+  },
+  "noMoreItems": "No more items",
+  "@noMoreItems": {
+    "description": "Inform that there are no more items on the current set"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK string, typically used as the content for a button"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Label for a password field"
+  },
+  "passwordsDoNotMatch": "Passwords don't match",
+  "@passwordsDoNotMatch": {
+    "description": "Passwords don't match validation error for password repeat field"
+  },
+  "register": "Register",
+  "@register": {
+    "description": "Register button or menu link label"
+  },
+  "registeredSuccessfully": "Registered successfully",
+  "@registeredSuccessfully": {
+    "description": "Successful registration confirmation"
+  },
+  "repeatPassword": "Repeat password",
+  "@repeatPassword": {
+    "description": "Repeat password button or menu link label"
+  },
+  "requestError": "Request error!",
+  "@requestError": {
+    "description": "Notify the user that the last network request operation encountered an error"
+  },
+  "resetPassword": "Reset password",
+  "@resetPassword": {
+    "description": "Label for a reset password button or menu link"
+  },
+  "route": "Route",
+  "@route": {
+    "description": "Generally used to refer to a climb in the application, it can have multiple pitches"
+  },
+  "routesLink": "Routes",
+  "@routesLink": {
+    "description": "The string to be used for routes screen on the sidebar navigation"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send button label"
+  },
+  "searchPlaceholder": "Search...",
+  "@searchPlaceholder": {
+    "description": "The default placeholder to be used in search fields"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up string"
+  },
+  "submissionFailure": "Submission failure",
+  "@submissionFailure": {
+    "description": "Inform that a request to submit data failed."
+  },
+  "submissionSuccess": "Submission success",
+  "@submissionSuccess": {
+    "description": "Inform that a request to submit data succeeded."
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Main form submit button label"
+  },
+  "successfulRegistration": "Success, check your email for further instructions",
+  "@successfulRegistration": {
+    "description": "Notify of a successful registration"
+  },
+  "typeNMore": "Type {n} more",
+  "@typeNMore": {
+    "description": "validation message for fields with minimum required length",
+    "placeholders": {
+      "n": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "updateCover": "Update cover",
+  "@updateCover": {
+    "description": "Prompt the user to update the cover image for something"
+  },
+  "useCurrentLocation": "Use current location",
+  "@useCurrentLocation": {
+    "description": "Prompt the user to use the current device's location"
+  },
+  "useImageAsCover": "Use this image as the cover",
+  "@useImageAsCover": {
+    "description": "Prompt the user to use the currently selected image as the cover for something"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "Label for a username form field"
+  },
+  "wikiclimb": "WikiClimb",
+  "@wikiclimb": {
+    "description": "Application title"
   }
 }

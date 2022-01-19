@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:formz/formz.dart';
 
 import '../bloc/password_recovery/password_recovery_bloc.dart';
@@ -19,7 +20,10 @@ class PasswordRecoveryForm extends StatelessWidget {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(content: Text(state.message ?? 'Request Error!')),
+              SnackBar(
+                content: Text(state.message ??
+                    AppLocalizations.of(context)!.requestError),
+              ),
             );
         } else if (state.status.isSubmissionSuccess) {
           ScaffoldMessenger.of(context)
@@ -27,7 +31,8 @@ class PasswordRecoveryForm extends StatelessWidget {
             ..showSnackBar(
               SnackBar(
                 content: Text(
-                  state.message ?? 'Success, check your email for instructions',
+                  state.message ??
+                      AppLocalizations.of(context)!.successfulRegistration,
                 ),
               ),
             );
@@ -35,10 +40,10 @@ class PasswordRecoveryForm extends StatelessWidget {
       },
       builder: (context, state) {
         if (state.status.isSubmissionSuccess) {
-          return const Center(
+          return Center(
             child: Text(
-              'Success, check your email for further instructions',
-              key: Key(
+              AppLocalizations.of(context)!.successfulRegistration,
+              key: const Key(
                 'passwordRecoveryForm_successSubmissionConfirmation_text',
               ),
             ),
@@ -79,10 +84,12 @@ class _EmailInput extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Email',
+            hintText: AppLocalizations.of(context)!.email,
             filled: true,
             fillColor: Colors.white,
-            errorText: state.email.invalid ? 'Invalid email' : null,
+            errorText: state.email.invalid
+                ? AppLocalizations.of(context)!.invalidEmail
+                : null,
             prefixIcon: Icon(
               Icons.email,
               color: Theme.of(context).primaryColorDark,
@@ -104,7 +111,7 @@ class _SubmitButton extends StatelessWidget {
             ? const Center(child: CircularProgressIndicator())
             : ElevatedButton(
                 key: const Key('passwordRecoveryForm_continue_raisedButton'),
-                child: const Text('Send'),
+                child: Text(AppLocalizations.of(context)!.send),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
                   padding: const EdgeInsets.symmetric(

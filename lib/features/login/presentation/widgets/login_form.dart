@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:formz/formz.dart';
 
 import '../../../home/presentation/screens/home_screen.dart';
@@ -20,7 +21,11 @@ class LoginForm extends StatelessWidget {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              const SnackBar(content: Text('Authentication Failure')),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.authenticationFailure,
+                ),
+              ),
             );
         } else if (state.status.isSubmissionSuccess) {
           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -41,7 +46,7 @@ class LoginForm extends StatelessWidget {
             onPressed: () {
               Navigator.push(context, PasswordRecoveryScreen.route());
             },
-            child: const Text('I forgot my password'),
+            child: Text(AppLocalizations.of(context)!.iForgotMyPassword),
           ),
         ],
       ),
@@ -61,10 +66,12 @@ class _UsernameInput extends StatelessWidget {
               context.read<LoginBloc>().add(LoginUsernameChanged(username)),
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Username',
+            hintText: AppLocalizations.of(context)!.username,
             filled: true,
             fillColor: Colors.white,
-            errorText: state.username.invalid ? 'invalid username' : null,
+            errorText: state.username.invalid
+                ? AppLocalizations.of(context)!.invalidUsername
+                : null,
             prefixIcon: Icon(
               Icons.person,
               color: Theme.of(context).primaryColorDark,
@@ -89,10 +96,12 @@ class _PasswordInput extends StatelessWidget {
           obscureText: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            hintText: 'Password',
+            hintText: AppLocalizations.of(context)!.password,
             filled: true,
             fillColor: Colors.white,
-            errorText: state.password.invalid ? 'invalid password' : null,
+            errorText: state.password.invalid
+                ? AppLocalizations.of(context)!.invalidPassword
+                : null,
             prefixIcon: Icon(
               Icons.lock,
               color: Theme.of(context).primaryColorDark,
@@ -114,7 +123,7 @@ class _LoginButton extends StatelessWidget {
             ? const Center(child: CircularProgressIndicator())
             : ElevatedButton(
                 key: const Key('loginForm_continue_raisedButton'),
-                child: const Text('Login'),
+                child: Text(AppLocalizations.of(context)!.logIn),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
                   padding: const EdgeInsets.symmetric(

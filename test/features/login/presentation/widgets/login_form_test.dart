@@ -3,6 +3,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
 import 'package:get_it/get_it.dart';
@@ -28,6 +29,21 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 class FakeRoute extends Fake implements MaterialPageRoute {}
 
+extension on WidgetTester {
+  Future<void> pumpIt(LoginBloc loginBloc) => pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: loginBloc,
+              child: const LoginForm(),
+            ),
+          ),
+        ),
+      );
+}
+
 void main() {
   late LoginBloc loginBloc;
 
@@ -45,16 +61,7 @@ void main() {
       (tester) async {
     const username = 'username';
     when(() => loginBloc.state).thenReturn(const LoginState());
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpIt(loginBloc);
     await tester.enterText(
       find.byKey(const Key('loginForm_usernameInput_textField')),
       username,
@@ -67,40 +74,22 @@ void main() {
   testWidgets('adds LoginPasswordChanged to LoginBloc when password is updated',
       (tester) async {
     const password = 'password';
-    when(() => loginBloc.state).thenReturn(const LoginState());
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
-      ),
-    );
+    when(() => loginBloc.state).thenReturn(LoginState());
+    await tester.pumpIt(loginBloc);
     await tester.enterText(
-      find.byKey(const Key('loginForm_passwordInput_textField')),
+      find.byKey(Key('loginForm_passwordInput_textField')),
       password,
     );
     verify(
-      () => loginBloc.add(const LoginPasswordChanged(password)),
+      () => loginBloc.add(LoginPasswordChanged(password)),
     ).called(1);
   });
 
   testWidgets('continue button is disabled by default', (tester) async {
-    when(() => loginBloc.state).thenReturn(const LoginState());
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
-      ),
-    );
+    when(() => loginBloc.state).thenReturn(LoginState());
+    await tester.pumpIt(loginBloc);
     final button = tester.widget<ElevatedButton>(
-      find.byKey(const Key('loginForm_continue_raisedButton')),
+      find.byKey(Key('loginForm_continue_raisedButton')),
     );
     expect(button.enabled, isFalse);
   });
@@ -109,20 +98,13 @@ void main() {
       'loading indicator is shown when status is submission in progress',
       (tester) async {
     when(() => loginBloc.state).thenReturn(
-      const LoginState(status: FormzStatus.submissionInProgress),
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
+      LoginState(
+        status: FormzStatus.submissionInProgress,
       ),
     );
+    await tester.pumpIt(loginBloc);
     expect(
-      find.byKey(const Key('loginForm_continue_raisedButton')),
+      find.byKey(Key('loginForm_continue_raisedButton')),
       findsNothing,
     );
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -133,18 +115,9 @@ void main() {
     when(() => loginBloc.state).thenReturn(
       const LoginState(status: FormzStatus.valid),
     );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpIt(loginBloc);
     final button = tester.widget<ElevatedButton>(
-      find.byKey(const Key('loginForm_continue_raisedButton')),
+      find.byKey(Key('loginForm_continue_raisedButton')),
     );
     expect(button.enabled, isTrue);
   });
@@ -152,22 +125,13 @@ void main() {
   testWidgets('LoginSubmitted is added to LoginBloc when continue is tapped',
       (tester) async {
     when(() => loginBloc.state).thenReturn(
-      const LoginState(status: FormzStatus.valid),
+      LoginState(status: FormzStatus.valid),
     );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpIt(loginBloc);
     await tester.tap(
-      find.byKey(const Key('loginForm_continue_raisedButton')),
+      find.byKey(Key('loginForm_continue_raisedButton')),
     );
-    verify(() => loginBloc.add(const LoginSubmitted())).called(1);
+    verify(() => loginBloc.add(LoginSubmitted())).called(1);
   });
 
   testWidgets('shows SnackBar when status is submission failure',
@@ -175,23 +139,14 @@ void main() {
     whenListen(
       loginBloc,
       Stream.fromIterable([
-        const LoginState(status: FormzStatus.submissionInProgress),
-        const LoginState(status: FormzStatus.submissionFailure),
+        LoginState(status: FormzStatus.submissionInProgress),
+        LoginState(status: FormzStatus.submissionFailure),
       ]),
     );
     when(() => loginBloc.state).thenReturn(
-      const LoginState(status: FormzStatus.submissionFailure),
+      LoginState(status: FormzStatus.submissionFailure),
     );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BlocProvider.value(
-            value: loginBloc,
-            child: const LoginForm(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpIt(loginBloc);
     await tester.pump();
     expect(find.byType(SnackBar), findsOneWidget);
   });
@@ -201,15 +156,17 @@ void main() {
     whenListen(
       loginBloc,
       Stream.fromIterable([
-        const LoginState(status: FormzStatus.submissionInProgress),
-        const LoginState(status: FormzStatus.submissionSuccess),
+        LoginState(status: FormzStatus.submissionInProgress),
+        LoginState(status: FormzStatus.submissionSuccess),
       ]),
     );
     when(() => loginBloc.state).thenReturn(
-      const LoginState(status: FormzStatus.submissionSuccess),
+      LoginState(status: FormzStatus.submissionSuccess),
     );
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         navigatorObservers: [mockObserver],
         initialRoute: MockLoginScreen.id,
         routes: {
@@ -238,17 +195,8 @@ void main() {
 
     testWidgets('navigates to PasswordRecoveryScreen on button click',
         (tester) async {
-      when(() => loginBloc.state).thenReturn(const LoginState());
-      await tester.pumpWidget(
-        MaterialApp(
-          initialRoute: MockLoginScreen.id,
-          routes: {
-            MockLoginScreen.id: (context) =>
-                MockLoginScreen(loginBloc: loginBloc),
-            HomeScreen.id: (context) => MockHomeScreen(),
-          },
-        ),
-      );
+      when(() => loginBloc.state).thenReturn(LoginState());
+      await tester.pumpIt(loginBloc);
       final finder = find.byKey(Key('loginForm_passwordReset_elevatedButton'));
       expect(finder, findsOneWidget);
       await tester.tap(finder);

@@ -47,14 +47,12 @@ class HomeScreen extends StatelessWidget {
                                   BlocBuilder<AuthenticationBloc,
                                       AuthenticationState>(
                                     builder: (context, state) {
-                                      // final String message = state
-                                      //         is AuthenticationAuthenticated
-                                      //     ? 'Hello ${state.authenticationData.username}'
-                                      //     : 'Hello guest';
-                                      final message =
-                                          AppLocalizations.of(context)!
-                                              .helloWorld;
-                                      return Text(message);
+                                      final name = state
+                                              is AuthenticationAuthenticated
+                                          ? state.authenticationData.username
+                                          : 'guest';
+                                      return Text(AppLocalizations.of(context)!
+                                          .hello(name));
                                     },
                                   ),
                                 ],

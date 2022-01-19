@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wikiclimb_flutter_frontend/features/map/presentation/screens/map_screen.dart';
-import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/node_list_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../features/authentication/presentation/bloc/authentication_bloc.dart';
 import '../../../features/login/presentation/screens/login_screen.dart';
 import '../../../features/login/presentation/widgets/login_drawer_tile.dart';
+import '../../../features/map/presentation/screens/map_screen.dart';
+import '../../../features/node/presentation/screens/node_list_screen.dart';
 import '../../../features/registration/presentation/screens/registration_screen.dart';
 
 /// Main drawer provides the main application navigation menu.
@@ -48,7 +49,7 @@ class AreasTile extends StatelessWidget {
     return ListTile(
       key: UniqueKey(),
       leading: const Icon(Icons.list_outlined),
-      title: const Text('Areas'),
+      title: Text(AppLocalizations.of(context)!.areasLink),
       onTap: () {
         Navigator.pop(context);
         Navigator.push(
@@ -70,7 +71,7 @@ class RoutesTile extends StatelessWidget {
     return ListTile(
       key: UniqueKey(),
       leading: const Icon(Icons.upgrade),
-      title: const Text('Routes'),
+      title: Text(AppLocalizations.of(context)!.routesLink),
       onTap: () {
         Navigator.pop(context);
         Navigator.push(
@@ -92,7 +93,7 @@ class MapTile extends StatelessWidget {
     return ListTile(
       key: const Key('mainDrawer_mapListTile'),
       leading: const Icon(Icons.map),
-      title: const Text('Map'),
+      title: Text(AppLocalizations.of(context)!.mapLink),
       onTap: () {
         Navigator.pop(context);
         Navigator.pushNamed(context, MapScreen.id);
@@ -108,7 +109,7 @@ class SignUpTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: const Icon(Icons.app_registration),
-      title: const Text('Sign Up'),
+      title: Text(AppLocalizations.of(context)!.signUp),
       onTap: () {
         Navigator.pop(context);
         Navigator.pushNamed(context, RegistrationScreen.id);

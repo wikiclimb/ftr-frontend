@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../core/widgets/decoration/wkc_logo.dart';
 import '../../../../di.dart';
@@ -22,7 +23,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log in'),
+        title: Text(AppLocalizations.of(context)!.logIn),
       ),
       body: SafeArea(
         child: Container(

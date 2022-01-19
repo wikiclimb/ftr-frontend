@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../bloc/node_list/node_list_bloc.dart';
 import 'node_list_item.dart';
@@ -89,8 +90,8 @@ class _NodeListState extends State<NodeList> {
               ],
             );
           } else {
-            return const Center(
-              child: Text('No items'),
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noItems),
             );
           }
       }
@@ -107,8 +108,8 @@ class NodeListLastItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state.status == NodeListStatus.loaded && state.hasError) {
-      return const ListTile(
-        title: Text('Has an error'),
+      return ListTile(
+        title: Text(AppLocalizations.of(context)!.hasAnError),
       );
     } else if (state.status == NodeListStatus.loading) {
       return const ListTile(
@@ -117,7 +118,7 @@ class NodeListLastItem extends StatelessWidget {
     }
     return ListTile(
       title: state.nextPage == -1
-          ? const Text('No more items')
+          ? Text(AppLocalizations.of(context)!.noMoreItems)
           : const SizedBox(height: 24),
     );
   }

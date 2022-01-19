@@ -47,3 +47,6 @@ app.*.map.json
 
 # Code coverage reports
 /coverage
+
+# Missing translations
+lib/l10n/missing_translations.txt

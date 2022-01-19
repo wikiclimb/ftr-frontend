@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -37,7 +38,13 @@ void main() {
     when(() => passwordRecoveryBloc.state)
         .thenAnswer((_) => PasswordRecoveryState());
     await tester.pumpWidget(
-      MaterialApp(home: Scaffold(body: PasswordRecoveryScreen())),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: PasswordRecoveryScreen(),
+        ),
+      ),
     );
     expect(find.byType(PasswordRecoveryForm), findsOneWidget);
     await tester.pumpAndSettle();

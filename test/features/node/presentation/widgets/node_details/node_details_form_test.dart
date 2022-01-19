@@ -4,6 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formz/formz.dart';
 import 'package:get_it/get_it.dart';
@@ -42,6 +43,8 @@ extension on WidgetTester {
           BlocProvider<AuthenticationBloc>(create: (_) => authenticationBloc),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: NodeDetailsForm(),
           ),
@@ -249,6 +252,8 @@ main() {
               ),
             ],
             child: MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
               navigatorObservers: [mockObserver],
               home: Scaffold(body: NodeDetailsForm()),
             ),

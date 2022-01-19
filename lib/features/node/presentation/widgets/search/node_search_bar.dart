@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 import '../../bloc/node_list/node_list_bloc.dart';
@@ -17,7 +18,7 @@ class NodeSearchBar extends StatelessWidget {
 
     return FloatingSearchBar(
       key: const Key('nodeListScreen_floatingSearchBar'),
-      hint: 'Search...',
+      hint: AppLocalizations.of(context)?.searchPlaceholder,
       scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
       transitionDuration: const Duration(milliseconds: 100),
       transitionCurve: Curves.easeInOut,

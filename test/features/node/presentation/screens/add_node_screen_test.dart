@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -13,6 +14,18 @@ import 'package:wikiclimb_flutter_frontend/features/node/presentation/screens/ad
 class MockEditNode extends Mock implements EditNode {}
 
 class MockLocator extends Mock implements Locator {}
+
+extension on WidgetTester {
+  Future<void> pumpIt({required int type}) => pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: AddNodeScreen(type: type),
+          ),
+        ),
+      );
+}
 
 void main() {
   late final GetIt sl;
@@ -36,13 +49,7 @@ void main() {
     testWidgets(
       'widget is created',
       (WidgetTester tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: AddNodeScreen(type: 1),
-            ),
-          ),
-        );
+        await tester.pumpIt(type: 1);
         expect(find.byType(AddNodeScreen), findsOneWidget);
       },
     );
@@ -50,13 +57,7 @@ void main() {
     testWidgets(
       'node edit form is created',
       (WidgetTester tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: AddNodeScreen(type: 2),
-            ),
-          ),
-        );
+        await tester.pumpIt(type: 2);
         expect(
           find.byKey(Key('addNodeScreen_nodeDetailsForm')),
           findsOneWidget,

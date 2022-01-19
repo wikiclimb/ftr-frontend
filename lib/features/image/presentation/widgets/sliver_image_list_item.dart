@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../core/environment/environment_config.dart';
 import '../../../node/presentation/bloc/node_edit/node_edit_bloc.dart';
@@ -55,12 +56,12 @@ void _requestCoverUpdate(BuildContext context, wkc.Image image) {
   showDialog<String>(
     context: context,
     builder: (BuildContext ctx) => AlertDialog(
-      title: const Text('Update cover'),
-      content: const Text('Use this image as the cover'),
+      title: Text(AppLocalizations.of(context)!.updateCover),
+      content: Text(AppLocalizations.of(context)!.useImageAsCover),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(ctx, 'Cancel'),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         TextButton(
           onPressed: () {
@@ -69,7 +70,7 @@ void _requestCoverUpdate(BuildContext context, wkc.Image image) {
                 .add(NodeCoverUpdateRequested(image.fileName));
             Navigator.pop(ctx, 'Ok');
           },
-          child: const Text('OK'),
+          child: Text(AppLocalizations.of(context)!.ok),
         ),
       ],
     ),

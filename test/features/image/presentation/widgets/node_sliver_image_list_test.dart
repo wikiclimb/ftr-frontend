@@ -4,6 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/features/authentication/domain/entities/authentication_data.dart';
@@ -31,6 +32,8 @@ extension on WidgetTester {
   ) {
     return pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: CustomScrollView(
             slivers: [
@@ -109,7 +112,7 @@ void main() {
           nodes.first, mockImageListBloc, mockAuthenticationBloc);
       expect(
           find.byType(NodeSliverImageListStatusNotification), findsOneWidget);
-      expect(find.text('Error fetching images.'), findsOneWidget);
+      expect(find.text('Error fetching images'), findsOneWidget);
     });
   });
 

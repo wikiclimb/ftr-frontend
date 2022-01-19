@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:formz/formz.dart';
 
 import '../../bloc/node_edit/node_edit_bloc.dart';
@@ -19,17 +20,20 @@ class NodeDetailsForm extends StatelessWidget {
     return BlocListener<NodeEditBloc, NodeEditState>(
       listener: (context, state) {
         if (state.status.isSubmissionFailure) {
-          _displayMessage(context, 'Submission failure');
+          _displayMessage(
+              context, AppLocalizations.of(context)!.submissionFailure);
         } else if (state.status.isSubmissionSuccess) {
-          _displayMessage(context, 'Submission success');
+          _displayMessage(
+              context, AppLocalizations.of(context)!.submissionSuccess);
           Navigator.of(context).pop();
         } else {
           // Formz status pure, valid, invalid, submission in progress...
           // The user is still filling the form
           if (state.glStatus == GeolocationRequestStatus.success) {
-            _displayMessage(context, 'Located');
+            _displayMessage(context, AppLocalizations.of(context)!.located);
           } else if (state.glStatus == GeolocationRequestStatus.failure) {
-            _displayMessage(context, 'Geolocation failure');
+            _displayMessage(
+                context, AppLocalizations.of(context)!.geolocationFailure);
           }
         }
       },
@@ -74,10 +78,14 @@ class _NodeEditAppBarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NodeEditBloc, NodeEditState>(builder: (context, state) {
-      final String prefix = state.node.id == null ? 'Add' : 'Edit';
+      final String prefix = state.node.id == null
+          ? AppLocalizations.of(context)!.add
+          : AppLocalizations.of(context)!.edit;
       final String suffix = state.node.type == 1
-          ? 'Area'
-          : (state.node.type == 2 ? 'Route' : 'Node');
+          ? AppLocalizations.of(context)!.area
+          : (state.node.type == 2
+              ? AppLocalizations.of(context)!.route
+              : AppLocalizations.of(context)!.node);
       return Text('$prefix $suffix');
     });
   }
@@ -95,7 +103,7 @@ class _SubmitButton extends StatelessWidget {
             ? const Center(child: CircularProgressIndicator())
             : ElevatedButton(
                 key: const Key('nodeEditForm_submitButton_elevatedButton'),
-                child: const Text('Submit'),
+                child: Text(AppLocalizations.of(context)!.submit),
                 onPressed: state.status.isValidated
                     ? () {
                         context
@@ -117,7 +125,8 @@ class _NodeNameInput extends StatelessWidget {
     return BlocBuilder<NodeEditBloc, NodeEditState>(
         // buildWhen: (previous, current) => previous.name != current.name,
         builder: (context, state) {
-      final message = 'type ${4 - state.name.value.length} more';
+      final message =
+          AppLocalizations.of(context)!.typeNMore(4 - state.name.value.length);
       return TextField(
         controller: state.name.pure
             ? TextEditingController(text: state.name.value)
@@ -127,7 +136,7 @@ class _NodeNameInput extends StatelessWidget {
               NodeNameChanged(name),
             ),
         decoration: InputDecoration(
-          label: const Text('Name'),
+          label: Text(AppLocalizations.of(context)!.name),
           errorText: state.name.invalid ? message : null,
         ),
       );
@@ -156,8 +165,10 @@ class _NodeDescriptionInput extends StatelessWidget {
                 NodeDescriptionChanged(description),
               ),
           decoration: InputDecoration(
-            label: const Text('Description'),
-            errorText: state.description.invalid ? 'Add a description' : null,
+            label: Text(AppLocalizations.of(context)!.description),
+            errorText: state.description.invalid
+                ? AppLocalizations.of(context)!.addADescription
+                : null,
           ),
         );
       },
@@ -192,9 +203,9 @@ class _NodeLongitudeInput extends StatelessWidget {
                 NodeLongitudeChanged(longitude),
               ),
           decoration: InputDecoration(
-            label: const Text('Longitude'),
+            label: Text(AppLocalizations.of(context)!.longitude),
             errorText: state.longitude.invalid
-                ? 'Invalid value. Try between -180.0 0.0'
+                ? AppLocalizations.of(context)!.invalidLongitude
                 : null,
           ),
         );
@@ -230,9 +241,9 @@ class _NodeLatitudeInput extends StatelessWidget {
                 NodeLatitudeChanged(latitude),
               ),
           decoration: InputDecoration(
-            label: const Text('Latitude'),
+            label: Text(AppLocalizations.of(context)!.latitude),
             errorText: state.latitude.invalid
-                ? 'Invalid value. Try between -90.0 and 90.0'
+                ? AppLocalizations.of(context)!.invalidLatitude
                 : null,
           ),
         );
@@ -272,7 +283,7 @@ class _RequestGeolocationButton extends StatelessWidget {
         }
         return ElevatedButton(
           key: const Key('nodeEditForm_requestGeolocation_elevatedButton'),
-          child: const Text('Use current location'),
+          child: Text(AppLocalizations.of(context)!.useCurrentLocation),
           onPressed: () {
             context.read<NodeEditBloc>().add(NodeGeolocationRequested());
           },

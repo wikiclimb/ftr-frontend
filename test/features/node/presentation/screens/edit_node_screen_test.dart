@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wikiclimb_flutter_frontend/core/utils/locator.dart';
@@ -16,6 +17,8 @@ extension on WidgetTester {
   Future<void> pumpEditNodeScreen(NodeEditBloc mockBloc) {
     return pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: BlocProvider(
             create: (context) => mockBloc,
